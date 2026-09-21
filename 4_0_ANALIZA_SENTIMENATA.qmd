@@ -1,0 +1,3 @@
+# 4. Analiza sentimenta {.unnumbered}
+
+Analiza sentimenta procjenjuje emocionalni ton i stavove izražene u tekstu.

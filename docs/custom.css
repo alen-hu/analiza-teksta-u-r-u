@@ -1,0 +1,46 @@
+/* Poravnanje teksta unutar body dijela */
+main.content {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Poravnanje description teksta ispod naslova */
+.quarto-description,
+.description {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Navigacija i sadržaj ostaju lijevo poravnati */
+.sidebar,
+nav.sidebar,
+nav.toc {
+  text-align: left !important;
+}
+
+.highlight-box {
+  border: 2px solid #FFB5C5;
+  border-radius: 0px;
+  background-color: #FFB5C5;
+  color: #4F4F4F;
+  padding: 1em;
+  margin: 1em 0;
+}
+
+/* Boja "breadcrumb" trake (zelene trake iznad naslova poglavlja) */
+div.quarto-title-breadcrumbs .breadcrumb {
+  background-color: #A26D80 !important;   /* topla ružičasto-bordo nijansa */
+  color: white !important;
+  border-radius: 8px;
+}
+
+/* Boja linkova unutar te trake */
+div.quarto-title-breadcrumbs .breadcrumb a {
+  color: #fffafc !important;              /* gotovo bijela boja linkova */
+}
+
+/* Boja aktivnog dijela (trenutnog poglavlja) */
+div.quarto-title-breadcrumbs .breadcrumb-item.active {
+  color: #ffeef5 !important;
+  font-weight: 600;
+}

@@ -1,0 +1,13 @@
+# Učitavanje i oblikovanje podataka
+
+Tekstualne podatke možemo učitati iz CSV datoteka, tablica ili drugih izvora.
+Nakon učitavanja važno je provjeriti nazive stupaca, nedostajuće vrijednosti i
+jedinicu analize.
+
+```{r}
+dokumenti <- data.frame(
+  id = 1:3,
+  tekst = c("Prvi tekst", "Drugi tekst", "Treći tekst")
+)
+dokumenti
+```

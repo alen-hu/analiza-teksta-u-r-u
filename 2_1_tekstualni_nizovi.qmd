@@ -1,0 +1,9 @@
+# Tekstualni nizovi
+
+Tekstualni nizovi (`character`) osnovni su oblik pohrane rečenica i riječi u
+R-u. Njima možemo pristupiti pojedinačno ili ih organizirati u vektore.
+
+```{r}
+naslovi <- c("Prvi dokument", "Drugi dokument", "Treći dokument")
+naslovi
+```

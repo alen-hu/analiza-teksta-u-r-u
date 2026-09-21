@@ -1,0 +1,8 @@
+# Pretpostavke za analizu teksta u tidytextu
+
+Paket `tidytext` tekst prikazuje u obliku uredne tablice u kojoj je svaka
+riječ jedan red. Takav oblik olakšava povezivanje tekstualnih podataka s
+alatima iz ekosustava `tidyverse`.
+
+Prije tokenizacije potrebno je odlučiti kako postupati s interpunkcijom,
+velikim i malim slovima, stop-riječima i dijakritičkim znakovima.

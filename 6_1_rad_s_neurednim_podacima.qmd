@@ -1,0 +1,5 @@
+# Rad s neurednim podacima
+
+Neuredni podaci mogu sadržavati neujednačeno kodiranje, duplikate, HTML
+oznake, pogreške u pisanju ili nedovršene zapise. Čišćenje treba biti
+zabilježeno kako bi analiza ostala provjerljiva.

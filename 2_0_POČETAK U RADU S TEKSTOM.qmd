@@ -1,0 +1,3 @@
+# 2. Početak u radu s tekstom {.unnumbered}
+
+U ovom dijelu tekstualne podatke pripremamo za analizu u R-u.

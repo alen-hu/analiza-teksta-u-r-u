@@ -10,12 +10,23 @@
     ]
   },
   {
+    "objectID": "1_0_UVOD U ANALIZU TEKSTA.html",
+    "href": "1_0_UVOD U ANALIZU TEKSTA.html",
+    "title": "1. Uvod u analizu teksta",
+    "section": "",
+    "text": "Ovaj dio predstavlja osnovne pojmove i istraživački kontekst analize teksta.",
+    "crumbs": [
+      "1. Uvod u analizu teksta"
+    ]
+  },
+  {
     "objectID": "1_1_uvod_u_analizu_teksta.html",
     "href": "1_1_uvod_u_analizu_teksta.html",
     "title": "2  Uvod u analizu teksta",
     "section": "",
-    "text": "2.1 Što je analiza teksta?\nAnaliza teksta obuhvaća postupke kojima se nestrukturirani tekst pretvara u strukturirane podatke. Cilj može biti opisivanje učestalosti riječi, prepoznavanje tema, usporedba dokumenata ili ispitivanje odnosa između tekstualnih obilježja i drugih varijabli.\nU društvenim znanostima važno je jasno definirati jedinicu analize, izvor teksta i način na koji će se interpretirati dobiveni rezultati James et al. (2021).",
+    "text": "2.1 Što je analiza teksta?\nAnaliza teksta obuhvaća postupke kojima se nestrukturirani tekst pretvara u strukturirane podatke. Cilj može biti opisivanje učestalosti riječi, prepoznavanje tema, usporedba dokumenata ili ispitivanje odnosa između tekstualnih obilježja i drugih varijabli.\nU društvenim znanostima važno je jasno definirati jedinicu analize, izvor teksta i način na koji će se interpretirati dobiveni rezultati James i sur. (2021.).",
     "crumbs": [
+      "1. Uvod u analizu teksta",
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Uvod u analizu teksta</span>"
     ]
   },
@@ -24,8 +35,9 @@
     "href": "1_1_uvod_u_analizu_teksta.html#osnovni-tijek-rada-u-r-u",
     "title": "2  Uvod u analizu teksta",
     "section": "2.2 Osnovni tijek rada u R-u",
-    "text": "2.2 Osnovni tijek rada u R-u\nTipičan tijek rada sastoji se od sljedećih koraka:\n\nprikupljanje i dokumentiranje tekstualnih podataka\nčišćenje i normalizacija teksta\npretvaranje teksta u podatkovni oblik\nizračun tekstualnih mjera\nvizualizacija i interpretacija rezultata.\n\nPrimjer jednostavnog rada s tekstom:\n\ntekst &lt;- c(\n  \"Analiza teksta pomaže razumjeti društvene pojave.\",\n  \"R omogućuje reproducibilnu analizu podataka.\"\n)\n\ntekst\n\n[1] \"Analiza teksta pomaže razumjeti društvene pojave.\"\n[2] \"R omogućuje reproducibilnu analizu podataka.\"     \n\n\nTekst je potrebno čistiti promišljeno. Uklanjanje interpunkcije, malih riječi ili dijakritičkih znakova može olakšati neke analize, ali može ukloniti i informacije važne za istraživačko pitanje.\n\n\n\n\n\n\nJames, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. An Introduction to Statistical Learning. 2nd ed. Springer.",
+    "text": "2.2 Osnovni tijek rada u R-u\nTipičan tijek rada sastoji se od sljedećih koraka:\n\nprikupljanje i dokumentiranje tekstualnih podataka\nčišćenje i normalizacija teksta\npretvaranje teksta u podatkovni oblik\nizračun tekstualnih mjera\nvizualizacija i interpretacija rezultata.\n\nPrimjer jednostavnog rada s tekstom:\n\ntekst &lt;- c(\n  \"Analiza teksta pomaže razumjeti društvene pojave.\",\n  \"R omogućuje reproducibilnu analizu podataka.\"\n)\n\ntekst\n\n[1] \"Analiza teksta pomaže razumjeti društvene pojave.\"\n[2] \"R omogućuje reproducibilnu analizu podataka.\"     \n\n\nTekst je potrebno čistiti promišljeno. Uklanjanje interpunkcije, malih riječi ili dijakritičkih znakova može olakšati neke analize, ali može ukloniti i informacije važne za istraživačko pitanje.\n\n\n\n\nJames, Gareth, Daniela Witten, Trevor Hastie, i Robert Tibshirani. 2021. An Introduction to Statistical Learning. 2. izd. Springer.",
     "crumbs": [
+      "1. Uvod u analizu teksta",
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Uvod u analizu teksta</span>"
     ]
   },
@@ -36,6 +48,7 @@
     "section": "",
     "text": "3.1 Istraživački dizajn\nAnaliza teksta nije zamjena za teorijski utemeljen istraživački dizajn. Prije obrade podataka treba odrediti populaciju dokumenata, kriterije uključivanja, vremenski obuhvat i način provjere kvalitete kodiranja.\nTekstualne metode mogu se koristiti za:",
     "crumbs": [
+      "1. Uvod u analizu teksta",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primjena analize teksta u znanstvenim istraživanjima</span>"
     ]
   },
@@ -46,6 +59,7 @@
     "section": "",
     "text": "analizu tema u intervjuima i otvorenim odgovorima\nusporedbu političkih programa i medijskih tekstova\npraćenje promjena u javnom diskursu\nkombiniranje kvalitativne interpretacije s kvantitativnim pokazateljima.",
     "crumbs": [
+      "1. Uvod u analizu teksta",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primjena analize teksta u znanstvenim istraživanjima</span>"
     ]
   },
@@ -54,9 +68,170 @@
     "href": "1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html#reproducibilnost-i-etika",
     "title": "3  Primjena analize teksta u znanstvenim istraživanjima",
     "section": "3.2 Reproducibilnost i etika",
-    "text": "3.2 Reproducibilnost i etika\nReproducibilan projekt treba sadržavati izvorne podatke ili opis njihovog podrijetla, skripte za obradu i dovoljno informacija za ponavljanje analize. Kod osjetljivih podataka potrebno je anonimizirati identitete i poštovati uvjete pod kojima su podaci prikupljeni.\nJednostavna tablica frekvencija može se izračunati i bez posebnog paketa:\n\nrijeci &lt;- c(\"tekst\", \"R\", \"tekst\", \"istraživanje\", \"R\")\nsort(table(rijeci), decreasing = TRUE)\n\nrijeci\n           R        tekst istraživanje \n           2            2            1 \n\n\nDobivene frekvencije treba promatrati kao opisni pokazatelj, a ne kao samostalni dokaz značenja ili uzročnosti. Interpretacija zahtijeva poznavanje konteksta, izvora i ograničenja podataka Field (2024).\n\n\n\n\n\n\nField, Andy. 2024. Discovering Statistics Using r and RStudio. SAGE Publications.",
+    "text": "3.2 Reproducibilnost i etika\nReproducibilan projekt treba sadržavati izvorne podatke ili opis njihovog podrijetla, skripte za obradu i dovoljno informacija za ponavljanje analize. Kod osjetljivih podataka potrebno je anonimizirati identitete i poštovati uvjete pod kojima su podaci prikupljeni.\nJednostavna tablica frekvencija može se izračunati i bez posebnog paketa:\n\nrijeci &lt;- c(\"tekst\", \"R\", \"tekst\", \"istraživanje\", \"R\")\nsort(table(rijeci), decreasing = TRUE)\n\nrijeci\n           R        tekst istraživanje \n           2            2            1 \n\n\nDobivene frekvencije treba promatrati kao opisni pokazatelj, a ne kao samostalni dokaz značenja ili uzročnosti. Interpretacija zahtijeva poznavanje konteksta, izvora i ograničenja podataka Field (2024.).\n\n\n\n\nField, Andy. 2024. Discovering Statistics Using R and RStudio. SAGE Publications.",
     "crumbs": [
+      "1. Uvod u analizu teksta",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primjena analize teksta u znanstvenim istraživanjima</span>"
+    ]
+  },
+  {
+    "objectID": "2_0_POČETAK U RADU S TEKSTOM.html",
+    "href": "2_0_POČETAK U RADU S TEKSTOM.html",
+    "title": "2. Početak u radu s tekstom",
+    "section": "",
+    "text": "U ovom dijelu tekstualne podatke pripremamo za analizu u R-u.",
+    "crumbs": [
+      "2. Početak u radu s tekstom"
+    ]
+  },
+  {
+    "objectID": "2_1_tekstualni_nizovi.html",
+    "href": "2_1_tekstualni_nizovi.html",
+    "title": "4  Tekstualni nizovi",
+    "section": "",
+    "text": "Tekstualni nizovi (character) osnovni su oblik pohrane rečenica i riječi u R-u. Njima možemo pristupiti pojedinačno ili ih organizirati u vektore.\n\nnaslovi &lt;- c(\"Prvi dokument\", \"Drugi dokument\", \"Treći dokument\")\nnaslovi\n\n[1] \"Prvi dokument\"  \"Drugi dokument\" \"Treći dokument\"",
+    "crumbs": [
+      "2. Početak u radu s tekstom",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Tekstualni nizovi</span>"
+    ]
+  },
+  {
+    "objectID": "2_2_učitavanje_i_oblikovanje_podataka.html",
+    "href": "2_2_učitavanje_i_oblikovanje_podataka.html",
+    "title": "5  Učitavanje i oblikovanje podataka",
+    "section": "",
+    "text": "Tekstualne podatke možemo učitati iz CSV datoteka, tablica ili drugih izvora. Nakon učitavanja važno je provjeriti nazive stupaca, nedostajuće vrijednosti i jedinicu analize.\n\ndokumenti &lt;- data.frame(\n  id = 1:3,\n  tekst = c(\"Prvi tekst\", \"Drugi tekst\", \"Treći tekst\")\n)\ndokumenti\n\n  id       tekst\n1  1  Prvi tekst\n2  2 Drugi tekst\n3  3 Treći tekst",
+    "crumbs": [
+      "2. Početak u radu s tekstom",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Učitavanje i oblikovanje podataka</span>"
+    ]
+  },
+  {
+    "objectID": "2_3_pretpostavke_za_analizu_teksta_u_tidytext-u.html",
+    "href": "2_3_pretpostavke_za_analizu_teksta_u_tidytext-u.html",
+    "title": "6  Pretpostavke za analizu teksta u tidytextu",
+    "section": "",
+    "text": "Paket tidytext tekst prikazuje u obliku uredne tablice u kojoj je svaka riječ jedan red. Takav oblik olakšava povezivanje tekstualnih podataka s alatima iz ekosustava tidyverse.\nPrije tokenizacije potrebno je odlučiti kako postupati s interpunkcijom, velikim i malim slovima, stop-riječima i dijakritičkim znakovima.",
+    "crumbs": [
+      "2. Početak u radu s tekstom",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Pretpostavke za analizu teksta u tidytextu</span>"
+    ]
+  },
+  {
+    "objectID": "3_0_POČETAK U RADU S TEKSTOM.html",
+    "href": "3_0_POČETAK U RADU S TEKSTOM.html",
+    "title": "3. Deskriptivna analiza teksta",
+    "section": "",
+    "text": "Ovaj dio prikazuje osnovne načine opisivanja tekstualnih podataka.",
+    "crumbs": [
+      "3. Deskriptivna analiza teksta"
+    ]
+  },
+  {
+    "objectID": "3_1_deskriptivna_analiza_teksta.html",
+    "href": "3_1_deskriptivna_analiza_teksta.html",
+    "title": "7  Deskriptivna analiza teksta",
+    "section": "",
+    "text": "Deskriptivna analiza daje pregled veličine korpusa, broja dokumenata i raspodjele osnovnih tekstualnih obilježja.",
+    "crumbs": [
+      "3. Deskriptivna analiza teksta",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Deskriptivna analiza teksta</span>"
+    ]
+  },
+  {
+    "objectID": "3_2_analiza_učestalosti_riječi.html",
+    "href": "3_2_analiza_učestalosti_riječi.html",
+    "title": "8  Analiza učestalosti riječi",
+    "section": "",
+    "text": "Učestalost riječi može ukazati na dominantne pojmove u korpusu. Pri interpretaciji treba uzeti u obzir duljinu dokumenata i kontekst u kojem se riječi pojavljuju.\n\nrijeci &lt;- c(\"tekst\", \"tekst\", \"R\", \"podatak\", \"R\")\nsort(table(rijeci), decreasing = TRUE)\n\nrijeci\n      R   tekst podatak \n      2       2       1",
+    "crumbs": [
+      "3. Deskriptivna analiza teksta",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Analiza učestalosti riječi</span>"
+    ]
+  },
+  {
+    "objectID": "3_3_odnosi_među_riječima.html",
+    "href": "3_3_odnosi_među_riječima.html",
+    "title": "9  Odnosi među riječima",
+    "section": "",
+    "text": "Ko-pojavljivanje riječi omogućuje istraživanje pojmova koji se često javljaju u istim dokumentima ili rečenicama.",
+    "crumbs": [
+      "3. Deskriptivna analiza teksta",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Odnosi među riječima</span>"
+    ]
+  },
+  {
+    "objectID": "4_0_ANALIZA_SENTIMENATA.html",
+    "href": "4_0_ANALIZA_SENTIMENATA.html",
+    "title": "4. Analiza sentimenta",
+    "section": "",
+    "text": "Analiza sentimenta procjenjuje emocionalni ton i stavove izražene u tekstu.",
+    "crumbs": [
+      "4. Analiza sentimenta"
+    ]
+  },
+  {
+    "objectID": "4_1_analiza_sentimenata.html",
+    "href": "4_1_analiza_sentimenata.html",
+    "title": "10  Analiza sentimenta",
+    "section": "",
+    "text": "Analiza sentimenta povezuje riječi s leksičkim oznakama poput pozitivnog ili negativnog sentimenta. Rezultate treba interpretirati u odnosu na jezik, kontekst i primjerenost korištenog leksikona.",
+    "crumbs": [
+      "4. Analiza sentimenta",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Analiza sentimenta</span>"
+    ]
+  },
+  {
+    "objectID": "5_0_TEKSTUALNA_MODELIRANJA.html",
+    "href": "5_0_TEKSTUALNA_MODELIRANJA.html",
+    "title": "5. Tekstualna modeliranja",
+    "section": "",
+    "text": "Tematsko modeliranje omogućuje otkrivanje obrazaca tema u većim zbirkama dokumenata.",
+    "crumbs": [
+      "5. Tekstualna modeliranja"
+    ]
+  },
+  {
+    "objectID": "5_1_tematsko_modeliranje.html",
+    "href": "5_1_tematsko_modeliranje.html",
+    "title": "11  Tematsko modeliranje",
+    "section": "",
+    "text": "Tematski modeli sažimaju korpus pomoću skupa latentnih tema. Broj tema i interpretaciju modela potrebno je obrazložiti s obzirom na istraživačko pitanje.",
+    "crumbs": [
+      "5. Tekstualna modeliranja",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Tematsko modeliranje</span>"
+    ]
+  },
+  {
+    "objectID": "6_0_DODATNE_MOGUĆNOSTI_RADA_S_TEKSTOM.html",
+    "href": "6_0_DODATNE_MOGUĆNOSTI_RADA_S_TEKSTOM.html",
+    "title": "6. Dodatne mogućnosti rada s tekstom",
+    "section": "",
+    "text": "Završni dio obrađuje nestrukturirane podatke i vizualizacije teksta.",
+    "crumbs": [
+      "6. Dodatne mogućnosti rada s tekstom"
+    ]
+  },
+  {
+    "objectID": "6_1_rad_s_neurednim_podacima.html",
+    "href": "6_1_rad_s_neurednim_podacima.html",
+    "title": "12  Rad s neurednim podacima",
+    "section": "",
+    "text": "Neuredni podaci mogu sadržavati neujednačeno kodiranje, duplikate, HTML oznake, pogreške u pisanju ili nedovršene zapise. Čišćenje treba biti zabilježeno kako bi analiza ostala provjerljiva.",
+    "crumbs": [
+      "6. Dodatne mogućnosti rada s tekstom",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Rad s neurednim podacima</span>"
+    ]
+  },
+  {
+    "objectID": "6_2_vizualizacije_teksta.html",
+    "href": "6_2_vizualizacije_teksta.html",
+    "title": "13  Vizualizacije teksta",
+    "section": "",
+    "text": "Vizualizacije poput grafikona učestalosti, mreža ko-pojavljivanja i prikaza tema pomažu u istraživanju obrazaca. Svaku vizualizaciju treba povezati s jasnim istraživačkim pitanjem.",
+    "crumbs": [
+      "6. Dodatne mogućnosti rada s tekstom",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Vizualizacije teksta</span>"
     ]
   },
   {

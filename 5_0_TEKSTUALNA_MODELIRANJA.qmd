@@ -1,0 +1,4 @@
+# 5. Tekstualna modeliranja {.unnumbered}
+
+Tematsko modeliranje omogućuje otkrivanje obrazaca tema u većim zbirkama
+dokumenata.

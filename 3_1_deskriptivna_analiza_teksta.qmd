@@ -1,0 +1,4 @@
+# Deskriptivna analiza teksta
+
+Deskriptivna analiza daje pregled veličine korpusa, broja dokumenata i
+raspodjele osnovnih tekstualnih obilježja.

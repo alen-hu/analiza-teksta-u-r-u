@@ -6,21 +6,70 @@ book:
   title: "Analiza teksta u R-u"
   author: "Alen Husnjak"
   date: last-modified
+  repo-url: https://github.com/alen-hu
+  page-footer:
+    background: "#8B475D"
+    foreground: "#ffffff"
+    border: "#dddddd"
+    left: "Copyright 2026, Alen Husnjak"
+    right:
+      - icon: github
+        href: https://github.com/
+      - icon: linkedin
+        href: www.linkedin.com/in/alen-husnjak-5a0bb9206
   chapters:
     - index.qmd
-    - 1_1_uvod_u_analizu_teksta.qmd
-    - 1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.qmd
+    - part: "1_0_UVOD U ANALIZU TEKSTA.qmd"
+      chapters:
+        - 1_1_uvod_u_analizu_teksta.qmd
+        - 1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.qmd
+    - part: "2_0_POČETAK U RADU S TEKSTOM.qmd"
+      chapters:
+        - 2_1_tekstualni_nizovi.qmd
+        - 2_2_učitavanje_i_oblikovanje_podataka.qmd
+        - 2_3_pretpostavke_za_analizu_teksta_u_tidytext-u.qmd
+    - part: "3_0_POČETAK U RADU S TEKSTOM.qmd"
+      chapters:
+        - 3_1_deskriptivna_analiza_teksta.qmd
+        - 3_2_analiza_učestalosti_riječi.qmd
+        - 3_3_odnosi_među_riječima.qmd
+    - part: "4_0_ANALIZA_SENTIMENATA.qmd"
+      chapters:
+        - 4_1_analiza_sentimenata.qmd
+    - part: "5_0_TEKSTUALNA_MODELIRANJA.qmd"
+      chapters:
+        - 5_1_tematsko_modeliranje.qmd
+    - part: "6_0_DODATNE_MOGUĆNOSTI_RADA_S_TEKSTOM.qmd"
+      chapters:
+        - 6_1_rad_s_neurednim_podacima.qmd
+        - 6_2_vizualizacije_teksta.qmd
     - references.qmd
 
 bibliography: references.bib
 reference-location: section
+lang: hr
+
+language:
+  title-block-author-single: "Autor"
+  title-block-published: "Objavljeno"
+  appendix-title: "Dodaci"
 
 format:
   html:
+    css: custom.css
     toc: true
+    toc-depth: 3
+    toc-expand: 3
+    toc-location: right
+    toc-title: "Sadržaj poglavlja"
     number-sections: true
-    code-tools: true
-    css: styles.css
-    theme:
-      - cosmo
-      - brand
+    number-depth: 5
+    smooth-scroll: true
+    theme: cosmo
+    other-links:
+      - text: Gmail
+        icon: chat-text
+        href: ahusnjak0810@gmail.com
+      - text: LinkedIn
+        icon: linkedin
+        href: www.linkedin.com/in/alen-husnjak-5a0bb9206

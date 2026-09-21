@@ -1,0 +1,5 @@
+# Vizualizacije teksta
+
+Vizualizacije poput grafikona učestalosti, mreža ko-pojavljivanja i prikaza
+tema pomažu u istraživanju obrazaca. Svaku vizualizaciju treba povezati s
+jasnim istraživačkim pitanjem.

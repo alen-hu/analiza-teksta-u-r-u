@@ -1,0 +1,4 @@
+# Odnosi među riječima
+
+Ko-pojavljivanje riječi omogućuje istraživanje pojmova koji se često javljaju
+u istim dokumentima ili rečenicama.

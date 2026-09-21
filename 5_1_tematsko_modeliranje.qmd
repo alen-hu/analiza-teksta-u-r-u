@@ -1,0 +1,5 @@
+# Tematsko modeliranje
+
+Tematski modeli sažimaju korpus pomoću skupa latentnih tema. Broj tema i
+interpretaciju modela potrebno je obrazložiti s obzirom na istraživačko
+pitanje.

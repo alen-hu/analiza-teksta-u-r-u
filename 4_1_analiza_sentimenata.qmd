@@ -1,0 +1,5 @@
+# Analiza sentimenta
+
+Analiza sentimenta povezuje riječi s leksičkim oznakama poput pozitivnog ili
+negativnog sentimenta. Rezultate treba interpretirati u odnosu na jezik,
+kontekst i primjerenost korištenog leksikona.

@@ -1,0 +1,3 @@
+# 6. Dodatne mogućnosti rada s tekstom {.unnumbered}
+
+Završni dio obrađuje nestrukturirane podatke i vizualizacije teksta.

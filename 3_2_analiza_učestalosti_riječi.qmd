@@ -1,0 +1,10 @@
+# Analiza učestalosti riječi
+
+Učestalost riječi može ukazati na dominantne pojmove u korpusu. Pri
+interpretaciji treba uzeti u obzir duljinu dokumenata i kontekst u kojem se
+riječi pojavljuju.
+
+```{r}
+rijeci <- c("tekst", "tekst", "R", "podatak", "R")
+sort(table(rijeci), decreasing = TRUE)
+```
