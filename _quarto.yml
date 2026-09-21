@@ -1,0 +1,26 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Analiza teksta u R-u"
+  author: "Alen Husnjak"
+  date: last-modified
+  chapters:
+    - index.qmd
+    - 1_1_uvod_u_analizu_teksta.qmd
+    - 1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.qmd
+    - references.qmd
+
+bibliography: references.bib
+reference-location: section
+
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-tools: true
+    css: styles.css
+    theme:
+      - cosmo
+      - brand

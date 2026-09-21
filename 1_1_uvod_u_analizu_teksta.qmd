@@ -1,0 +1,39 @@
+---
+title: "Uvod u analizu teksta"
+---
+
+## Što je analiza teksta?
+
+Analiza teksta obuhvaća postupke kojima se nestrukturirani tekst pretvara u
+strukturirane podatke. Cilj može biti opisivanje učestalosti riječi,
+prepoznavanje tema, usporedba dokumenata ili ispitivanje odnosa između
+tekstualnih obilježja i drugih varijabli.
+
+U društvenim znanostima važno je jasno definirati jedinicu analize, izvor
+teksta i način na koji će se interpretirati dobiveni rezultati
+@james2021introduction.
+
+## Osnovni tijek rada u R-u
+
+Tipičan tijek rada sastoji se od sljedećih koraka:
+
+1. prikupljanje i dokumentiranje tekstualnih podataka
+2. čišćenje i normalizacija teksta
+3. pretvaranje teksta u podatkovni oblik
+4. izračun tekstualnih mjera
+5. vizualizacija i interpretacija rezultata.
+
+Primjer jednostavnog rada s tekstom:
+
+```{r}
+tekst <- c(
+  "Analiza teksta pomaže razumjeti društvene pojave.",
+  "R omogućuje reproducibilnu analizu podataka."
+)
+
+tekst
+```
+
+Tekst je potrebno čistiti promišljeno. Uklanjanje interpunkcije, malih riječi
+ili dijakritičkih znakova može olakšati neke analize, ali može ukloniti i
+informacije važne za istraživačko pitanje.

@@ -1,0 +1,12 @@
+---
+title: "Predgovor"
+---
+
+Ova knjiga uvodi čitatelja u analizu teksta u programskom jeziku R.
+Namijenjena je studentima i istraživačima u društvenim znanostima koji žele
+tekstualne podatke pretvoriti u podatke pogodne za sustavnu analizu.
+
+U poglavljima se objašnjavaju osnovni pojmovi, priprema podataka i primjene
+analize teksta u znanstvenim istraživanjima. Primjeri su reproducibilni i
+napisani tako da ih je moguće pokrenuti u RStudio okruženju uz instaliran
+Quarto.

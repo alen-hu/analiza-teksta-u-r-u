@@ -1,0 +1,34 @@
+---
+title: "Primjena analize teksta u znanstvenim istraživanjima"
+---
+
+## Istraživački dizajn
+
+Analiza teksta nije zamjena za teorijski utemeljen istraživački dizajn.
+Prije obrade podataka treba odrediti populaciju dokumenata, kriterije
+uključivanja, vremenski obuhvat i način provjere kvalitete kodiranja.
+
+Tekstualne metode mogu se koristiti za:
+
+- analizu tema u intervjuima i otvorenim odgovorima
+- usporedbu političkih programa i medijskih tekstova
+- praćenje promjena u javnom diskursu
+- kombiniranje kvalitativne interpretacije s kvantitativnim pokazateljima.
+
+## Reproducibilnost i etika
+
+Reproducibilan projekt treba sadržavati izvorne podatke ili opis njihovog
+podrijetla, skripte za obradu i dovoljno informacija za ponavljanje analize.
+Kod osjetljivih podataka potrebno je anonimizirati identitete i poštovati
+uvjete pod kojima su podaci prikupljeni.
+
+Jednostavna tablica frekvencija može se izračunati i bez posebnog paketa:
+
+```{r}
+rijeci <- c("tekst", "R", "tekst", "istraživanje", "R")
+sort(table(rijeci), decreasing = TRUE)
+```
+
+Dobivene frekvencije treba promatrati kao opisni pokazatelj, a ne kao
+samostalni dokaz značenja ili uzročnosti. Interpretacija zahtijeva poznavanje
+konteksta, izvora i ograničenja podataka @field2024discovering.

@@ -1,0 +1,72 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Analiza teksta u R-u",
+    "section": "",
+    "text": "Ova knjiga uvodi čitatelja u analizu teksta u programskom jeziku R. Namijenjena je studentima i istraživačima u društvenim znanostima koji žele tekstualne podatke pretvoriti u podatke pogodne za sustavnu analizu.\nU poglavljima se objašnjavaju osnovni pojmovi, priprema podataka i primjene analize teksta u znanstvenim istraživanjima. Primjeri su reproducibilni i napisani tako da ih je moguće pokrenuti u RStudio okruženju uz instaliran Quarto.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Predgovor</span>"
+    ]
+  },
+  {
+    "objectID": "1_1_uvod_u_analizu_teksta.html",
+    "href": "1_1_uvod_u_analizu_teksta.html",
+    "title": "2  Uvod u analizu teksta",
+    "section": "",
+    "text": "2.1 Što je analiza teksta?\nAnaliza teksta obuhvaća postupke kojima se nestrukturirani tekst pretvara u strukturirane podatke. Cilj može biti opisivanje učestalosti riječi, prepoznavanje tema, usporedba dokumenata ili ispitivanje odnosa između tekstualnih obilježja i drugih varijabli.\nU društvenim znanostima važno je jasno definirati jedinicu analize, izvor teksta i način na koji će se interpretirati dobiveni rezultati James et al. (2021).",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Uvod u analizu teksta</span>"
+    ]
+  },
+  {
+    "objectID": "1_1_uvod_u_analizu_teksta.html#osnovni-tijek-rada-u-r-u",
+    "href": "1_1_uvod_u_analizu_teksta.html#osnovni-tijek-rada-u-r-u",
+    "title": "2  Uvod u analizu teksta",
+    "section": "2.2 Osnovni tijek rada u R-u",
+    "text": "2.2 Osnovni tijek rada u R-u\nTipičan tijek rada sastoji se od sljedećih koraka:\n\nprikupljanje i dokumentiranje tekstualnih podataka\nčišćenje i normalizacija teksta\npretvaranje teksta u podatkovni oblik\nizračun tekstualnih mjera\nvizualizacija i interpretacija rezultata.\n\nPrimjer jednostavnog rada s tekstom:\n\ntekst &lt;- c(\n  \"Analiza teksta pomaže razumjeti društvene pojave.\",\n  \"R omogućuje reproducibilnu analizu podataka.\"\n)\n\ntekst\n\n[1] \"Analiza teksta pomaže razumjeti društvene pojave.\"\n[2] \"R omogućuje reproducibilnu analizu podataka.\"     \n\n\nTekst je potrebno čistiti promišljeno. Uklanjanje interpunkcije, malih riječi ili dijakritičkih znakova može olakšati neke analize, ali može ukloniti i informacije važne za istraživačko pitanje.\n\n\n\n\n\n\nJames, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2021. An Introduction to Statistical Learning. 2nd ed. Springer.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Uvod u analizu teksta</span>"
+    ]
+  },
+  {
+    "objectID": "1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html",
+    "href": "1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html",
+    "title": "3  Primjena analize teksta u znanstvenim istraživanjima",
+    "section": "",
+    "text": "3.1 Istraživački dizajn\nAnaliza teksta nije zamjena za teorijski utemeljen istraživački dizajn. Prije obrade podataka treba odrediti populaciju dokumenata, kriterije uključivanja, vremenski obuhvat i način provjere kvalitete kodiranja.\nTekstualne metode mogu se koristiti za:",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primjena analize teksta u znanstvenim istraživanjima</span>"
+    ]
+  },
+  {
+    "objectID": "1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html#istraživački-dizajn",
+    "href": "1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html#istraživački-dizajn",
+    "title": "3  Primjena analize teksta u znanstvenim istraživanjima",
+    "section": "",
+    "text": "analizu tema u intervjuima i otvorenim odgovorima\nusporedbu političkih programa i medijskih tekstova\npraćenje promjena u javnom diskursu\nkombiniranje kvalitativne interpretacije s kvantitativnim pokazateljima.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primjena analize teksta u znanstvenim istraživanjima</span>"
+    ]
+  },
+  {
+    "objectID": "1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html#reproducibilnost-i-etika",
+    "href": "1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html#reproducibilnost-i-etika",
+    "title": "3  Primjena analize teksta u znanstvenim istraživanjima",
+    "section": "3.2 Reproducibilnost i etika",
+    "text": "3.2 Reproducibilnost i etika\nReproducibilan projekt treba sadržavati izvorne podatke ili opis njihovog podrijetla, skripte za obradu i dovoljno informacija za ponavljanje analize. Kod osjetljivih podataka potrebno je anonimizirati identitete i poštovati uvjete pod kojima su podaci prikupljeni.\nJednostavna tablica frekvencija može se izračunati i bez posebnog paketa:\n\nrijeci &lt;- c(\"tekst\", \"R\", \"tekst\", \"istraživanje\", \"R\")\nsort(table(rijeci), decreasing = TRUE)\n\nrijeci\n           R        tekst istraživanje \n           2            2            1 \n\n\nDobivene frekvencije treba promatrati kao opisni pokazatelj, a ne kao samostalni dokaz značenja ili uzročnosti. Interpretacija zahtijeva poznavanje konteksta, izvora i ograničenja podataka Field (2024).\n\n\n\n\n\n\nField, Andy. 2024. Discovering Statistics Using r and RStudio. SAGE Publications.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Primjena analize teksta u znanstvenim istraživanjima</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "Literatura",
+    "section": "",
+    "text": "Field, Andy. 2024. Discovering Statistics Using r and RStudio.\nSAGE Publications.\n\n\nJames, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani.\n2021. An Introduction to Statistical Learning. 2nd ed.\nSpringer.",
+    "crumbs": [
+      "Literatura"
+    ]
+  }
+]
