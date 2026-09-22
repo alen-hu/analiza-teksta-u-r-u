@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="…">
 
 <title>2&nbsp; Uvod u analizu teksta – Analiza teksta u R-u</title>
 <style>
@@ -23,61 +24,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -127,6 +74,23 @@ div.csl-indent {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
 
 
 <link rel="stylesheet" href="custom.css">
@@ -135,13 +99,13 @@ div.csl-indent {
 <body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1_0_UVOD U ANALIZU TEKSTA.html">1. Uvod u analizu teksta</a></li><li class="breadcrumb-item"><a href="./1_1_uvod_u_analizu_teksta.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Uvod u analizu teksta</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1_0_UVOD U ANALIZU TEKSTA.html">UVOD U ANALIZU TEKSTA</a></li><li class="breadcrumb-item"><a href="./1_1_uvod_u_analizu_teksta.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Uvod u analizu teksta</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -151,7 +115,28 @@ div.csl-indent {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1_0_UVOD U ANALIZU TEKSTA.html">UVOD U ANALIZU TEKSTA</a></li><li class="breadcrumb-item"><a href="./1_1_uvod_u_analizu_teksta.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Uvod u analizu teksta</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Uvod u analizu teksta</span></h1>
+                  <div>
+        <div class="description">
+          …
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -178,7 +163,7 @@ div.csl-indent {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./1_0_UVOD U ANALIZU TEKSTA.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">1. Uvod u analizu teksta</span></a>
+ <span class="menu-text">UVOD U ANALIZU TEKSTA</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -329,69 +314,62 @@ div.csl-indent {
     <h2 id="toc-title">Sadržaj poglavlja</h2>
    
   <ul>
-  <li><a href="#što-je-analiza-teksta" id="toc-što-je-analiza-teksta" class="nav-link active" data-scroll-target="#što-je-analiza-teksta"><span class="header-section-number">2.1</span> Što je analiza teksta?</a></li>
-  <li><a href="#osnovni-tijek-rada-u-r-u" id="toc-osnovni-tijek-rada-u-r-u" class="nav-link" data-scroll-target="#osnovni-tijek-rada-u-r-u"><span class="header-section-number">2.2</span> Osnovni tijek rada u R-u</a></li>
+  <li><a href="#tidytext" id="toc-tidytext" class="nav-link active" data-scroll-target="#tidytext"><span class="header-section-number">2.1</span> <code>tidytext</code></a></li>
   </ul>
 <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1_0_UVOD U ANALIZU TEKSTA.html">1. Uvod u analizu teksta</a></li><li class="breadcrumb-item"><a href="./1_1_uvod_u_analizu_teksta.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Uvod u analizu teksta</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Uvod u analizu teksta</span></h1>
-</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
-
-
-<section id="što-je-analiza-teksta" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="što-je-analiza-teksta"><span class="header-section-number">2.1</span> Što je analiza teksta?</h2>
-<p>Analiza teksta obuhvaća postupke kojima se nestrukturirani tekst pretvara u strukturirane podatke. Cilj može biti opisivanje učestalosti riječi, prepoznavanje tema, usporedba dokumenata ili ispitivanje odnosa između tekstualnih obilježja i drugih varijabli.</p>
-<p>U društvenim znanostima važno je jasno definirati jedinicu analize, izvor teksta i način na koji će se interpretirati dobiveni rezultati <span class="citation" data-cites="james2021introduction">James i sur. (<a href="references.html#ref-james2021introduction" role="doc-biblioref">2021.</a>)</span>.</p>
-</section>
-<section id="osnovni-tijek-rada-u-r-u" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="osnovni-tijek-rada-u-r-u"><span class="header-section-number">2.2</span> Osnovni tijek rada u R-u</h2>
-<p>Tipičan tijek rada sastoji se od sljedećih koraka:</p>
+<p><strong>Tekstualna analiza</strong> je postupak obrade i analize tekstualnih podataka kako bi se izvukli korisni obrasci, informacije i uvidi. Cilj je strukturirati neuređeni tekstualni sadržaj u oblik prikladan za analizu. Ova metoda često uključuje korake poput čišćenja podataka, pretvaranja teksta u numeričke vrijednosti i primjene statističkih i lingvističkih metoda te metoda strojnog učenja za interpretaciju podataka.</p>
+<p>Tekstualna analiza uključuje sljedeće korake:</p>
 <ol type="1">
-<li>prikupljanje i dokumentiranje tekstualnih podataka</li>
-<li>čišćenje i normalizacija teksta</li>
-<li>pretvaranje teksta u podatkovni oblik</li>
-<li>izračun tekstualnih mjera</li>
-<li>vizualizacija i interpretacija rezultata.</li>
+<li><p>Prikupljanje tekstualnog sadržaja iz izvora kao što su društvene mreže, članci, e-pošta, recenzije, itd.</p></li>
+<li><p>Predobrada, odnosno čišćenje podataka (npr. interpunkcija, zaustavne riječi i brojevi) i pretvaranje teksta u standardizirani format.</p></li>
+<li><p>Razbijanje teksta na manje dijelove, poput riječi ili rečenica - tokena.</p></li>
+<li><p>Pretvaranje teksta u numeričke formate kao što su vreće riječi, tf-idf ili ugrađivanja riječi.</p></li>
+<li><p>Primjena metoda kao što su analiza sentimenta, klasifikacija, tematsko modeliranje itd.</p></li>
+<li><p>Vizualizacija i interpretacija pomoću grafova, oblaka riječi i sličnih metoda za lakšu interpretaciju.</p></li>
 </ol>
-<p>Primjer jednostavnog rada s tekstom:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>tekst <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Analiza teksta pomaže razumjeti društvene pojave."</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"R omogućuje reproducibilnu analizu podataka."</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>tekst</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Analiza teksta pomaže razumjeti društvene pojave."
-[2] "R omogućuje reproducibilnu analizu podataka."     </code></pre>
+<p>Tekstualna analiza može se izvoditi u različitim programskim jezicima kao što su R, Python, Java, C++ i Julia.</p>
+<p>Tekstualna analiza uključuje razne mjere kojima analizira tekst, primjerice:</p>
+<ul>
+<li><p><strong>analiza sentimenta</strong> - identifikacija emocionalnog tona teksta (pozitivan, negativan, neutralan);</p></li>
+<li><p><strong>tf-idf</strong> - mjera važnosti riječi u dokumentu s obzirom na cijeli korpus;</p></li>
+<li><p><strong>tematsko modeliranje</strong> - identificiranje tematskih obrazaca u tekstovima;</p></li>
+<li><p><strong>n-gram analiza</strong> - analiza sekvenci riječi (dvo-grami, tro-grami itd.);</p></li>
+<li><p><strong>NER</strong> - prepoznavanje entiteta poput imena, mjesta i datuma.</p></li>
+</ul>
+<p>Tekstualna analiza tako omogućuje ekstrakciju ključnih informacija iz velikih količina tekstualnih podataka, praćenje stavova i ponašanja korisnika, automatizaciju obrade podataka u raznim industrijama (prepoznavanje prijevara i analiza recenzija), donošenje informiranih poslovnih odluka temeljenih na podacima i slično.</p>
+<p>Primjeri aktualnih tekstualnih analiza su:</p>
+<ul>
+<li><p>analiza sentimenta na društvenim mrežama,</p></li>
+<li><p>automatsko sažimanje teksta,</p></li>
+<li><p>prepoznavanje dezinformacija i</p></li>
+<li><p>customer support.</p></li>
+</ul>
+<section id="tidytext" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="tidytext"><span class="header-section-number">2.1</span> <code>tidytext</code></h2>
+<p><strong><code>tidytext</code></strong> je paket u R-u koji implementira princip <em>tidy data</em> u analizu teksta. Omogućuje organizaciju tekstualnih podataka u tablični format čime se olakšava primjena metoda analize i vizualizacije. On koristi principe <em>tidy data</em> gdje su redci riječi ili tokeni, a stupci metapodaci (npr. dokumenti, učestalost) pri čemu podržava standardne predobradbene korake poput uklanjanja zaustavnih riječi, implementtira tf-idf i analize sentimenta te ima široku integraciju s ostalim R paketima poput <code>quanteda</code> i <code>ggplot2</code> za napredne analize i vizualizacije.</p>
+<p>R za tekstualna analiza koristi razne pakete od kojih su najvažniji:</p>
+<ul>
+<li><p><strong><code>tm</code> (Text Mining)</strong> - klasični paket za tekstualnu analizu koji uključuje alate za čišćenje i analizu teksta,</p></li>
+<li><p><strong><code>tidytext</code></strong> - omogućuje analizu teksta pomoću principa <em>tidy data</em> (uređeni podaci),</p></li>
+<li><p><strong><code>text2vec</code></strong> - fokusiran na učinkovito vektoriziranje teksta i modeliranje,</p></li>
+<li><p><strong><code>quanteda</code></strong> - brz i fleksibilan alat za analizu teksta i vizualizaciju te</p></li>
+<li><p><strong><code>topicmodels</code></strong> - specijaliziran za modeliranje tema.</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pictures_and_graphs/data analysis.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
 </div>
-</div>
-<p>Tekst je potrebno čistiti promišljeno. Uklanjanje interpunkcije, malih riječi ili dijakritičkih znakova može olakšati neke analize, ali može ukloniti i informacije važne za istraživačko pitanje.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
-<div id="ref-james2021introduction" class="csl-entry" role="listitem">
-James, Gareth, Daniela Witten, Trevor Hastie, i Robert Tibshirani. 2021. <em>An Introduction to Statistical Learning</em>. 2. izd. Springer.
-</div>
-</div>
 </section>
 
 </main> <!-- /main -->
@@ -797,8 +775,8 @@ James, Gareth, Daniela Witten, Trevor Hastie, i Robert Tibshirani. 2021. <em>An 
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./1_0_UVOD U ANALIZU TEKSTA.html" class="pagination-link" aria-label="1. Uvod u analizu teksta">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">1. Uvod u analizu teksta</span>
+      <a href="./1_0_UVOD U ANALIZU TEKSTA.html" class="pagination-link" aria-label="UVOD U ANALIZU TEKSTA">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">UVOD U ANALIZU TEKSTA</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

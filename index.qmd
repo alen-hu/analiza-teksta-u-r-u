@@ -1,5 +1,14 @@
 ---
 title: "Predgovor"
+numbered: false
+number-sections: false
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+title-block-style: "default"
+format:
+  html:
+    toc: true
+    toc-location: right
 ---
 
 Ova knjiga uvodi čitatelja u analizu teksta u programskom jeziku R.

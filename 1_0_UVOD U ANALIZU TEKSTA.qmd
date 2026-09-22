@@ -1,3 +1,9 @@
-# 1. Uvod u analizu teksta {.unnumbered}
+---
+title: "UVOD U ANALIZU TEKSTA"
+description: "..."
+number-sections: true
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+---
 
 Ovaj dio predstavlja osnovne pojmove i istraživački kontekst analize teksta.
