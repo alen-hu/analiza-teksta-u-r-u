@@ -1,9 +1,451 @@
-# Tekstualni nizovi
-
-Tekstualni nizovi (`character`) osnovni su oblik pohrane rečenica i riječi u
-R-u. Njima možemo pristupiti pojedinačno ili ih organizirati u vektore.
+---
+title: "Tekstualni nizovi"
+description: "Tekstualni nizovi osnovna su jedinica svake tekstualne analize u R-u i temelj na kojem počiva sav daljnji rad s tekstom. Riječ je o slijedu znakova, poput slova, brojki, razmaka i interpunkcije, kojim se u R-u pohranjuje tekst. Bilo da je riječ o romanima, novinskim člancima ili objavama na društvenim mrežama, tekst je prije analize gotovo uvijek potrebno očistiti, prilagoditi i preoblikovati, a sve se te operacije izvode upravo na nizovima. Stoga je za rad s tekstom ključno poznavati načine stvaranja i oblikovanja nizova, pretraživanja, dijeljenja, zamjene i spajanja njihovih dijelova te mjerenja udaljenosti među njima."
+number-sections: true
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+---
 
 ```{r}
-naslovi <- c("Prvi dokument", "Drugi dokument", "Treći dokument")
-naslovi
+#| include: false
+
+library(tidyverse)
+library(glue)
+library(stringdist)
 ```
+
+**Tekstualni niz** (engl. *string*) je slijed znakova koji služi za pohranu tekstualnih podataka i rad s njima. Takav niz može sadržavati slova, brojke, razmake, interpunkciju i druge znakove. U R-u se tekstualni nizovi pohranjuju kao podaci tipa `character`, a zapisuju se unutar dvostrukih ili jednostrukih navodnika.
+
+Iako osnovni R sadrži vlastite funkcije za rad s tekstom (npr. `paste()`, `grepl()` ili `gsub()`), u praksi se najčešće koristi paket `stringr` koji je dio `tidyverse` skupa paketa. `stringr` je izgrađen na paketu `stringi` koji nudi opsežan skup alata za gotovo sve što bismo ikada mogli raditi s nizovima. Za razliku od njega, `stringr` obuhvaća samo najbitnije i najčešće operacije potrebne u radu s tekstom, a zbog čega je jednostavniji i intuitivniji za korištenje. Prednost `stringr`-a je dosljedna sintaksa, odnosno to da sve njegove funkcije počinju prefiksom `str_` (npr. `str_detect()`, `str_replace()`, `str_length()`), a tekstualni niz uvijek je prvi argument što olakšava njihovo povezivanje operatorom `|>`. Paket podržava i regularne izraze za pretraživanje i obradu teksta.
+
+U R-u se tekstualni nizovi stvaraju tako da se tekst stavi unutar dvostrukih (`"..."`) ili jednostrukih (`'...'`) navodnika. Dobiveni niz najčešće se operatorom `<-` pridružuje nekoj varijabli kako bismo ga poslije mogli koristiti. Obje vrste navodnika funkcioniraju jednako, no preporučuje se koristiti dvostruke navodnike, dok su jednostruki navodnici korisni kada sam tekst sadrži dvostruke navodnike.
+
+Definirajmo za početak jednu rečenicu kao tekstualni niz:
+
+```{r}
+# Definiranje rečenice kao tekstualni niz
+sentence_one <- "To Miss Hermione Jean Granger, I leave my copy of The Tales of Beedle the Bard, in the hope that she will find it entertaining and instructive."
+
+# Pregled
+sentence_one
+```
+
+Ipak, ako sam tekst sadrži dvostruke navodnike, R će navodnik iz teksta protumačiti kao početak ili kraj niza, a ne kao dio teksta. Taj se problem može izbjeći tako da se niz omeđi jednostrukim navodnicima, pa se dvostruki navodnici unutar njega čitaju kao obični znakovi.
+
+```{r}
+# Definiranje rečenice s navodnicima kao tekstualni niz
+sentence_two <- '"And as for this book" said Hermione, "The Tales of Beedle the Bard... I have never even heard of them."'
+
+# Pregled
+sentence_two
+```
+
+Vidljivo je pritom da R nizove ispisuje na različite načine. U slučaju vektora `sentence_one` R ispisuje niz samo s dvostrukim navodnicima koji simboliziraju početak i kraj niza. U slučaju korištenja jednostrukih navodnika za označavanje početka i kraja niza, kao kod varijable `sentence_two`, R i dalje ispisuje niz s dvostrukim navodnicima koji označavaju početak i kraj niza, a tekst koji je originalno označen navodnicima ispisan je znakom `\` ispred navodnika koji je dio teksta.
+
+Isto tako, ako želimo tekst koji sadrži oba oblika navodnika, i jednostruke i dvostruke, pretvoriti u niz, dvostruke navodnike iz teksta moramo pretvoriti u `\"` kako oni ne bi bili prepoznati kao početak i kraj niza.
+
+```{r}
+# Definiranje četvrtog paragrafa kao tekstualni niz
+sentence_three <- "\"Well, exactly,\" said Hermione, now flicking through the The Tales of Beedle the Bard. \"If these things are important enough to pass on right under the nose of the Ministry, you'd think he'd have let us know why... unless he thought it was obvious?\""
+
+# Pregled
+sentence_three
+```
+
+Općenito, niz bi uvijek trebalo najprije omeđiti dvostrukim navodnicima, a jednostruke koristiti samo ako tekst sadrži dvostruke navodnike. Tek ako tekst sadrži i dvostruke i jednostruke navodnike, dvostruke navodnike unutar teksta označavamo s `\"`.
+
+Više tekstualnih nizova moguće je funkcijom `c()` objediniti u vektor nizova, bilo da ih navedemo izravno ili preko varijabli u koje su spremljeni.
+
+```{r}
+# Definiranje prvog niza
+first_part <- "Voldemort had been raised in a Muggle orphanage."
+
+# Definiranje drugog niza
+second_part <- "Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them."
+
+# Definiranje trećeg niza
+third_part <- "Hardly any wizards believed in the Deathly Hallows."
+
+# Definiranje četvrtog niza
+fourth_part <- "Was it likely that Voldemort knew about them?"
+
+# Objedinjavanje nizova
+hp_sentences <- c(first_part, second_part, third_part, fourth_part)
+
+# Pregled
+hp_sentences
+
+# Definiranje cijelog odlomka kao jednog niza
+hp_paragraph <- c("Voldemort had been raised in a Muggle orphanage. Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them. Hardly any wizards believed in the Deathly Hallows. Was it likely that Voldemort knew about them?")
+
+# Pregled
+hp_paragraph
+```
+
+Za ispis nizova može se koristiti i funkcija `writeLines()` koja tekst prikazuje onako kako zaista izgleda, bez navodnika i oznaka elemenata vektora. Funkcija se može primijeniti na pojedinačni niz ili na vektor nizova, a pri čemu se svaki element ispisuje zasebno. U funkciju se može dodati i argument `sep` koji određuje znak koji se dodaje iza svakog elementa. Zadani je separator novi redak (`"\n"`), pa se svaki element ispisuje u zasebnom retku, no može se zadati i neki drugi separator.
+
+```{r}
+# Ispis nizova sa zadanim separatorom
+writeLines(hp_sentences)
+writeLines(hp_paragraph)
+
+# Ispis nizova s drugim separatorom
+writeLines(hp_sentences, sep = " @@@@@ ")
+writeLines(hp_paragraph, sep = " @@@@@ ")
+```
+
+Prednost funkcije `writeLines()` je u tome da ispisuje tekst u originalnom obliku bez navodnika koji su dodani u prvotnom načinu formiranja tekstualnih nizova.
+
+## Escape sekvence
+
+Slijed u nizu koji počinje obrnutom kosom crtom (`\`) naziva se **escape sekvenca** i omogućuje uključivanje posebnih znakova u nizove. To su znakovi koje je teško ili nemoguće izravno upisati tipkovnicom ili koji bi inače imali drugačije značenje. Već smo spomenuli jedan takav primjer, `\"`, kojim označavamo navodnik unutar teksta. Escape sekvence omogućuju umetanje:
+
+1. kontrolnih znakova (npr. novi redak, tabulator),
+
+2. posebnih znakova (npr. navodnika unutar nizova) i
+
+3. Unicode znakova (npr. simbola, slova iz različitih pisama, matematičkih oznaka i emojija).
+
+| Escape sekvenca | Značenje                         | Primjer                                      |
+|-----------------|----------------------------------|----------------------------------------------|
+| `\n`            | novi redak                       | `"Hello\nWorld"` ⟶ Hello *(novi redak)* World |
+| `\t`            | tabulator                        | `"Hello\tWorld"` ⟶ Hello *(tabulator)* World |
+| `\"`            | dvostruki navodnik unutar niza   | `"He said \"Hello\""` ⟶ He said "Hello"     |
+| `\\`            | obrnuta kosa crta                | `"C:\\Users\\Documents"` ⟶ C:\Users\Documents |
+| `\uxxxx`        | Unicode znak (do 4 heksadecimalne znamenke) | `"\u03B1"` ⟶ α (grčko slovo alfa) |
+| `\Uxxxxxxxx`    | Unicode znak (do 8 heksadecimalnih znamenki) | `"\U1F30D"` ⟶ 🌍 (emoji globusa) |
+
+R escape sekvence pretvara u odgovarajuće znakove već pri stvaranju niza, no pri običnom ispisu niza prikazuje ih u izvornom obliku (npr. `\n`). Da bismo vidjeli kako tekst zaista izgleda, koristimo funkciju `writeLines()` ili `cat()`.
+
+Unicode je standard koji svakom znaku iz gotovo svih svjetskih pisama, kao i brojnim simbolima i emojijima, dodjeljuje jedinstveni kod. U R-u se Unicode znak zapisuje s `\u` iza kojeg slijede do 4 heksadecimalne znamenke ili s `\U` iza kojeg slijedi do 8 heksadecimalnih znamenki. Ako iza koda u nizu slijedi slovo ili broj koji bi se mogao pročitati kao dio kôda, kod treba staviti u vitičaste zagrade (npr. `\U{1F30D}`). U popisima Unicode znakova kodovi se često navode u obliku `U+1F30D` koji R ne prepoznaje pa oznaku `U+` treba zamijeniti s `\U`. Popisi Unicode znakova mogu se pronaći na stranicama [Unicode Emoji List](https://unicode.org/emoji/charts/full-emoji-list.html) i [Unicode Table](https://unicode-table.com/).
+
+```{r}
+# Ispis niza s Unicode znakom
+writeLines("Hello!\n\U1F44B")
+```
+
+## Numeričke vrijednosti kao tekstualni niz
+
+Nizovi se često koriste i za izvještavanje o numeričkim rezultatima. Primjerice, neku vrijednost možemo htjeti prikazati kao tekstualni niz s određenim brojem znamenki.
+
+```{r}
+# Pridruživanje vrijednosti varijabli
+number <- 13.652378540037642375
+
+# Pregled
+number
+```
+
+U R-u postoji nekoliko funkcija za pretvaranje i formatiranje numeričkih vrijednosti u tekstualne nizove. Prva je `as.character()` koja broj pretvara u niz bez mogućnosti formatiranja. Broj se pritom zapisuje s najviše 15 značajnih znamenki pa se vrijednosti s više znamenki ipak zaokružuju. Druga je `format()` kojom argumentom `digits` određujemo broj značajnih znamenki, a ne broj decimalnih mjesta. Treća je `formatC()` koja daje najveću kontrolu nad zapisom jer uz odgovarajući format ispisuje točno zadani broj decimalnih mjesta.
+
+```{r}
+# Pretvaranje broja u niz
+as.character(number)
+
+# Formatiranje s određenim brojem značajnih znamenki
+format(number, digits = 3)
+
+# Formatiranje s fiksnim brojem decimalnih mjesta
+formatC(number, digits = 5)
+```
+
+Funkcije `format()` i `formatC()` mogu broj zapisati u fiksnom ili znanstvenom formatu. U fiksnom formatu broj se zapisuje uobičajeno, s određenim brojem znamenki iza decimalne točke (npr. `13.65238`). U znanstvenom formatu broj se zapisuje kao umnožak broja s jednom znamenkom ispred decimalne točke i potencije broja 10. Pritom se znak množenja izostavlja, a slovo *e* znači „puta deset na potenciju” (npr. `1.365238e+01` znači 1,365238 × 10¹). U funkciji `format()` format se određuje argumentom `scientific` kojemu se zadaje vrijednost `TRUE` ili `FALSE`. U funkciji `formatC()` koristi se argument `format`, kojemu se zadaje `"f"` za fiksni format, `"e"` za znanstveni format ili `"g"`, pri čemu R sam bira kraći od ta dva zapisa. Kod `"f"` i `"e"` argument `digits` označava broj decimalnih mjesta, a kod `"g"` broj značajnih znamenki.
+
+```{r}
+# Znanstveni i fiksni format funkcijom format()
+format(number, scientific = TRUE)
+format(number, scientific = FALSE)
+
+# Fiksni, znanstveni i kraći od ta dva formata funkcijom formatC()
+formatC(number, format = "f")
+formatC(number, format = "e")
+formatC(number, format = "g")
+```
+
+## Operacije na nizovima
+
+Paket `stringr` sadrži skup funkcija za najčešće operacije s tekstom. Sve njegove funkcije počinju prefiksom `str_` i kao prvi argument uzimaju niz ili vektor nizova.
+
+Jedna od osnovnih funkcija paketa je `str_c()` koja spaja više nizova u jedan niz. Prema zadanim postavkama kao separator koristi prazan niz (`sep = ""`) što znači da se nizovi spajaju bez ikakvog znaka između njih.
+
+```{r}
+# Spajanje nizova u jedan niz
+str_c(first_part, second_part, third_part, fourth_part)
+```
+
+Ovdje je dobro istaknuti da je razmak u R-u znak kao i svaki drugi i da se ne dodaje automatski. Spajanjem varijabli dobili smo jedan niz koji sadrži sve četiri rečenice, ali budući da je separator prazan niz, između njih nema razmaka. Tako svaka rečenica počinje odmah iza točke prethodne, iako bi pravopisno ondje trebao biti razmak. Zato je u argumentu `sep` poželjno kao separator zadati razmak.
+
+```{r}
+# Spajanje nizova u jedan niz s razmakom kao separatorom
+str_c(
+  first_part, second_part, third_part, fourth_part,
+  sep = " "
+)
+```
+
+Sljedeća je funkcija `str_length()` koja vraća broj znakova u svakom nizu vektora, uključujući razmake i interpunkciju. Vrlo je slična osnovnoj funkciji `nchar()`, ali za razliku od nje radi i s faktorima, dok `nchar()` u tom slučaju javlja pogrešku.
+
+```{r}
+# Broj znakova u svakom nizu
+str_length(hp_sentences)
+```
+
+Funkcija `str_sub()` izdvaja dio niza na temelju položaja znakova. Argumenti `start` i `end` određuju položaj prvog i posljednjeg znaka koji želimo izdvojiti, a oba se znaka uključuju u rezultat.
+
+```{r}
+# Izdvajanje znakova od petog do šesnaestog
+str_sub(hp_sentences, start = 5, end = 16)
+```
+
+### Traženje podudaranja u nizovima
+
+Jedna od najkorisnijih mogućnosti paketa `stringr` je rad s uzorcima. To može biti, primjerice, pronalaženje nizova koji sadrže određeni uzorak, dijeljenje nizova na temelju uzorka ili zamjena dijelova niza koji odgovaraju uzorku. Za pronalaženje podudaranja najčešće se koriste tri funkcije: `str_detect()`, `str_subset()` i `str_count()`. Sve tri traže zadani uzorak, a razlikuju se po rezultatu koji vraćaju.
+
+Funkcija `str_detect()` vraća logički vektor s vrijednošću `TRUE` za svaki niz koji sadrži zadani uzorak i `FALSE` za svaki niz koji ga ne sadrži. Funkcija `str_subset()` vraća samo nizove koji sadrže uzorak, a `str_count()` broj pojavljivanja uzorka u svakom nizu. Dakle, sve se tri funkcije koriste na isti način, a razlikuju se samo po rezultatu. Uzorak se zadaje argumentom `pattern`. Prema zadanim postavkama `stringr` uzorak tumači kao regularni izraz u kojem neki znakovi (npr. `.` ili `?`) imaju posebno značenje. Ako želimo da se uzorak tumači doslovno, zadajemo ga unutar funkcije `fixed()`. Pritom valja imati na umu da se razlikuju velika i mala slova. Primjerice, može nas zanimati sadrži li neki niz riječ *Voldemort*.
+
+```{r}
+# Sadrži li niz uzorak
+str_detect(hp_sentences, pattern = fixed("Voldemort"))
+
+# Nizovi koji sadrže uzorak
+str_subset(hp_sentences, pattern = fixed("Voldemort"))
+
+# Broj pojavljivanja uzorka u svakom nizu
+str_count(hp_sentences, pattern = fixed("Voldemort"))
+```
+
+### Odvajanje nizova
+
+Sljedeća funkcija paketa `stringr`, `str_split()`, dijeli niz na dijelove prema zadanom uzorku. Uzorak se zadaje argumentom `pattern` i može biti znak, riječ ili bilo koji drugi niz znakova na mjestu kojeg funkcija dijeli niz.
+
+Recimo da imamo sljedeći niz:
+
+```{r}
+# Definiranje niza
+hp_text <- "Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, \"Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?\""
+
+# Pregled niza
+hp_text
+```
+
+Iz ispisa je vidljivo da je riječ o odlomku od nekoliko rečenica unutar kojih su pojedini dijelovi odijeljeni zarezima. Rečenice završavaju točkom iza koje slijedi razmak, a zarezima također slijedi razmak. Funkcijom `str_split()` niz možemo podijeliti prema bilo kojem od tih separatora. Budući da točka u regularnim izrazima ima posebno značenje (označava bilo koji znak), uzorak s točkom zadajemo unutar funkcije `fixed()`.
+
+```{r}
+# Podjela niza prema uzorku ". "
+str_split(
+  string = hp_text,
+  pattern = fixed(". ")
+)
+
+# Podjela niza prema uzorku ", "
+str_split(
+  string = hp_text,
+  pattern = ", "
+)
+```
+
+Niz je moguće podijeliti i prema više uzoraka odjednom. Uzorci se tada odvajaju znakom `|`, koji u regularnim izrazima znači *ili*. Budući da funkcija `fixed()` ne podržava taj znak, uzorak zadajemo kao regularni izraz, a posebno značenje točke uklanjamo tako da ispred nje stavimo dvije obrnute kose crte (`\\.`).
+
+```{r}
+# Podjela niza prema više uzoraka
+str_split(
+  string = hp_text,
+  pattern = "\\. |, "
+)
+```
+
+U svakom od ovih slučajeva funkcija je niz podijelila na više manjih nizova. Sa separatorom `". "` dobili smo šest nizova. Pritom se vidi da podjela prema točki nije isto što i podjela na rečenice jer je funkcija niz podijelila i iza kratica *Mr.* i *Mrs.* pa su one završile u zasebnim dijelovima odvojene od prezimena *Weasley*. Sa separatorom `", "` dobili smo 9 nizova, a kad smo uključili oba separatora, čak 14.
+
+Broj dijelova možemo ograničiti argumentom `n`. Ako zadamo `n = 2`, niz će se podijeliti na dva dijela pri prvom pojavljivanju uzorka, a ostatak niza ostat će netaknut u drugom dijelu. U našem primjeru prvi dio bit će prva rečenica, a drugi ostatak odlomka.
+
+```{r}
+# Podjela niza na najviše dva dijela
+str_split(
+  string = hp_text,
+  pattern = fixed(". "),
+  n = 2
+)
+```
+
+Važno je napomenuti da funkcija `str_split()` prema zadanim postavkama vraća listu jer je lista jedina podatkovna struktura čiji elementi mogu biti različite duljine. Ako zadamo `n` ili znamo da svi nizovi imaju jednak broj dijelova, možemo dobiti jednostavniji rezultat, matricu. To postižemo tako da argumentu `simplify` zadamo vrijednost `TRUE`. Tada svaki redak matrice odgovara jednom ulaznom nizu, a svaki stupac jednom dijelu niza. Matrica ima onoliko stupaca koliko dijelova ima najdulje podijeljeni niz, a nedostajuća mjesta u ostalim retcima popunjavaju se praznim nizovima. Budući da ovdje dijelimo samo jedan niz, dobit ćemo matricu s jednim retkom i 14 stupaca.
+
+```{r}
+# Podjela niza prema uzorcima i prikaz rezultata kao matrice
+str_split(
+  string = hp_text,
+  pattern = "\\. |, ",
+  simplify = TRUE
+)
+```
+
+Za obradu rezultata u obliku liste koriste se funkcije `lapply()` i `sapply()`. Funkcija `lapply()` kao prvi argument uzima listu, a kao drugi funkciju koju primjenjuje na svaki element liste te vraća listu. Funkcija `sapply()` radi isto, ali rezultat pojednostavljuje u vektor ili matricu kad god je to moguće. Primjerice, funkcijom `lapply()` možemo izračunati koliko dijelova ima svaki podijeljeni niz.
+
+### Zamjena dijelova niza
+
+Sljedeće su važne funkcije `str_replace()` i `str_replace_all()` koje dijelove niza koji odgovaraju zadanom uzorku zamjenjuju drugim nizom. Razlika je u tome što `str_replace()` zamjenjuje samo prvo pojavljivanje uzorka, a `str_replace_all()` svako pojavljivanje. Dva su najvažnija argumenta tih funkcija `pattern`, koji određuje uzorak koji želimo zamijeniti, i `replacement`, koji određuje niz kojim ga zamjenjujemo.
+
+```{r}
+# Zamjena prvog pojavljivanja uzorka
+str_replace(
+  string = hp_text,
+  pattern = "\\. |, ",
+  replacement = " & "
+)
+
+# Zamjena svih pojavljivanja uzorka
+str_replace_all(
+  string = hp_text,
+  pattern = "\\. |, ",
+  replacement = " & "
+)
+```
+
+### Stvaranje nizova s podacima
+
+Još je jedna važna operacija u radu s tekstualnim nizovima stvaranje novih nizova od podataka u R-u. Jedna od funkcija za to je `paste()` iz osnovnog R-a koja spaja dva ili više niza. Ipak, za složenija spajanja praktičnije je koristiti funkciju `glue()` iz paketa `glue`. Taj se paket instalira zajedno s `tidyverse`-om, ali se ne učitava automatski naredbom `library(tidyverse)` pa ga treba zasebno učitati naredbom `library(glue)`.
+
+Funkcija `glue()` praktičnija je jer se njome lakše stvaraju nizovi kada treba spojiti mnogo varijabli i teksta. Niz se zapisuje unutar navodnika, a sve što stavimo unutar vitičastih zagrada (`{}`) funkcija tumači kao R kod, izvršava ga i rezultat umeće u niz. Unutar vitičastih zagrada možemo, dakle, navesti gotovo sve što se može pretvoriti u niz, varijablu, niz ili izraz, primjerice računsku operaciju, čiji će se rezultat izračunati i pretvoriti u niz.
+
+```{r}
+# Stvaranje niza od varijabli i izraza
+first_name <- "Harry"
+last_name <- "Potter"
+glue("{first_name} {last_name} started Hogwarts at the age of {1991 - 1980}.")
+```
+
+Funkcija `glue()` omogućuje i korištenje privremenih varijabli. To su varijable koje definiramo samo unutar poziva funkcije jer nam nisu potrebne nigdje drugdje, a čime se ne spremaju u radno okruženje.
+
+```{r}
+# Stvaranje niza s privremenim varijablama
+glue(
+  "student = Harry Potter,\nhouse = {house};\nwand = {wand},\npet = {pet};\npatronus = {patronus};\nfirst_appearance = {first_appearance}",
+  house = "Gryffindor",
+  wand = "holly and phoenix feather",
+  pet = "Hedwig",
+  patronus = "stag",
+  first_appearance = "Harry Potter and the Philosopher's Stone"
+)
+```
+
+Funkcija `glue()` može se koristiti i unutar funkcije `mutate()` iz paketa `dplyr` za stvaranje novog stupca.
+
+```{r}
+# Stvaranje novog stupca s nizom
+name <- "Harry Potter"
+df <- tibble(name)
+df |>
+  mutate(new_column = glue("Hi, {name}"))
+```
+
+```{r}
+# Stvaranje tablice s podacima
+hp_df <- tibble(
+  segment = c("house", "wand", "pet", "patronus", "first appearance"),
+  information = c("Gryffindor", "holly and phoenix feather", "Hedwig", "stag", "Harry Potter and the Philosopher's Stone")
+)
+
+# Pregled
+hp_df
+
+# Stvaranje rečenice za svaki redak tablice
+hp_df |> mutate(sentence = glue("Harry's {segment} is {information}."))
+```
+
+Ponekad želimo spojiti sve elemente vektora u jedan niz. To je moguće funkcijom `glue_collapse()`, koja se može koristiti sa sljedećim argumentima:
+
+- `sep` - niz koji se umeće između elemenata vektora,
+
+- `last` - poseban separator između posljednja dva elementa vektora,
+
+- `width` - najveća duljina rezultata; dulji rezultat skraćuje se i završava s `...`.
+
+```{r}
+# Spajanje elemenata vektora u jedan niz
+characters_names <- c("Harry Potter", "Hermione Granger", "Ron Weasley", "Albus Dumbledore", "Severus Snape")
+
+glue_collapse(
+  characters_names,
+  sep = ", ",
+  last = " and ",
+  width = 10
+)
+
+# Umetanje spojenog vektora u niz
+glue(
+  "The main characters are: {characters}.",
+  characters = glue_collapse(
+    characters_names,
+    sep = ", ",
+    last = " and "
+  )
+)
+```
+
+## Udaljenost među nizovima
+
+Posljednji važan dio rada s nizovima je udaljenost među nizovima, odnosno broj koji pokazuje koliko se dva niza međusobno razlikuju. Primjerice, može nas zanimati kolika je udaljenost između riječi *Snape* i *snake*. Te se riječi razlikuju u samo jednom znaku, a to je slovo *p* u prezimenu *Snape* koje je zamijenjeno slovom *k* u riječi *snake*. Budući da se razlikuju u jednom znaku, njihova je udaljenost 1. U drugom primjeru udaljenost između imena *Sirius* i riječi *serious* iznosi 2. Obje riječi počinju slovom *s*, sadrže *ri* i završavaju s *us*, a razlikuju se u tome što riječ *serious* umjesto prvog *i* ima *e* te između *i* i *u* ima dodatno slovo *o*.
+
+Takva mjera može biti korisna u mnogim situacijama. Vjerojatno je najpoznatija primjena automatsko ispravljanje pojmova upisanih u tražilicu. Kada pogrešno upišemo pojam, tražilica nas pita jesmo li mislili na neki drugi, ispravljeni pojam. Jedan od načina da se to postigne jest izračunati udaljenost između upisanog niza i poznatih pojmova te ponuditi onaj koji je najbliži. Druga je česta primjena rad s korisničkim unosom, primjerice podacima koje različite osobe upisuju u obrasce, pri čemu se isti podatak često upiše na više načina ili s pogreškama.
+
+Najčešće korišten paket za izračun udaljenosti među nizovima u R-u je `stringdist` koji sadrži istoimenu funkciju. Funkcija kao prva dva argumenta uzima nizove koje uspoređujemo, a argumentom `method` zadajemo vrstu udaljenosti koju želimo izračunati.
+
+Jedna od najčešće korištenih mjera je **Levenshteinova udaljenost** koja broji najmanji broj izmjena potrebnih da se jedan niz pretvori u drugi. Izmjena može biti umetanje, brisanje ili zamjena jednog znaka, a svaka izmjena povećava udaljenost za jedan. Upravo je tu mjeru ilustrirao uvodni primjer. Da bi se ime *Sirius* pretvorilo u riječ *serious*, potrebne su dvije izmjene, zamjena prvog slova *i* slovom *e* i umetanje slova *o* između *i* i *u*. Za izračun Levenshteinove udaljenosti kao metodu zadajemo `lv`.
+
+```{r}
+# Levenshteinova udaljenost
+stringdist(
+  "Sirius",
+  "Serious",
+  method = "lv"
+)
+```
+
+Jedna od alternativa Levenshteinovoj udaljenosti je **Damerau-Levenshteinova udaljenost**. Od nje se razlikuje po tome što kao jednu izmjenu broji i zamjenu mjesta dvaju susjednih znakova (transpoziciju). Primjerice, u unosu *Hermoine Granger* zamijenjena su mjesta slovima *i* i *o*, što je vrlo česta pogreška u pisanju tog imena. Prema Levenshteinovoj udaljenosti za ispravak su potrebne dvije izmjene, zamjena slova *o* slovom *i* i zamjena slova *i* slovom *o*, a prema Damerau-Levenshteinovoj samo jedna, zamjena mjesta tih dvaju slova. Za izračun Damerau-Levenshteinove udaljenosti kao metodu zadajemo `dl`.
+
+```{r}
+# Levenshteinova udaljenost
+stringdist(
+  "Hermione Granger",
+  "Hermoine Granger",
+  method = "lv"
+)
+
+# Damerau-Levenshteinova udaljenost
+stringdist(
+  "Hermione Granger",
+  "Hermoine Granger",
+  method = "dl"
+)
+```
+
+Još jedna mjera je **optimalno poravnanje nizova** (engl. *optimal string alignment*) koja se zadaje metodom `osa`. Ona je slična Damerau-Levenshteinovoj udaljenosti, ali s ograničenjem da se svaki dio niza smije izmijeniti najviše jednom. Primjerice, dva znaka kojima smo zamijenili mjesta ne smiju se nakon toga dodatno mijenjati. Ovo je ujedno zadana metoda funkcije `stringdist()` pa se koristi ako argument `method` ne zadamo.
+
+Drugačiji pristup od Levenshteinove udaljenosti imaju metode temeljene na **q-gramima**. One nizove ne uspoređuju znak po znak, nego ih dijele na podnizove fiksne duljine *q* (q-grame) čija se duljina u funkciji `stringdist()` zadaje argumentom `q`. Postupak uključuje podjelu oba niza na q-grame, brojanje pojavljivanja svakog q-grama u svakom nizu te izračun udaljenosti kao zbroja razlika u tim brojevima. Za izračun kao metodu zadajemo `qgram`.
+
+```{r}
+# Udaljenost temeljena na q-gramima
+stringdist(
+  "Hogwarts",
+  "Hogwards",
+  method = "qgram",
+  q = 2
+)
+```
+
+U ovom je slučaju rezultat 4. Podijelimo li nizove na dijelove od dva znaka (bigrame), dobivamo *Ho, og, gw, wa, ar, rt, ts* i *Ho, og, gw, wa, ar, rd, ds*. Bigrami *rt* i *ts* pojavljuju se samo u prvom nizu, a *rd* i *ds* samo u drugom, pa se nizovi razlikuju u četiri bigrama. Primijetimo da bi Levenshteinova udaljenost za iste nizove iznosila samo 1 jer se razlikuju u jednom slovu. To pokazuje da različite metode mogu dati vrlo različite rezultate, ovisno o tome što mjere.
+
+Na q-gramima se temelje i metode `jaccard` i `cosine`. Jaccardova udaljenost računa se kao udio q-grama koji se pojavljuju samo u jednom od nizova u ukupnom broju različitih q-grama obaju nizova. Kosinusna udaljenost q-grame svakog niza prikazuje kao vektor u višedimenzionalnom prostoru i računa se kao 1 umanjeno za kosinus kuta između tih dvaju vektora.
+
+Paket `stringdist` sadrži i funkciju `amatch()`, koja za zadani niz pronalazi najbliži niz u vektoru i vraća njegov položaj. To je korisno kada u popisu želimo pronaći unos na koji je osoba mislila kada je upisala niz s pogreškom. Primjerice, možemo saznati na kojeg je lika iz vektora `characters_names` mislila osoba koja je upisala *Albus Dumbeldore*. Argumentom `maxDist` određujemo najveću dopuštenu udaljenost, a ako nijedan niz u vektoru nije dovoljno blizu, onda funkcija vraća `NA`.
+
+```{r}
+# Pronalaženje najbližeg niza u vektoru
+amatch(
+  x = "Albus Dumbeldore",
+  table = characters_names,
+  maxDist = 5,
+  method = "lv"
+)
+```
+
+Rezultat je 4 jer je četvrti element vektora, *Albus Dumbledore*, od upisanog niza udaljen samo dvije izmjene, dok su svi ostali elementi udaljeni mnogo više od dopuštenih pet. Kad bi više elemenata bilo jednako blizu, funkcija bi vratila položaj prvog od njih.

@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Tekstualni nizovi osnovna su jedinica svake tekstualne analize u R-u i temelj na kojem počiva sav daljnji rad s tekstom. Riječ je o slijedu znakova, poput slova, brojki, razmaka i interpunkcije, kojim se u R-u pohranjuje tekst. Bilo da je riječ o romanima, novinskim člancima ili objavama na društvenim mrežama, tekst je prije analize gotovo uvijek potrebno očistiti, prilagoditi i preoblikovati, a sve se te operacije izvode upravo na nizovima. Stoga je za rad s tekstom ključno poznavati načine stvaranja i oblikovanja nizova, pretraživanja, dijeljenja, zamjene i spajanja njihovih dijelova te mjerenja udaljenosti među njima.">
 
 <title>4&nbsp; Tekstualni nizovi – Analiza teksta u R-u</title>
 <style>
@@ -68,7 +69,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./2_2_učitavanje_i_oblikovanje_podataka.html" rel="next">
+<link href="./2_2_regularni_izrazi.html" rel="next">
 <link href="./2_0_POČETAK U RADU S TEKSTOM.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -108,6 +109,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
 
 
 <link rel="stylesheet" href="custom.css">
@@ -116,13 +134,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">2. Početak u radu s tekstom</a></li><li class="breadcrumb-item"><a href="./2_1_tekstualni_nizovi.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Tekstualni nizovi</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">POČETAK U RADU S TEKSTOM</a></li><li class="breadcrumb-item"><a href="./2_1_tekstualni_nizovi.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Tekstualni nizovi</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -132,7 +150,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">POČETAK U RADU S TEKSTOM</a></li><li class="breadcrumb-item"><a href="./2_1_tekstualni_nizovi.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Tekstualni nizovi</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Tekstualni nizovi</span></h1>
+                  <div>
+        <div class="description">
+          Tekstualni nizovi osnovna su jedinica svake tekstualne analize u R-u i temelj na kojem počiva sav daljnji rad s tekstom. Riječ je o slijedu znakova, poput slova, brojki, razmaka i interpunkcije, kojim se u R-u pohranjuje tekst. Bilo da je riječ o romanima, novinskim člancima ili objavama na društvenim mrežama, tekst je prije analize gotovo uvijek potrebno očistiti, prilagoditi i preoblikovati, a sve se te operacije izvode upravo na nizovima. Stoga je za rad s tekstom ključno poznavati načine stvaranja i oblikovanja nizova, pretraživanja, dijeljenja, zamjene i spajanja njihovih dijelova te mjerenja udaljenosti među njima.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -182,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./2_0_POČETAK U RADU S TEKSTOM.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">2. Početak u radu s tekstom</span></a>
+ <span class="menu-text">POČETAK U RADU S TEKSTOM</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -196,14 +235,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./2_2_učitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  <a href="./2_2_regularni_izrazi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regularni izrazi</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./2_3_pretpostavke_za_analizu_teksta_u_tidytext-u.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytextu</span></span></a>
+  <a href="./2_3_učitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytextu</span></span></a>
   </div>
 </li>
       </ul>
@@ -211,7 +256,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./3_0_POČETAK U RADU S TEKSTOM.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">3. Deskriptivna analiza teksta</span></a>
+ <span class="menu-text">DESKRIPCIJSKA ANALIZA TEKSTA</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -220,19 +265,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3_1_deskriptivna_analiza_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3_2_analiza_učestalosti_riječi.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./3_3_odnosi_među_riječima.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
   </div>
 </li>
       </ul>
@@ -240,7 +285,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./4_0_ANALIZA_SENTIMENATA.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">4. Analiza sentimenta</span></a>
+ <span class="menu-text">ANALIZA SENTIMENATA</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -249,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_1_analiza_sentimenata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Analiza sentimenta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenta</span></span></a>
   </div>
 </li>
       </ul>
@@ -257,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./5_0_TEKSTUALNA_MODELIRANJA.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">5. Tekstualna modeliranja</span></a>
+ <span class="menu-text">TEKSTUALNA MODELIRANJA</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -266,7 +311,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5_1_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
   </div>
 </li>
       </ul>
@@ -274,7 +319,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./6_0_DODATNE_MOGUĆNOSTI_RADA_S_TEKSTOM.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">6. Dodatne mogućnosti rada s tekstom</span></a>
+ <span class="menu-text">DODATNE MOGUĆNOSTI RADA S TEKSTOM</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -283,13 +328,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_1_rad_s_neurednim_podacima.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_2_vizualizacije_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Vizualizacije teksta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacije teksta</span></span></a>
   </div>
 </li>
       </ul>
@@ -306,40 +351,635 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#escape-sekvence" id="toc-escape-sekvence" class="nav-link active" data-scroll-target="#escape-sekvence"><span class="header-section-number">4.1</span> Escape sekvence</a></li>
+  <li><a href="#numeričke-vrijednosti-kao-tekstualni-niz" id="toc-numeričke-vrijednosti-kao-tekstualni-niz" class="nav-link" data-scroll-target="#numeričke-vrijednosti-kao-tekstualni-niz"><span class="header-section-number">4.2</span> Numeričke vrijednosti kao tekstualni niz</a></li>
+  <li><a href="#operacije-na-nizovima" id="toc-operacije-na-nizovima" class="nav-link" data-scroll-target="#operacije-na-nizovima"><span class="header-section-number">4.3</span> Operacije na nizovima</a>
+  <ul class="collapse">
+  <li><a href="#traženje-podudaranja-u-nizovima" id="toc-traženje-podudaranja-u-nizovima" class="nav-link" data-scroll-target="#traženje-podudaranja-u-nizovima"><span class="header-section-number">4.3.1</span> Traženje podudaranja u nizovima</a></li>
+  <li><a href="#odvajanje-nizova" id="toc-odvajanje-nizova" class="nav-link" data-scroll-target="#odvajanje-nizova"><span class="header-section-number">4.3.2</span> Odvajanje nizova</a></li>
+  <li><a href="#zamjena-dijelova-niza" id="toc-zamjena-dijelova-niza" class="nav-link" data-scroll-target="#zamjena-dijelova-niza"><span class="header-section-number">4.3.3</span> Zamjena dijelova niza</a></li>
+  <li><a href="#stvaranje-nizova-s-podacima" id="toc-stvaranje-nizova-s-podacima" class="nav-link" data-scroll-target="#stvaranje-nizova-s-podacima"><span class="header-section-number">4.3.4</span> Stvaranje nizova s podacima</a></li>
+  </ul></li>
+  <li><a href="#udaljenost-među-nizovima" id="toc-udaljenost-među-nizovima" class="nav-link" data-scroll-target="#udaljenost-među-nizovima"><span class="header-section-number">4.4</span> Udaljenost među nizovima</a></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">2. Početak u radu s tekstom</a></li><li class="breadcrumb-item"><a href="./2_1_tekstualni_nizovi.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Tekstualni nizovi</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Tekstualni nizovi</span></h1>
-</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
-
-
-<p>Tekstualni nizovi (<code>character</code>) osnovni su oblik pohrane rečenica i riječi u R-u. Njima možemo pristupiti pojedinačno ili ih organizirati u vektore.</p>
+<p><strong>Tekstualni niz</strong> (engl. <em>string</em>) je slijed znakova koji služi za pohranu tekstualnih podataka i rad s njima. Takav niz može sadržavati slova, brojke, razmake, interpunkciju i druge znakove. U R-u se tekstualni nizovi pohranjuju kao podaci tipa <code>character</code>, a zapisuju se unutar dvostrukih ili jednostrukih navodnika.</p>
+<p>Iako osnovni R sadrži vlastite funkcije za rad s tekstom (npr. <code>paste()</code>, <code>grepl()</code> ili <code>gsub()</code>), u praksi se najčešće koristi paket <code>stringr</code> koji je dio <code>tidyverse</code> skupa paketa. <code>stringr</code> je izgrađen na paketu <code>stringi</code> koji nudi opsežan skup alata za gotovo sve što bismo ikada mogli raditi s nizovima. Za razliku od njega, <code>stringr</code> obuhvaća samo najbitnije i najčešće operacije potrebne u radu s tekstom, a zbog čega je jednostavniji i intuitivniji za korištenje. Prednost <code>stringr</code>-a je dosljedna sintaksa, odnosno to da sve njegove funkcije počinju prefiksom <code>str_</code> (npr. <code>str_detect()</code>, <code>str_replace()</code>, <code>str_length()</code>), a tekstualni niz uvijek je prvi argument što olakšava njihovo povezivanje operatorom <code>|&gt;</code>. Paket podržava i regularne izraze za pretraživanje i obradu teksta.</p>
+<p>U R-u se tekstualni nizovi stvaraju tako da se tekst stavi unutar dvostrukih (<code>"..."</code>) ili jednostrukih (<code>'...'</code>) navodnika. Dobiveni niz najčešće se operatorom <code>&lt;-</code> pridružuje nekoj varijabli kako bismo ga poslije mogli koristiti. Obje vrste navodnika funkcioniraju jednako, no preporučuje se koristiti dvostruke navodnike, dok su jednostruki navodnici korisni kada sam tekst sadrži dvostruke navodnike.</p>
+<p>Definirajmo za početak jednu rečenicu kao tekstualni niz:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>naslovi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Prvi dokument"</span>, <span class="st">"Drugi dokument"</span>, <span class="st">"Treći dokument"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>naslovi</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje rečenice kao tekstualni niz</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>sentence_one <span class="ot">&lt;-</span> <span class="st">"To Miss Hermione Jean Granger, I leave my copy of The Tales of Beedle the Bard, in the hope that she will find it entertaining and instructive."</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sentence_one</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Prvi dokument"  "Drugi dokument" "Treći dokument"</code></pre>
+<pre><code>[1] "To Miss Hermione Jean Granger, I leave my copy of The Tales of Beedle the Bard, in the hope that she will find it entertaining and instructive."</code></pre>
 </div>
 </div>
+<p>Ipak, ako sam tekst sadrži dvostruke navodnike, R će navodnik iz teksta protumačiti kao početak ili kraj niza, a ne kao dio teksta. Taj se problem može izbjeći tako da se niz omeđi jednostrukim navodnicima, pa se dvostruki navodnici unutar njega čitaju kao obični znakovi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje rečenice s navodnicima kao tekstualni niz</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sentence_two <span class="ot">&lt;-</span> <span class="st">'"And as for this book" said Hermione, "The Tales of Beedle the Bard... I have never even heard of them."'</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>sentence_two</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "\"And as for this book\" said Hermione, \"The Tales of Beedle the Bard... I have never even heard of them.\""</code></pre>
+</div>
+</div>
+<p>Vidljivo je pritom da R nizove ispisuje na različite načine. U slučaju vektora <code>sentence_one</code> R ispisuje niz samo s dvostrukim navodnicima koji simboliziraju početak i kraj niza. U slučaju korištenja jednostrukih navodnika za označavanje početka i kraja niza, kao kod varijable <code>sentence_two</code>, R i dalje ispisuje niz s dvostrukim navodnicima koji označavaju početak i kraj niza, a tekst koji je originalno označen navodnicima ispisan je znakom <code>\</code> ispred navodnika koji je dio teksta.</p>
+<p>Isto tako, ako želimo tekst koji sadrži oba oblika navodnika, i jednostruke i dvostruke, pretvoriti u niz, dvostruke navodnike iz teksta moramo pretvoriti u <code>\"</code> kako oni ne bi bili prepoznati kao početak i kraj niza.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje četvrtog paragrafa kao tekstualni niz</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sentence_three <span class="ot">&lt;-</span> <span class="st">"</span><span class="sc">\"</span><span class="st">Well, exactly,</span><span class="sc">\"</span><span class="st"> said Hermione, now flicking through the The Tales of Beedle the Bard. </span><span class="sc">\"</span><span class="st">If these things are important enough to pass on right under the nose of the Ministry, you'd think he'd have let us know why... unless he thought it was obvious?</span><span class="sc">\"</span><span class="st">"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>sentence_three</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "\"Well, exactly,\" said Hermione, now flicking through the The Tales of Beedle the Bard. \"If these things are important enough to pass on right under the nose of the Ministry, you'd think he'd have let us know why... unless he thought it was obvious?\""</code></pre>
+</div>
+</div>
+<p>Općenito, niz bi uvijek trebalo najprije omeđiti dvostrukim navodnicima, a jednostruke koristiti samo ako tekst sadrži dvostruke navodnike. Tek ako tekst sadrži i dvostruke i jednostruke navodnike, dvostruke navodnike unutar teksta označavamo s <code>\"</code>.</p>
+<p>Više tekstualnih nizova moguće je funkcijom <code>c()</code> objediniti u vektor nizova, bilo da ih navedemo izravno ili preko varijabli u koje su spremljeni.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje prvog niza</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>first_part <span class="ot">&lt;-</span> <span class="st">"Voldemort had been raised in a Muggle orphanage."</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje drugog niza</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>second_part <span class="ot">&lt;-</span> <span class="st">"Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them."</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje trećeg niza</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>third_part <span class="ot">&lt;-</span> <span class="st">"Hardly any wizards believed in the Deathly Hallows."</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje četvrtog niza</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>fourth_part <span class="ot">&lt;-</span> <span class="st">"Was it likely that Voldemort knew about them?"</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Objedinjavanje nizova</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>hp_sentences <span class="ot">&lt;-</span> <span class="fu">c</span>(first_part, second_part, third_part, fourth_part)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>hp_sentences</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Voldemort had been raised in a Muggle orphanage."                                                                
+[2] "Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them."
+[3] "Hardly any wizards believed in the Deathly Hallows."                                                             
+[4] "Was it likely that Voldemort knew about them?"                                                                   </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje cijelog odlomka kao jednog niza</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>hp_paragraph <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Voldemort had been raised in a Muggle orphanage. Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them. Hardly any wizards believed in the Deathly Hallows. Was it likely that Voldemort knew about them?"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>hp_paragraph</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Voldemort had been raised in a Muggle orphanage. Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them. Hardly any wizards believed in the Deathly Hallows. Was it likely that Voldemort knew about them?"</code></pre>
+</div>
+</div>
+<p>Za ispis nizova može se koristiti i funkcija <code>writeLines()</code> koja tekst prikazuje onako kako zaista izgleda, bez navodnika i oznaka elemenata vektora. Funkcija se može primijeniti na pojedinačni niz ili na vektor nizova, a pri čemu se svaki element ispisuje zasebno. U funkciju se može dodati i argument <code>sep</code> koji određuje znak koji se dodaje iza svakog elementa. Zadani je separator novi redak (<code>"\n"</code>), pa se svaki element ispisuje u zasebnom retku, no može se zadati i neki drugi separator.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ispis nizova sa zadanim separatorom</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(hp_sentences)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Voldemort had been raised in a Muggle orphanage.
+Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them.
+Hardly any wizards believed in the Deathly Hallows.
+Was it likely that Voldemort knew about them?</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(hp_paragraph)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Voldemort had been raised in a Muggle orphanage. Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them. Hardly any wizards believed in the Deathly Hallows. Was it likely that Voldemort knew about them?</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ispis nizova s drugim separatorom</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(hp_sentences, <span class="at">sep =</span> <span class="st">" @@@@@ "</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Voldemort had been raised in a Muggle orphanage. @@@@@ Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them. @@@@@ Hardly any wizards believed in the Deathly Hallows. @@@@@ Was it likely that Voldemort knew about them? @@@@@ </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(hp_paragraph, <span class="at">sep =</span> <span class="st">" @@@@@ "</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Voldemort had been raised in a Muggle orphanage. Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them. Hardly any wizards believed in the Deathly Hallows. Was it likely that Voldemort knew about them? @@@@@ </code></pre>
+</div>
+</div>
+<p>Prednost funkcije <code>writeLines()</code> je u tome da ispisuje tekst u originalnom obliku bez navodnika koji su dodani u prvotnom načinu formiranja tekstualnih nizova.</p>
+<section id="escape-sekvence" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="escape-sekvence"><span class="header-section-number">4.1</span> Escape sekvence</h2>
+<p>Slijed u nizu koji počinje obrnutom kosom crtom (<code>\</code>) naziva se <strong>escape sekvenca</strong> i omogućuje uključivanje posebnih znakova u nizove. To su znakovi koje je teško ili nemoguće izravno upisati tipkovnicom ili koji bi inače imali drugačije značenje. Već smo spomenuli jedan takav primjer, <code>\"</code>, kojim označavamo navodnik unutar teksta. Escape sekvence omogućuju umetanje:</p>
+<ol type="1">
+<li><p>kontrolnih znakova (npr. novi redak, tabulator),</p></li>
+<li><p>posebnih znakova (npr. navodnika unutar nizova) i</p></li>
+<li><p>Unicode znakova (npr. simbola, slova iz različitih pisama, matematičkih oznaka i emojija).</p></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 35%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Escape sekvenca</th>
+<th>Značenje</th>
+<th>Primjer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>\n</code></td>
+<td>novi redak</td>
+<td><code>"Hello\nWorld"</code> ⟶ Hello <em>(novi redak)</em> World</td>
+</tr>
+<tr class="even">
+<td><code>\t</code></td>
+<td>tabulator</td>
+<td><code>"Hello\tWorld"</code> ⟶ Hello <em>(tabulator)</em> World</td>
+</tr>
+<tr class="odd">
+<td><code>\"</code></td>
+<td>dvostruki navodnik unutar niza</td>
+<td><code>"He said \"Hello\""</code> ⟶ He said “Hello”</td>
+</tr>
+<tr class="even">
+<td><code>\\</code></td>
+<td>obrnuta kosa crta</td>
+<td><code>"C:\\Users\\Documents"</code> ⟶ C:</td>
+</tr>
+<tr class="odd">
+<td><code>\uxxxx</code></td>
+<td>Unicode znak (do 4 heksadecimalne znamenke)</td>
+<td><code>"\u03B1"</code> ⟶ α (grčko slovo alfa)</td>
+</tr>
+<tr class="even">
+<td><code>\Uxxxxxxxx</code></td>
+<td>Unicode znak (do 8 heksadecimalnih znamenki)</td>
+<td><code>"\U1F30D"</code> ⟶ 🌍 (emoji globusa)</td>
+</tr>
+</tbody>
+</table>
+<p>R escape sekvence pretvara u odgovarajuće znakove već pri stvaranju niza, no pri običnom ispisu niza prikazuje ih u izvornom obliku (npr. <code>\n</code>). Da bismo vidjeli kako tekst zaista izgleda, koristimo funkciju <code>writeLines()</code> ili <code>cat()</code>.</p>
+<p>Unicode je standard koji svakom znaku iz gotovo svih svjetskih pisama, kao i brojnim simbolima i emojijima, dodjeljuje jedinstveni kod. U R-u se Unicode znak zapisuje s <code>\u</code> iza kojeg slijede do 4 heksadecimalne znamenke ili s <code>\U</code> iza kojeg slijedi do 8 heksadecimalnih znamenki. Ako iza koda u nizu slijedi slovo ili broj koji bi se mogao pročitati kao dio kôda, kod treba staviti u vitičaste zagrade (npr. <code>\U{1F30D}</code>). U popisima Unicode znakova kodovi se često navode u obliku <code>U+1F30D</code> koji R ne prepoznaje pa oznaku <code>U+</code> treba zamijeniti s <code>\U</code>. Popisi Unicode znakova mogu se pronaći na stranicama <a href="https://unicode.org/emoji/charts/full-emoji-list.html">Unicode Emoji List</a> i <a href="https://unicode-table.com/">Unicode Table</a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ispis niza s Unicode znakom</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="st">"Hello!</span><span class="sc">\n</span><span class="st">\U1F44B"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Hello!
+👋</code></pre>
+</div>
+</div>
+</section>
+<section id="numeričke-vrijednosti-kao-tekstualni-niz" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="numeričke-vrijednosti-kao-tekstualni-niz"><span class="header-section-number">4.2</span> Numeričke vrijednosti kao tekstualni niz</h2>
+<p>Nizovi se često koriste i za izvještavanje o numeričkim rezultatima. Primjerice, neku vrijednost možemo htjeti prikazati kao tekstualni niz s određenim brojem znamenki.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pridruživanje vrijednosti varijabli</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>number <span class="ot">&lt;-</span> <span class="fl">13.652378540037642375</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>number</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 13.65238</code></pre>
+</div>
+</div>
+<p>U R-u postoji nekoliko funkcija za pretvaranje i formatiranje numeričkih vrijednosti u tekstualne nizove. Prva je <code>as.character()</code> koja broj pretvara u niz bez mogućnosti formatiranja. Broj se pritom zapisuje s najviše 15 značajnih znamenki pa se vrijednosti s više znamenki ipak zaokružuju. Druga je <code>format()</code> kojom argumentom <code>digits</code> određujemo broj značajnih znamenki, a ne broj decimalnih mjesta. Treća je <code>formatC()</code> koja daje najveću kontrolu nad zapisom jer uz odgovarajući format ispisuje točno zadani broj decimalnih mjesta.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pretvaranje broja u niz</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as.character</span>(number)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "13.6523785400376"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatiranje s određenim brojem značajnih znamenki</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(number, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "13.7"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Formatiranje s fiksnim brojem decimalnih mjesta</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">formatC</span>(number, <span class="at">digits =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "13.652"</code></pre>
+</div>
+</div>
+<p>Funkcije <code>format()</code> i <code>formatC()</code> mogu broj zapisati u fiksnom ili znanstvenom formatu. U fiksnom formatu broj se zapisuje uobičajeno, s određenim brojem znamenki iza decimalne točke (npr. <code>13.65238</code>). U znanstvenom formatu broj se zapisuje kao umnožak broja s jednom znamenkom ispred decimalne točke i potencije broja 10. Pritom se znak množenja izostavlja, a slovo <em>e</em> znači „puta deset na potenciju” (npr. <code>1.365238e+01</code> znači 1,365238 × 10¹). U funkciji <code>format()</code> format se određuje argumentom <code>scientific</code> kojemu se zadaje vrijednost <code>TRUE</code> ili <code>FALSE</code>. U funkciji <code>formatC()</code> koristi se argument <code>format</code>, kojemu se zadaje <code>"f"</code> za fiksni format, <code>"e"</code> za znanstveni format ili <code>"g"</code>, pri čemu R sam bira kraći od ta dva zapisa. Kod <code>"f"</code> i <code>"e"</code> argument <code>digits</code> označava broj decimalnih mjesta, a kod <code>"g"</code> broj značajnih znamenki.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Znanstveni i fiksni format funkcijom format()</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(number, <span class="at">scientific =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "1.365238e+01"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(number, <span class="at">scientific =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "13.65238"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fiksni, znanstveni i kraći od ta dva formata funkcijom formatC()</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">formatC</span>(number, <span class="at">format =</span> <span class="st">"f"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "13.6524"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">formatC</span>(number, <span class="at">format =</span> <span class="st">"e"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "1.3652e+01"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">formatC</span>(number, <span class="at">format =</span> <span class="st">"g"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "13.65"</code></pre>
+</div>
+</div>
+</section>
+<section id="operacije-na-nizovima" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="operacije-na-nizovima"><span class="header-section-number">4.3</span> Operacije na nizovima</h2>
+<p>Paket <code>stringr</code> sadrži skup funkcija za najčešće operacije s tekstom. Sve njegove funkcije počinju prefiksom <code>str_</code> i kao prvi argument uzimaju niz ili vektor nizova.</p>
+<p>Jedna od osnovnih funkcija paketa je <code>str_c()</code> koja spaja više nizova u jedan niz. Prema zadanim postavkama kao separator koristi prazan niz (<code>sep = ""</code>) što znači da se nizovi spajaju bez ikakvog znaka između njih.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spajanje nizova u jedan niz</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_c</span>(first_part, second_part, third_part, fourth_part)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Voldemort had been raised in a Muggle orphanage.Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them.Hardly any wizards believed in the Deathly Hallows.Was it likely that Voldemort knew about them?"</code></pre>
+</div>
+</div>
+<p>Ovdje je dobro istaknuti da je razmak u R-u znak kao i svaki drugi i da se ne dodaje automatski. Spajanjem varijabli dobili smo jedan niz koji sadrži sve četiri rečenice, ali budući da je separator prazan niz, između njih nema razmaka. Tako svaka rečenica počinje odmah iza točke prethodne, iako bi pravopisno ondje trebao biti razmak. Zato je u argumentu <code>sep</code> poželjno kao separator zadati razmak.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spajanje nizova u jedan niz s razmakom kao separatorom</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_c</span>(</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  first_part, second_part, third_part, fourth_part,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">" "</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Voldemort had been raised in a Muggle orphanage. Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them. Hardly any wizards believed in the Deathly Hallows. Was it likely that Voldemort knew about them?"</code></pre>
+</div>
+</div>
+<p>Sljedeća je funkcija <code>str_length()</code> koja vraća broj znakova u svakom nizu vektora, uključujući razmake i interpunkciju. Vrlo je slična osnovnoj funkciji <code>nchar()</code>, ali za razliku od nje radi i s faktorima, dok <code>nchar()</code> u tom slučaju javlja pogrešku.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj znakova u svakom nizu</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_length</span>(hp_sentences)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  48 112  51  45</code></pre>
+</div>
+</div>
+<p>Funkcija <code>str_sub()</code> izdvaja dio niza na temelju položaja znakova. Argumenti <code>start</code> i <code>end</code> određuju položaj prvog i posljednjeg znaka koji želimo izdvojiti, a oba se znaka uključuju u rezultat.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Izdvajanje znakova od petog do šesnaestog</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_sub</span>(hp_sentences, <span class="at">start =</span> <span class="dv">5</span>, <span class="at">end =</span> <span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "emort had be" "dy could hav" "ly any wizar" "it likely th"</code></pre>
+</div>
+</div>
+<section id="traženje-podudaranja-u-nizovima" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="traženje-podudaranja-u-nizovima"><span class="header-section-number">4.3.1</span> Traženje podudaranja u nizovima</h3>
+<p>Jedna od najkorisnijih mogućnosti paketa <code>stringr</code> je rad s uzorcima. To može biti, primjerice, pronalaženje nizova koji sadrže određeni uzorak, dijeljenje nizova na temelju uzorka ili zamjena dijelova niza koji odgovaraju uzorku. Za pronalaženje podudaranja najčešće se koriste tri funkcije: <code>str_detect()</code>, <code>str_subset()</code> i <code>str_count()</code>. Sve tri traže zadani uzorak, a razlikuju se po rezultatu koji vraćaju.</p>
+<p>Funkcija <code>str_detect()</code> vraća logički vektor s vrijednošću <code>TRUE</code> za svaki niz koji sadrži zadani uzorak i <code>FALSE</code> za svaki niz koji ga ne sadrži. Funkcija <code>str_subset()</code> vraća samo nizove koji sadrže uzorak, a <code>str_count()</code> broj pojavljivanja uzorka u svakom nizu. Dakle, sve se tri funkcije koriste na isti način, a razlikuju se samo po rezultatu. Uzorak se zadaje argumentom <code>pattern</code>. Prema zadanim postavkama <code>stringr</code> uzorak tumači kao regularni izraz u kojem neki znakovi (npr. <code>.</code> ili <code>?</code>) imaju posebno značenje. Ako želimo da se uzorak tumači doslovno, zadajemo ga unutar funkcije <code>fixed()</code>. Pritom valja imati na umu da se razlikuju velika i mala slova. Primjerice, može nas zanimati sadrži li neki niz riječ <em>Voldemort</em>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sadrži li niz uzorak</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_detect</span>(hp_sentences, <span class="at">pattern =</span> <span class="fu">fixed</span>(<span class="st">"Voldemort"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  TRUE FALSE FALSE  TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nizovi koji sadrže uzorak</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_subset</span>(hp_sentences, <span class="at">pattern =</span> <span class="fu">fixed</span>(<span class="st">"Voldemort"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Voldemort had been raised in a Muggle orphanage."
+[2] "Was it likely that Voldemort knew about them?"   </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj pojavljivanja uzorka u svakom nizu</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_count</span>(hp_sentences, <span class="at">pattern =</span> <span class="fu">fixed</span>(<span class="st">"Voldemort"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 0 0 1</code></pre>
+</div>
+</div>
+</section>
+<section id="odvajanje-nizova" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="odvajanje-nizova"><span class="header-section-number">4.3.2</span> Odvajanje nizova</h3>
+<p>Sljedeća funkcija paketa <code>stringr</code>, <code>str_split()</code>, dijeli niz na dijelove prema zadanom uzorku. Uzorak se zadaje argumentom <code>pattern</code> i može biti znak, riječ ili bilo koji drugi niz znakova na mjestu kojeg funkcija dijeli niz.</p>
+<p>Recimo da imamo sljedeći niz:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiranje niza</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>hp_text <span class="ot">&lt;-</span> <span class="st">"Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, </span><span class="sc">\"</span><span class="st">Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?</span><span class="sc">\"</span><span class="st">"</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled niza</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>hp_text</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, \"Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?\""</code></pre>
+</div>
+</div>
+<p>Iz ispisa je vidljivo da je riječ o odlomku od nekoliko rečenica unutar kojih su pojedini dijelovi odijeljeni zarezima. Rečenice završavaju točkom iza koje slijedi razmak, a zarezima također slijedi razmak. Funkcijom <code>str_split()</code> niz možemo podijeliti prema bilo kojem od tih separatora. Budući da točka u regularnim izrazima ima posebno značenje (označava bilo koji znak), uzorak s točkom zadajemo unutar funkcije <code>fixed()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela niza prema uzorku ". "</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_split</span>(</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> hp_text,</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="fu">fixed</span>(<span class="st">". "</span>)</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand"                                                                                                                             
+[2] "Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch"
+[3] "As Mr"                                                                                                                                                                                                                                                
+[4] "Weasley examined the Deluminator for the third or fourth time, Mrs"                                                                                                                                                                                   
+[5] "Weasley said tentatively, \"Harry, dear, everyone's awfully hungry, we didn't like to start without you..."                                                                                                                                           
+[6] "Shall I serve dinner now?\""                                                                                                                                                                                                                          </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela niza prema uzorku ", "</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_split</span>(</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> hp_text,</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">", "</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "Outside in the garden"                                                                                                                                                                                                     
+[2] "over the dinner tables"                                                                                                                                                                                                    
+[3] "the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword"
+[4] "but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time"                                                
+[5] "Mrs. Weasley said tentatively"                                                                                                                                                                                             
+[6] "\"Harry"                                                                                                                                                                                                                   
+[7] "dear"                                                                                                                                                                                                                      
+[8] "everyone's awfully hungry"                                                                                                                                                                                                 
+[9] "we didn't like to start without you.... Shall I serve dinner now?\""                                                                                                                                                       </code></pre>
+</div>
+</div>
+<p>Niz je moguće podijeliti i prema više uzoraka odjednom. Uzorci se tada odvajaju znakom <code>|</code>, koji u regularnim izrazima znači <em>ili</em>. Budući da funkcija <code>fixed()</code> ne podržava taj znak, uzorak zadajemo kao regularni izraz, a posebno značenje točke uklanjamo tako da ispred nje stavimo dvije obrnute kose crte (<code>\\.</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela niza prema više uzoraka</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_split</span>(</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> hp_text,</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">. |, "</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+ [1] "Outside in the garden"                                                                                                                          
+ [2] "over the dinner tables"                                                                                                                         
+ [3] "the three objects Scrimgeour had given them were passed from hand to hand"                                                                      
+ [4] "Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword"
+ [5] "but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch"                                           
+ [6] "As Mr"                                                                                                                                          
+ [7] "Weasley examined the Deluminator for the third or fourth time"                                                                                  
+ [8] "Mrs"                                                                                                                                            
+ [9] "Weasley said tentatively"                                                                                                                       
+[10] "\"Harry"                                                                                                                                        
+[11] "dear"                                                                                                                                           
+[12] "everyone's awfully hungry"                                                                                                                      
+[13] "we didn't like to start without you..."                                                                                                         
+[14] "Shall I serve dinner now?\""                                                                                                                    </code></pre>
+</div>
+</div>
+<p>U svakom od ovih slučajeva funkcija je niz podijelila na više manjih nizova. Sa separatorom <code>". "</code> dobili smo šest nizova. Pritom se vidi da podjela prema točki nije isto što i podjela na rečenice jer je funkcija niz podijelila i iza kratica <em>Mr.</em> i <em>Mrs.</em> pa su one završile u zasebnim dijelovima odvojene od prezimena <em>Weasley</em>. Sa separatorom <code>", "</code> dobili smo 9 nizova, a kad smo uključili oba separatora, čak 14.</p>
+<p>Broj dijelova možemo ograničiti argumentom <code>n</code>. Ako zadamo <code>n = 2</code>, niz će se podijeliti na dva dijela pri prvom pojavljivanju uzorka, a ostatak niza ostat će netaknut u drugom dijelu. U našem primjeru prvi dio bit će prva rečenica, a drugi ostatak odlomka.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela niza na najviše dva dijela</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_split</span>(</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> hp_text,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="fu">fixed</span>(<span class="st">". "</span>),</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">2</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand"                                                                                                                                                                                                                                                                                                                                                 
+[2] "Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, \"Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?\""</code></pre>
+</div>
+</div>
+<p>Važno je napomenuti da funkcija <code>str_split()</code> prema zadanim postavkama vraća listu jer je lista jedina podatkovna struktura čiji elementi mogu biti različite duljine. Ako zadamo <code>n</code> ili znamo da svi nizovi imaju jednak broj dijelova, možemo dobiti jednostavniji rezultat, matricu. To postižemo tako da argumentu <code>simplify</code> zadamo vrijednost <code>TRUE</code>. Tada svaki redak matrice odgovara jednom ulaznom nizu, a svaki stupac jednom dijelu niza. Matrica ima onoliko stupaca koliko dijelova ima najdulje podijeljeni niz, a nedostajuća mjesta u ostalim retcima popunjavaju se praznim nizovima. Budući da ovdje dijelimo samo jedan niz, dobit ćemo matricu s jednim retkom i 14 stupaca.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela niza prema uzorcima i prikaz rezultata kao matrice</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_split</span>(</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> hp_text,</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">. |, "</span>,</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">simplify =</span> <span class="cn">TRUE</span></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1]                    [,2]                    
+[1,] "Outside in the garden" "over the dinner tables"
+     [,3]                                                                       
+[1,] "the three objects Scrimgeour had given them were passed from hand to hand"
+     [,4]                                                                                                                                             
+[1,] "Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword"
+     [,5]                                                                                                  
+[1,] "but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch"
+     [,6]    [,7]                                                           
+[1,] "As Mr" "Weasley examined the Deluminator for the third or fourth time"
+     [,8]  [,9]                       [,10]     [,11] 
+[1,] "Mrs" "Weasley said tentatively" "\"Harry" "dear"
+     [,12]                       [,13]                                   
+[1,] "everyone's awfully hungry" "we didn't like to start without you..."
+     [,14]                        
+[1,] "Shall I serve dinner now?\""</code></pre>
+</div>
+</div>
+<p>Za obradu rezultata u obliku liste koriste se funkcije <code>lapply()</code> i <code>sapply()</code>. Funkcija <code>lapply()</code> kao prvi argument uzima listu, a kao drugi funkciju koju primjenjuje na svaki element liste te vraća listu. Funkcija <code>sapply()</code> radi isto, ali rezultat pojednostavljuje u vektor ili matricu kad god je to moguće. Primjerice, funkcijom <code>lapply()</code> možemo izračunati koliko dijelova ima svaki podijeljeni niz.</p>
+</section>
+<section id="zamjena-dijelova-niza" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="zamjena-dijelova-niza"><span class="header-section-number">4.3.3</span> Zamjena dijelova niza</h3>
+<p>Sljedeće su važne funkcije <code>str_replace()</code> i <code>str_replace_all()</code> koje dijelove niza koji odgovaraju zadanom uzorku zamjenjuju drugim nizom. Razlika je u tome što <code>str_replace()</code> zamjenjuje samo prvo pojavljivanje uzorka, a <code>str_replace_all()</code> svako pojavljivanje. Dva su najvažnija argumenta tih funkcija <code>pattern</code>, koji određuje uzorak koji želimo zamijeniti, i <code>replacement</code>, koji određuje niz kojim ga zamjenjujemo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zamjena prvog pojavljivanja uzorka</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_replace</span>(</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> hp_text,</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">. |, "</span>,</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">replacement =</span> <span class="st">" &amp; "</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Outside in the garden &amp; over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, \"Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?\""</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zamjena svih pojavljivanja uzorka</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_replace_all</span>(</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> hp_text,</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">. |, "</span>,</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">replacement =</span> <span class="st">" &amp; "</span></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Outside in the garden &amp; over the dinner tables &amp; the three objects Scrimgeour had given them were passed from hand to hand &amp; Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword &amp; but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch &amp; As Mr &amp; Weasley examined the Deluminator for the third or fourth time &amp; Mrs &amp; Weasley said tentatively &amp; \"Harry &amp; dear &amp; everyone's awfully hungry &amp; we didn't like to start without you... &amp; Shall I serve dinner now?\""</code></pre>
+</div>
+</div>
+</section>
+<section id="stvaranje-nizova-s-podacima" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="stvaranje-nizova-s-podacima"><span class="header-section-number">4.3.4</span> Stvaranje nizova s podacima</h3>
+<p>Još je jedna važna operacija u radu s tekstualnim nizovima stvaranje novih nizova od podataka u R-u. Jedna od funkcija za to je <code>paste()</code> iz osnovnog R-a koja spaja dva ili više niza. Ipak, za složenija spajanja praktičnije je koristiti funkciju <code>glue()</code> iz paketa <code>glue</code>. Taj se paket instalira zajedno s <code>tidyverse</code>-om, ali se ne učitava automatski naredbom <code>library(tidyverse)</code> pa ga treba zasebno učitati naredbom <code>library(glue)</code>.</p>
+<p>Funkcija <code>glue()</code> praktičnija je jer se njome lakše stvaraju nizovi kada treba spojiti mnogo varijabli i teksta. Niz se zapisuje unutar navodnika, a sve što stavimo unutar vitičastih zagrada (<code>{}</code>) funkcija tumači kao R kod, izvršava ga i rezultat umeće u niz. Unutar vitičastih zagrada možemo, dakle, navesti gotovo sve što se može pretvoriti u niz, varijablu, niz ili izraz, primjerice računsku operaciju, čiji će se rezultat izračunati i pretvoriti u niz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stvaranje niza od varijabli i izraza</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>first_name <span class="ot">&lt;-</span> <span class="st">"Harry"</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>last_name <span class="ot">&lt;-</span> <span class="st">"Potter"</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glue</span>(<span class="st">"{first_name} {last_name} started Hogwarts at the age of {1991 - 1980}."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Harry Potter started Hogwarts at the age of 11.</code></pre>
+</div>
+</div>
+<p>Funkcija <code>glue()</code> omogućuje i korištenje privremenih varijabli. To su varijable koje definiramo samo unutar poziva funkcije jer nam nisu potrebne nigdje drugdje, a čime se ne spremaju u radno okruženje.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stvaranje niza s privremenim varijablama</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glue</span>(</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"student = Harry Potter,</span><span class="sc">\n</span><span class="st">house = {house};</span><span class="sc">\n</span><span class="st">wand = {wand},</span><span class="sc">\n</span><span class="st">pet = {pet};</span><span class="sc">\n</span><span class="st">patronus = {patronus};</span><span class="sc">\n</span><span class="st">first_appearance = {first_appearance}"</span>,</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">house =</span> <span class="st">"Gryffindor"</span>,</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">wand =</span> <span class="st">"holly and phoenix feather"</span>,</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">pet =</span> <span class="st">"Hedwig"</span>,</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">patronus =</span> <span class="st">"stag"</span>,</span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">first_appearance =</span> <span class="st">"Harry Potter and the Philosopher's Stone"</span></span>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>student = Harry Potter,
+house = Gryffindor;
+wand = holly and phoenix feather,
+pet = Hedwig;
+patronus = stag;
+first_appearance = Harry Potter and the Philosopher's Stone</code></pre>
+</div>
+</div>
+<p>Funkcija <code>glue()</code> može se koristiti i unutar funkcije <code>mutate()</code> iz paketa <code>dplyr</code> za stvaranje novog stupca.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stvaranje novog stupca s nizom</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>name <span class="ot">&lt;-</span> <span class="st">"Harry Potter"</span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(name)</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">new_column =</span> <span class="fu">glue</span>(<span class="st">"Hi, {name}"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  name         new_column      
+  &lt;chr&gt;        &lt;glue&gt;          
+1 Harry Potter Hi, Harry Potter</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stvaranje tablice s podacima</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>hp_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">segment =</span> <span class="fu">c</span>(<span class="st">"house"</span>, <span class="st">"wand"</span>, <span class="st">"pet"</span>, <span class="st">"patronus"</span>, <span class="st">"first appearance"</span>),</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">information =</span> <span class="fu">c</span>(<span class="st">"Gryffindor"</span>, <span class="st">"holly and phoenix feather"</span>, <span class="st">"Hedwig"</span>, <span class="st">"stag"</span>, <span class="st">"Harry Potter and the Philosopher's Stone"</span>)</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>hp_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  segment          information                             
+  &lt;chr&gt;            &lt;chr&gt;                                   
+1 house            Gryffindor                              
+2 wand             holly and phoenix feather               
+3 pet              Hedwig                                  
+4 patronus         stag                                    
+5 first appearance Harry Potter and the Philosopher's Stone</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stvaranje rečenice za svaki redak tablice</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>hp_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">sentence =</span> <span class="fu">glue</span>(<span class="st">"Harry's {segment} is {information}."</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  segment          information                              sentence            
+  &lt;chr&gt;            &lt;chr&gt;                                    &lt;glue&gt;              
+1 house            Gryffindor                               Harry's house is Gr…
+2 wand             holly and phoenix feather                Harry's wand is hol…
+3 pet              Hedwig                                   Harry's pet is Hedw…
+4 patronus         stag                                     Harry's patronus is…
+5 first appearance Harry Potter and the Philosopher's Stone Harry's first appea…</code></pre>
+</div>
+</div>
+<p>Ponekad želimo spojiti sve elemente vektora u jedan niz. To je moguće funkcijom <code>glue_collapse()</code>, koja se može koristiti sa sljedećim argumentima:</p>
+<ul>
+<li><p><code>sep</code> - niz koji se umeće između elemenata vektora,</p></li>
+<li><p><code>last</code> - poseban separator između posljednja dva elementa vektora,</p></li>
+<li><p><code>width</code> - najveća duljina rezultata; dulji rezultat skraćuje se i završava s <code>...</code>.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spajanje elemenata vektora u jedan niz</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>characters_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Harry Potter"</span>, <span class="st">"Hermione Granger"</span>, <span class="st">"Ron Weasley"</span>, <span class="st">"Albus Dumbledore"</span>, <span class="st">"Severus Snape"</span>)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glue_collapse</span>(</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>  characters_names,</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">", "</span>,</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">last =</span> <span class="st">" and "</span>,</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">10</span></span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Harry P...</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Umetanje spojenog vektora u niz</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glue</span>(</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"The main characters are: {characters}."</span>,</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">characters =</span> <span class="fu">glue_collapse</span>(</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>    characters_names,</span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">", "</span>,</span>
+<span id="cb81-7"><a href="#cb81-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">last =</span> <span class="st">" and "</span></span>
+<span id="cb81-8"><a href="#cb81-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb81-9"><a href="#cb81-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The main characters are: Harry Potter, Hermione Granger, Ron Weasley, Albus Dumbledore and Severus Snape.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="udaljenost-među-nizovima" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="udaljenost-među-nizovima"><span class="header-section-number">4.4</span> Udaljenost među nizovima</h2>
+<p>Posljednji važan dio rada s nizovima je udaljenost među nizovima, odnosno broj koji pokazuje koliko se dva niza međusobno razlikuju. Primjerice, može nas zanimati kolika je udaljenost između riječi <em>Snape</em> i <em>snake</em>. Te se riječi razlikuju u samo jednom znaku, a to je slovo <em>p</em> u prezimenu <em>Snape</em> koje je zamijenjeno slovom <em>k</em> u riječi <em>snake</em>. Budući da se razlikuju u jednom znaku, njihova je udaljenost 1. U drugom primjeru udaljenost između imena <em>Sirius</em> i riječi <em>serious</em> iznosi 2. Obje riječi počinju slovom <em>s</em>, sadrže <em>ri</em> i završavaju s <em>us</em>, a razlikuju se u tome što riječ <em>serious</em> umjesto prvog <em>i</em> ima <em>e</em> te između <em>i</em> i <em>u</em> ima dodatno slovo <em>o</em>.</p>
+<p>Takva mjera može biti korisna u mnogim situacijama. Vjerojatno je najpoznatija primjena automatsko ispravljanje pojmova upisanih u tražilicu. Kada pogrešno upišemo pojam, tražilica nas pita jesmo li mislili na neki drugi, ispravljeni pojam. Jedan od načina da se to postigne jest izračunati udaljenost između upisanog niza i poznatih pojmova te ponuditi onaj koji je najbliži. Druga je česta primjena rad s korisničkim unosom, primjerice podacima koje različite osobe upisuju u obrasce, pri čemu se isti podatak često upiše na više načina ili s pogreškama.</p>
+<p>Najčešće korišten paket za izračun udaljenosti među nizovima u R-u je <code>stringdist</code> koji sadrži istoimenu funkciju. Funkcija kao prva dva argumenta uzima nizove koje uspoređujemo, a argumentom <code>method</code> zadajemo vrstu udaljenosti koju želimo izračunati.</p>
+<p>Jedna od najčešće korištenih mjera je <strong>Levenshteinova udaljenost</strong> koja broji najmanji broj izmjena potrebnih da se jedan niz pretvori u drugi. Izmjena može biti umetanje, brisanje ili zamjena jednog znaka, a svaka izmjena povećava udaljenost za jedan. Upravo je tu mjeru ilustrirao uvodni primjer. Da bi se ime <em>Sirius</em> pretvorilo u riječ <em>serious</em>, potrebne su dvije izmjene, zamjena prvog slova <em>i</em> slovom <em>e</em> i umetanje slova <em>o</em> između <em>i</em> i <em>u</em>. Za izračun Levenshteinove udaljenosti kao metodu zadajemo <code>lv</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Levenshteinova udaljenost</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stringdist</span>(</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Sirius"</span>,</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Serious"</span>,</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"lv"</span></span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>Jedna od alternativa Levenshteinovoj udaljenosti je <strong>Damerau-Levenshteinova udaljenost</strong>. Od nje se razlikuje po tome što kao jednu izmjenu broji i zamjenu mjesta dvaju susjednih znakova (transpoziciju). Primjerice, u unosu <em>Hermoine Granger</em> zamijenjena su mjesta slovima <em>i</em> i <em>o</em>, što je vrlo česta pogreška u pisanju tog imena. Prema Levenshteinovoj udaljenosti za ispravak su potrebne dvije izmjene, zamjena slova <em>o</em> slovom <em>i</em> i zamjena slova <em>i</em> slovom <em>o</em>, a prema Damerau-Levenshteinovoj samo jedna, zamjena mjesta tih dvaju slova. Za izračun Damerau-Levenshteinove udaljenosti kao metodu zadajemo <code>dl</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Levenshteinova udaljenost</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stringdist</span>(</span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hermione Granger"</span>,</span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hermoine Granger"</span>,</span>
+<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"lv"</span></span>
+<span id="cb85-6"><a href="#cb85-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Damerau-Levenshteinova udaljenost</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stringdist</span>(</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hermione Granger"</span>,</span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hermoine Granger"</span>,</span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"dl"</span></span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<p>Još jedna mjera je <strong>optimalno poravnanje nizova</strong> (engl. <em>optimal string alignment</em>) koja se zadaje metodom <code>osa</code>. Ona je slična Damerau-Levenshteinovoj udaljenosti, ali s ograničenjem da se svaki dio niza smije izmijeniti najviše jednom. Primjerice, dva znaka kojima smo zamijenili mjesta ne smiju se nakon toga dodatno mijenjati. Ovo je ujedno zadana metoda funkcije <code>stringdist()</code> pa se koristi ako argument <code>method</code> ne zadamo.</p>
+<p>Drugačiji pristup od Levenshteinove udaljenosti imaju metode temeljene na <strong>q-gramima</strong>. One nizove ne uspoređuju znak po znak, nego ih dijele na podnizove fiksne duljine <em>q</em> (q-grame) čija se duljina u funkciji <code>stringdist()</code> zadaje argumentom <code>q</code>. Postupak uključuje podjelu oba niza na q-grame, brojanje pojavljivanja svakog q-grama u svakom nizu te izračun udaljenosti kao zbroja razlika u tim brojevima. Za izračun kao metodu zadajemo <code>qgram</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Udaljenost temeljena na q-gramima</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stringdist</span>(</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hogwarts"</span>,</span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Hogwards"</span>,</span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"qgram"</span>,</span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">q =</span> <span class="dv">2</span></span>
+<span id="cb89-7"><a href="#cb89-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>U ovom je slučaju rezultat 4. Podijelimo li nizove na dijelove od dva znaka (bigrame), dobivamo <em>Ho, og, gw, wa, ar, rt, ts</em> i <em>Ho, og, gw, wa, ar, rd, ds</em>. Bigrami <em>rt</em> i <em>ts</em> pojavljuju se samo u prvom nizu, a <em>rd</em> i <em>ds</em> samo u drugom, pa se nizovi razlikuju u četiri bigrama. Primijetimo da bi Levenshteinova udaljenost za iste nizove iznosila samo 1 jer se razlikuju u jednom slovu. To pokazuje da različite metode mogu dati vrlo različite rezultate, ovisno o tome što mjere.</p>
+<p>Na q-gramima se temelje i metode <code>jaccard</code> i <code>cosine</code>. Jaccardova udaljenost računa se kao udio q-grama koji se pojavljuju samo u jednom od nizova u ukupnom broju različitih q-grama obaju nizova. Kosinusna udaljenost q-grame svakog niza prikazuje kao vektor u višedimenzionalnom prostoru i računa se kao 1 umanjeno za kosinus kuta između tih dvaju vektora.</p>
+<p>Paket <code>stringdist</code> sadrži i funkciju <code>amatch()</code>, koja za zadani niz pronalazi najbliži niz u vektoru i vraća njegov položaj. To je korisno kada u popisu želimo pronaći unos na koji je osoba mislila kada je upisala niz s pogreškom. Primjerice, možemo saznati na kojeg je lika iz vektora <code>characters_names</code> mislila osoba koja je upisala <em>Albus Dumbeldore</em>. Argumentom <code>maxDist</code> određujemo najveću dopuštenu udaljenost, a ako nijedan niz u vektoru nije dovoljno blizu, onda funkcija vraća <code>NA</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pronalaženje najbližeg niza u vektoru</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="fu">amatch</span>(</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="st">"Albus Dumbeldore"</span>,</span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">table =</span> characters_names,</span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxDist =</span> <span class="dv">5</span>,</span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"lv"</span></span>
+<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>Rezultat je 4 jer je četvrti element vektora, <em>Albus Dumbledore</em>, od upisanog niza udaljen samo dvije izmjene, dok su svi ostali elementi udaljeni mnogo više od dopuštenih pet. Kad bi više elemenata bilo jednako blizu, funkcija bi vratila položaj prvog od njih.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -744,13 +1384,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./2_0_POČETAK U RADU S TEKSTOM.html" class="pagination-link" aria-label="2. Početak u radu s tekstom">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">2. Početak u radu s tekstom</span>
+      <a href="./2_0_POČETAK U RADU S TEKSTOM.html" class="pagination-link" aria-label="POČETAK U RADU S TEKSTOM">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">POČETAK U RADU S TEKSTOM</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./2_2_učitavanje_i_oblikovanje_podataka.html" class="pagination-link" aria-label="Učitavanje i oblikovanje podataka">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./2_2_regularni_izrazi.html" class="pagination-link" aria-label="Regularni izrazi">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regularni izrazi</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

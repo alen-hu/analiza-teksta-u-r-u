@@ -1,0 +1,896 @@
+---
+title: "Regularni izrazi"
+description: "..."
+number-sections: true
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+---
+
+**Regularni izrazi** (*regular expression*) su jezik koji se koristi za opisivanje uzoraka u nizovima. Riječ je zapravo o nizovima znakova koji imaju posebno značenje. Koriste se za pretraživanje, izdvajanje i manipuliranje nizovima znakova pri čemu, umjesto da ručno provjeravamo znak po znak, regularni izraz omogućuje da jednim uzorkom precizno definiramo što želimo pronaći, primjerice broj, slovo, određenu riječ, skupinu znakova ili složeniji obrazac. U praksi, regularni izrazi se koriste, primjerice, za provjeru podudaranja (npr. počinje li tekst brojem), izdvajanje dijelova teksta (npr. e-mail adrese, brojeva, datuma), čišćenje teksta (npr. uklanjanje višestrukih razmaka, nepotrebnih simbola), pripremu podataka za tekstualnu analizu i slično.
+
+Iako postoje i neki jednostavniji, paket `stringr` kao nastavak na rad s tekstualnim nizovima, omogućuje i rad s regularnim izrazima dosljedno koristeći slične funkcije i iste nazive argumenata te vraća rezultate u predvidljivim formatima. Možda i najvažnije, `stringr` koristi konciznu sintaksu za detektiranje regularnih izraza u nizovima. Važno je zato znati pojedine znakovi u regularnim izrazima koji u tekstualnim nizovima imaju posebno značenje.
+
+Jedna od najjednostavnijih funkcija `stringr` paketa je `str_match()` koja iz nekog niza izdvaja prvo definirano podudaranje u nizu. Mnogo korisnija, funkcija `str_match_all()` izdvaja sva definiranja podudaranja iz niza.
+
+| Znakovi | Značenje | Primjer |
+|-----------------|----------|-------------------------|
+| `.` | bilo što (broj, slovo, razmak) | `str_match_all("Stan.Marsh_0 8", ".")` > "S", "t", "a", "n", ".", "M", "a", "r", "s", "h", "_", "0", " ", "8" |
+| `^` | početak niza | `str_match_all("Stan.Marsh_0 8", "^.")` > "S" |
+| `$` | kraj niza | `str_match_all("Stan.Marsh_0 8", ".$")` > "8" |
+| `\\.` | točka | `str_match_all("Stan.Marsh_0 8", "\\.")` > "." |
+| `\\d` | brojevi | `str_match_all("Stan.Marsh_0 8", "\\d")` > "0", "8" |
+| `\\D` | sve osim brojeva | `str_match_all("Stan.Marsh_0 8", "\\D")` > "S", "t", "a", "n", " ", "M", "a", "r", "s", "h", "_" |
+| `\\w` | slova, brojevi i doljnja crta | `str_match_all("Stan.Marsh_0 8", "\\w")` > "S", "t", "a", "n", "M", "a", "r", "s", "h", "_" "0", "8" |
+| `\\W` | sve osim slova, brojeva i doljnjih crta | `str_match_all("Stan.Marsh_0 8", "\\W")` > "." |
+| `[A-Za-z]` | velika i mala slova | `str_match_all("Stan.Marsh_0 8", "[A-Za-z]")` > "S", "t", "a", "n", "M", "a", "r", "s", "h" |
+| `[aeiou]` | mala slova samoglasnika | `str_match_all("Stan.Marsh_0 8", "[aeiou]")` > "a", "a" |
+| `\\s` | `" "`, razmak ili prijelom reda | `str_match_all("Stan.Marsh_0 8", "\\s")` > " " |
+| `\\S` | sve osim `" "`, razmaka ili prijeloma reda | `str_match_all("Stan.Marsh_0 8", "\\S")` > "S", "t", "a", "n", ".", "M", "a", "r", "s", "h", "_", "0", "8" |
+
+Osim ovih, postoje još neki znakovi korisni za formiranje znakovlja za prepoznavanje regularnih izraza. Prvi takvi znakovi su znakovi ponavljanja koji se koriste za kontrolu koliko se puta prethodni element smije ili mora ponoviti. Prva je opcija definiranje ponavljanja vitičastim zagradama - `{}` pri čemu:
+
+- zagrada s jednim brojem (npr. `{2}`) znači da se element koji joj prethodi mora pojaviti točno toliko puta,
+
+- zagrada sa dva broja odvojena zarezom (npr. `{2,4}`) dopušta minimalan i maksimalan broj ponavljanja,
+
+- zagrada s jednim brojem iza kojeg dolazi samo zarez (npr. `{2,}`) znači da postoji donja granica bez gornje granice.
+
+Osim ova dva, još se dva znaka koriste kao znakovi ponavljanja, no bez određenih broja pojavljivanja. Znak plus iza elementa označava da se element ponavlja jednom ili više puta (to je kraća verzija od `{1,}`). Drugi znak je zvjezdica koja je skraćeno od `{0,}`, a koja označava nijedno, jedno ili više ponavljanja. Ključno je razumijeti razliku između ova dva znaka. Kod znaka plus izraz kojem je pridružen mora se pojaviti barem jednom da bi se regularni niz smatrao uspješnim, a ako tog elementa uopće nema, uzorak se ne podudara s nizom. S druge strane, znak zvjezdice označava da je pojavljivanje potpuno neobavezno. Primjerice, izraz `[A-Za-z]+` traži niz koji sadrži barem jedno slovo, a ako u tekstu nema slova, ne dobiva se nikakav rezultat. Kada slova postoje, regularni će ih izraz povezati u najduži mogući uzastopni niz. S druge strane, izraz `[A-Za-z]*` je zadovoljen čak i kada u nizu nema nijednog slova. Zbog toga regularni izraz sa zvjezdicom može „uspjeti” i na mjestima gdje zapravo nema onoga što intuitivno tražimo. U praktičnom radu to često rezultira hvatanjem praznih nizova.
+
+Korištenjem navedenih znakova možemo izvlačiti iz određenog teksta regularne izraze, odnosno skupove nizova koji odgovaraju nekom uzorku. U nastavku ćemo primijeniti ove znakove na tekst pod varijablom `intro_to_sp`.
+
+```{r}
+#| include: false
+part_1 <- "The animated series South Park first aired on August 13, 1997, on the Comedy Central television network. The show was created by Trey Parker and Matt Stone, two authors who met in the early 1990s while studying at the University of Colorado in Boulder. Their collaboration began with the short animated film The Spirit of Christmas, which is widely considered the direct predecessor of South Park."
+
+part_2 <- "Trey Parker and Matt Stone were both born in 1969, but in different places. Parker was born in Conifer, Colorado, while Stone was born in Houston, Texas. This combination of local Colorado influence and a broader American cultural background strongly shaped the tone of the series. In multiple interviews, the creators have stated that they wanted to make an animated show that could openly comment on society, politics, and the media, regardless of the audience’s age."
+
+part_3 <- "The story is set in the fictional town of South Park, located in the state of Colorado. Although the town itself is not real, it is inspired by real places, streets, and small communities in the region. Streets such as South Park Street, Main Street, and Kenny Street appear repeatedly, and addresses like 200 South Park Street or 42 Kenny Street are mentioned more than once, sometimes with slight variations."
+
+part_4 <- 'South Park has been on television for more than 25 years, meaning it has aired continuously from 1997 to the present day. During this time, the show has produced over 300 episodes across more than 25 seasons. In promotional materials, this is sometimes written in capital letters as OVER 300 EPISODES, while official descriptions often use the lowercase version “over 300 episodes.”'
+
+part_5 <- "The series is well known for its unusually fast production process, with some episodes being completed just days before they are broadcast. This approach allows the creators to react to current events almost in real time. As a result, one episode might reference an event from 2023, while another might return to 1997 as the year when everything began."
+
+part_6 <- 'In the end, South Park is not just an animated TV show but a long-running cultural project. As it is often stated at the end of descriptions:
+"This is South Park."'
+
+part_7 <- 'And then, on the next line:
+"THIS IS SOUTH PARK."'
+
+intro_to_sp <- c(part_1, part_2, part_3, part_4, part_5, part_6, part_7)
+```
+
+```{r}
+# Pregled teksta
+intro_to_sp
+```
+
+```{r}
+# Hvatanje prvih riječi svakog niza
+intro_to_sp |>
+  str_match_all("^[^\\s]+") |>
+  unlist()
+```
+
+- `^` - početak niza
+
+- `[^\\s]+` - cjelina niza:
+
+  - `\\s` - bilo koji razmak
+
+  - `[^\\s]` - bilo koji znak koji nije razmak
+
+  - `+` - jedan ili više puta
+
+Regularni izraz zajedno znači: "na početku svakog niza uzmi prvi neprekinuti niz znakova sve dok se ne pojavi razmak"
+
+```{r}
+# Hvatanje prvih riječi svakog niza
+intro_to_sp |>
+  str_match_all("[^\\s]+$") |>
+  unlist()
+```
+- `$` - kraj niza
+
+- `[^\\s]+` - cjelina niza - "uzmi jedan ili više uzastopnih znakova koji nisu razmak"
+
+Regularni izraz zajedno znači: "uzmi posljednji neprekinuti niz znakova koji ne sadrži razmake i koji se nalazi na samom kraju niza"
+
+```{r}
+# Hvatanje godine s točnim formatom
+intro_to_sp |>
+  str_match_all("\\d{4}") |>
+  unlist()
+```
+
+- `\\d` - broj
+
+- `{4}` - točno četiri ponavljanja
+
+```{r}
+# Hvatanje punog datuma
+intro_to_sp |>
+  str_match_all("[A-Z][a-z]+ \\d{1,2}, \\d{4}") |>
+  unlist()
+```
+
+- `[A-Z]` -  prvo slovo veliko
+
+- `[a-z]+` - nastavak riječi
+
+- `\\d{1,2}` - broj koji ima jednu ili dvije znamenke
+
+- `\\d{4}` - broj koji ima četiri znamenke
+
+```{r}
+# Hvatanje imena i prezimena autora
+intro_to_sp |>
+  str_match_all("Trey Parker") |>
+  unlist()
+intro_to_sp |>
+  str_match_all("Matt Stone") |>
+  unlist()
+```
+
+- regularni izraz je tekstualni niz koji se može pojaviti samo u ovom obliku
+
+```{r}
+# Hvatanje imena ulica
+intro_to_sp |>
+  str_match_all("[A-Z][a-z]+ Street") |>
+  unlist()
+```
+
+```{r}
+# Hvatanje izraza pisanih isključivo velikim slovima
+intro_to_sp |>
+  str_match_all("[A-Z]{3,}") |>
+  unlist()
+```
+
+```{r}
+# Hvatanje citata s navodnicima
+intro_to_sp |>
+  str_match_all("\"[^\"]+\"") |>
+  unlist()
+```
+
+```{r}
+# Hvatanje raspona “more than X years”
+intro_to_sp |>
+  str_match_all("more than \\d+ years") |>
+  unlist()
+```
+
+```{r}
+first_episode_cast <- c("Stan Marsh", "Kyle Broflovski", "Eric Cartman", "Kenny McCormick", "Ike Broflovski", "Chef", "Ms. Crabtree", "Bill Denkins", "Officer Barbrady", "Mr. Garrison", "Mr. Hat", "Train conductor", "A kid", "Jason White", "Wendy Testaburger", "Liane Cartman", "News reporter", "Mr. Kitty", "Carl the Visitor", "Blonde woman", "Visitors", "Cows")
+```
+
+```{r}
+# Pronalaženje nizova koji počinju s "Mr."
+str_match(
+  string = first_episode_cast,
+  pattern = "^Mr."
+)
+
+# Pronalaženje nizova koji imaju točku
+str_match(
+  string = first_episode_cast,
+  pattern = "\\."
+)
+```
+
+Osim `str_match()` za pronalaženje podudaranja koristi se i funkcija `str_view()` koja služi za vizualizaciju podudaranja između regularnog izraza i elemenata u nizovima, odnosno pomaže jasno vidjeti gdje i kako se uzorak podudara s tekstom
+
+```{r}
+# Pronalaženje nizova koji završavaju sa "ski"
+str_view(
+  string = first_episode_cast,
+  pattern = "ski$"
+)
+```
+
+```{r}
+# Navedi sve nizove koji završavaju razmakom i znamenkom
+str_detect(
+  string = first_episode_cast,
+  pattern = "\\s\\d$"
+)
+
+# Navedi sve nizove koji sadrže "Grey" ili "Gray"
+str_detect(
+  string = first_episode_cast,
+  pattern = "Gr[ae]y"
+)
+
+# Navedite sve nizove s neobičnim likovima (bez riječi ili razmaka)
+str_detect(
+  string = first_episode_cast,
+  pattern = "[^\\w\\s]"
+)
+
+# Ovo navodi sve nizove s dvije ili više znamenki zaredom
+str_detect(
+  string = first_episode_cast,
+  pattern = "\\d{2,}"
+)
+
+# Navedite samo prve riječi svakog niza
+str_match(
+  string = first_episode_cast,
+  pattern = "^\\w+"
+)
+
+# Spoji sve što dolazi prije riječi "Knight"
+str_match(
+  string = first_episode_cast,
+  pattern = ".*Knight"
+)
+```
+
+Posljednja dva posebna znaka koja se koriste u regularnim izrazima je operator cijevi koji služi kao uvjet "ili" i upitnik koji može učiniti stvari opcionalnima.
+
+```{r}
+lines <- c(
+  "Karate Kid 2, Distributor: Columbia, 58 Screens",
+  "Finding Nemo, Distributors: Pixar and Disney, 10 Screens",
+  "Finding Harmony, Distributor: Unknown, 1 Screen",
+  "Finding Dory, Distributor: Pixar and Disney, 8 Screens"
+)
+```
+
+Recimo da nas zanimaju distributori filmova, primjerice, Columbia i Pixar. Možemo ih pretraživati upisivanjem Columbia "pipe" Pixar.
+
+```{r}
+str_view(
+  lines,
+  "Columbia|Pixar"
+)
+```
+
+Riječ distributer u podacima ponekad se piše u jednini, a ponekad u množini. S operatorom pipe bismo naravno mogli reći da bismo željeli uskladiti obje verzije riječi: "distributer" ili "distributors", ali u ovom slučaju, zapravo je samo "s" na kraju riječi ono što čini razliku. Regularni izrazi nam također omogućuju da uskladimo dvije verzije riječi tako da "s" na kraju bude opcionalan s upitnikom. Ovo funkcionira kao što regularni izraz tretira sva slova našeg uzorka pojedinačno, pa će se upitnik primijeniti samo na posljednji znak, "s".
+
+```{r}
+str_view(
+  lines,
+  "Distributors?"
+)
+```
+
+Kako bismo razumjeli drugu funkcionalnost upitnika, prvo moramo pogledati još jedan važan koncept u regularnim izrazima - prema zadanim postavkama, regularni izrazi pokušavaju pronaći podudaranje s maksimalnim brojem znakova. Budući da se broj tri pojavljuje dvaput u naslovu filma, podudarat će se sa svime do posljednjeg koji može pronaći.
+
+```{r}
+str_view(
+  "Toy Story 3 In Disney Digital 3D",
+  ".*3"
+)
+```
+
+Ipak, ako zvjezdici dodamo upitnik, naš uzorak neće odgovarati maksimalnom, već minimalnom broju znakova. Tada će odgovarati samo svemu ispred prvog pojavljivanja broja 3.
+
+```{r}
+str_view(
+  "Toy Story 3 In Disney Digital 3D",
+  ".*?3"
+)
+```
+
+```{r}
+# Dodajte tri opcije: Spojite Nema, Harmonyja ili Doryja
+str_view(lines, pattern = "Finding Nemo|Harmony|Dory")
+
+# Stavite tri opcije u zagrade i usporedite rezultate
+str_view(lines, pattern = "Finding (Nemo|Harmony|Dory)")
+
+# Koristite gornji uzorak koji odgovara nazivima cijelih filmova
+str_match(lines, pattern = "Finding (Nemo|Harmony|Dory)")
+```
+
+```{r}
+# Uskladite i Screen i Screens tako da zadnje "s" bude opcionalno
+str_match(lines, pattern = "Screens?")
+
+# Usporedi slučajni broj proizvoljnih znakova, nakon čega slijedi zarez
+str_match(lines, pattern = ".*,")
+
+# Uskladi isti uzorak nakon kojeg slijedi zarez, ali na "lijeni" način
+str_match(lines, pattern = ".*?,")
+```
+
+Ovi su prethodno navedeni primjeri apstraktni jer ne prikazuju neke smislene nizove, nego samo znakove. Regularne je izraze lakše shvatiti s konkretnijim izrazima. `rebus` paket nudi neke prečace koji pojednostavljuju konstruiranje uzoraka regularnih izraza. Primjeri takvih prečaca su već spomenuti `START` i `END` koji se koriste za određivanje regularnih izraza koji odgovaraju početku i kraju niza. Ta se dva prečaca nazivaju i sidra (*anchors*). Ako sidra upišemo u R, onda ćemo dobiti specifične izlaze.
+
+```{r}
+# Sidra
+START
+END
+```
+
+Kod `START`-a je izlaz `<regex> ^`. `<regex>` označava da je ovo poseban objekt regularnog izraza i ima vrijednost `^`, a znak `^` koristi se za označavanje početka niza. Kod `END`-a se pojavljuje vrijednost `$`, znak koji se koristi za definiranje uzoraka koji se moraju nalaziti na kraju niza. Operator `%R%` omogućuje sastavljanje regularnih izraza od jednostavnih dijelova.
+
+Na primjeru vektora `characters`, možemo, primjerice, odrediti prečacem `START` nizove u vektoru koji počinju sa *Mr.*.
+
+```{r}
+# Korištenje `START`-a na vektoru
+str_view(
+  string = first_episode_cast,
+  pattern = START %R% "S",
+)
+```
+
+Ispis koji nam `rebus` funkcija daje su nizovi u kojima se pojavljuje *Th* na početku i redni broj niza u vektoru.
+
+Druga opcija je određivanje nizova koji imaju specifičan završetak, primjerice, *mother*.
+
+```{r}
+# Korištenje `END`-a na vektoru
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = "es." %R% END
+)
+```
+
+Konačno, START i END možemo zajedno koristiti kako bismo dobili ispis nizova koji se sastoje od specifičnih izraza.
+
+```{r}
+# Korištenje `START`-a i `END`-a na vektoru
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = START %R% "." %R% END
+)
+```
+
+Još je jedan prečac `ANY_CHAR` koji se koristi kada nije bitno da se neki znak nalazi na određenom mjestu i kada samo želimo potvrditi da postoji neki znak. Dakle, `ANY_CHAR` ispisuje nizove koji imaju neki znak uopće i znak ispred i iza uzorka, ovisno o rasporedu prečaca, operatora i uzorka.
+
+```{r}
+# Korištenje `ANY_CHAR` na vektoru ispred uzorka
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = ANY_CHAR %R% "forestnet.org"
+)
+
+# Korištenje `ANY_CHAR` na vektoru iza uzorka
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = "forestnet.org" %R% ANY_CHAR
+)
+```
+
+Osim toga, `ANY_CHAR` može se koristiti i za podjelu nizova u vektoru na specifične znakove. Pritom se `ANY_CHAR` u argumentu `pattern` upisuje toliko puta koliko znakova unutar jedne cjeline želimo imati.
+
+```{r}
+# Podjela nizova na dva znaka u svakom dijelu
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = ANY_CHAR %R% ANY_CHAR
+)
+
+# Podjela nizova na tri znaka u svakom dijelu
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = ANY_CHAR %R% ANY_CHAR %R% ANY_CHAR
+)
+```
+
+Regularni izraz kao argument uzorka može se uključiti u bilo koju funkciju `stringr` paketa koja ima argument `pattern` kao što su `str_subset()` za vraćanje nizova s podudaranjima, `str_detect()` za dobivanje logičkog vektora o tome postoji li podudaranje, `str_count()` za brojanje broja podudaranja u svakom nizu i `str_extract()` koji vraća samo dio niza koji odgovara uzorku.
+
+```{r}
+# Vraćanje nizova s podudaranjima
+str_subset(
+  string = little_red_riding_hood_city_edition,
+  pattern = ANY_CHAR %R% "forestnet.org"
+)
+
+# Detektiranje nizova koji se poklapaju s uzorkom
+str_detect(
+  string = little_red_riding_hood_city_edition,
+  pattern = ANY_CHAR %R% "forestnet.org"
+)
+
+# Brojanje podudaranja u svakom nizu
+str_count(
+  string = little_red_riding_hood_city_edition,
+  pattern = ANY_CHAR %R% "forestnet.org"
+)
+
+# Ispis dijelova nizova koji odgovaraju uzorku
+str_extract(
+  string = little_red_riding_hood_city_edition,
+  pattern = ANY_CHAR %R% "forestnet.org"
+)
+
+# Brojanje nizova koji završavaju sa *mother*
+length(
+  str_view(
+    string = little_red_riding_hood_city_edition,
+    pattern = ANY_CHAR %R% "forestnet.org"
+  )
+)
+```
+
+Postoji još tri prečaca `rebus` paketa: `DOT` koji traži točku u nizovima, `CARAT` koji traži znak kape (\^) i `DOLLAR` koji traži znak za dolar.
+
+```{r}
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = DOT
+)
+```
+
+#### Osnovni koncepti regularnih izraza
+
+Kod regularnih je izraza korisno još nekoliko pojmova: alternacija, klase znakova i ponavljanje.
+
+U regularnom izrazu, ako želimo navesti podudaranje dva uzorka, koristi se **alternacija**. Ona u jeziku regularnih izraza izgleda poput logičkog *ili* (`|`) u R-u. U `rebus`-u se za alteraciju koristi funkcija `or()` koja nam omogućuje da specificiramo skup alternativa koje mogu biti pojedinačni znakovi ili nizovi znakova. Svaka alternativa se prosljeđuje kao zasebni argument.
+
+```{r}
+# Definiranje alteracija
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = or("Mia", "Red")
+)
+
+# Definiranje alteracije u složenom regularnom izrazu
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = or("safety.alert", "tips", "blockwatch") %R% "@forestnet.org"
+)
+```
+
+U regularnim izrazima **klasa znakova** je način specificiranja podudaranja jednog (i samo jednog) od znakova. Klase znakova slične su `ANY_CHAR`, ali s ograničenjem dopuštenih znakova. Umjesto podudaranja s bilo kojim znakom, podudaraju se s bilo kojim pojedinačnim znakom u skupu koji odredimo. U `rebus`-u se za određivanje klase koristi funkcija `char_class()` u koju se upisuje niz koji sadrži sve znakove koje želimo spojiti.
+
+```{r}
+# Definiranje klase znakova
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = char_class("Ss")
+)
+```
+
+U ovom slučaju klasa znakova odgovara malom i velikom slovu S i M.
+
+Postoji mogućnost određivanja i negirana klasa znakova koje navode da treba odgovarati svakom pojedinačnom znaku koji nije u ovom skupu. Za negiranu se klasu koristi funkcija `negatet_char_class()`. U ovom primjeru, svaki pojedinačni znak koji nije malo ili veliko slovo S.
+
+```{r}
+# Definiranje negirane klase znakova
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = negated_char_class("Ss")
+)
+```
+
+Za razliku od drugih mjesta u regularnom izrazu, u ovom slučaju nije potrebno izbjegavati znakove koji bi inače mogli imati posebno značenje unutar klasa znakova. Ako, primjerice, želimo uskladiti `.`, onda možemo uključiti točku izravno u funkciju kao `char_class(".")`.
+
+Konačno, postoji nekoliko načina za određivanje uzorka koji se **ponavlja**. Uzorak može biti neobavezan, pojaviti se nula ili više puta, jedan ili više puta ili se ponavljati unutar određenog raspona vremena. U `rebus` paketu se to može napraviti funkcijama `optional()`, `zero_or_more()`, `one_or_more()` i `repeated()`.
+
+```{r}
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = optional("Ss"),
+  match = TRUE
+)
+
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = zero_or_more("Ss"),
+  match = TRUE
+)
+
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = one_or_more("Ss"),
+  match = TRUE
+)
+
+str_view(
+  string = little_red_riding_hood_city_edition,
+  pattern = repeated("Ss"),
+  match = TRUE
+)
+```
+
+Može se također dodati i `exactly()` koja se koristi za izgradnju regularnog izraza koji doslovno odgovara točno određenom nizu, bez tumačenja posebnih znakova.
+
+#### Prečaci
+
+Regularni izrazi pružaju nekoliko dodatnih prečaca. Prvi prečac je određivanje raspon koristeći crticu (`-`) unutar klase znakova. Tako navođenje `0-9` odgovara bilo kojoj znamenki između 0 i 9 uključivo, a `a-z` odgovara bilo kojem malom slovu od slova a do slova z, dok `A-Z` odgovara bilo kojem velikom slovu od A do Z.
+
+```{r}
+char_class("0-9")
+char_class("a-z")
+char_class("A-Z")
+char_class("0-9a-zA-Z_")
+```
+
+Crtica i `DGT` konstanta imaju iste funkcije i navode bilo koju znamenku. Znak riječi može se navesti s `WRD` i ekvivalentan je bilo kojem malom ili velikom slovu, znamenki ili povlaci, a znak razmaka može se navesti pomoću `SPC` i odgovara svakom pojedinačnom razmaku, kartici ili znaku novog retka. Svi ovi prečaci također imaju negirane verzije - `NOT_DGT`, `NOT_WRD` i `NOT_SPC`.
+
+```{r}
+# Kreiranje uzorka
+street_pattern <- DGT %R% one_or_more(SPC) %R%
+  one_or_more(WRD %R% SPC) %R%
+  or("Street", "Square")
+
+# Pretraživanje podudaranja
+str_view_all(
+  string = little_red_riding_hood_city_edition,
+  pattern = street_pattern
+)
+```
+
+```{r}
+# Kreiranje uzorka
+email_pattern <- one_or_more(or(WRD, DOT)) %R%
+  ANY_CHAR %R% "forestnet.org"
+  one_or_more(WRD) %R%
+  DOT %R%
+  one_or_more(WRD)
+
+# Pretraživanje podudaranja
+str_view_all(
+  string = little_red_riding_hood_city_edition,
+  pattern = email_pattern,
+  match = TRUE
+)
+```
+
+```{r}
+phone_number <- "Call 555-555-0191 or (555) 555-0192 for help."
+
+three_digits <- DGT %R% DGT %R% DGT
+four_digits <- DGT %R% DGT %R% DGT %R% DGT
+separator <- char_class("-.() ")
+
+phone_pattern <- optional(OPEN_PAREN) %R%
+  three_digits %R% zero_or_more(separator) %R%
+  three_digits %R% zero_or_more(separator) %R%
+  four_digits
+
+str_view_all(phone_number, phone_pattern)
+```
+
+### Hvatanje
+
+Jedna od naprednijih tehnika prilikom rada s regularnim izrazima je **hvatanje** (eng. *capturing*), koje omogućuje da određene dijelove uzorka grupiramo i izdvojimo radi daljnje obrade. Unutar paketa `rebus` hvatanje se provodi funkcijom `capture()` koja označava da želimo „uhvatiti” dio podudaranja.
+
+Primjerice, u slijedeća dva slučaja možemo primijetiti razliku:
+
+```{r}
+# Regularni izraz za hvatanje e-mail adresa
+email_pattern <- one_or_more(WRD) %R% "@" %R% one_or_more(WRD) %R% DOT %R% one_or_more(WRD)
+email_capture <- capture(one_or_more(WRD) %R% "@" %R% one_or_more(WRD) %R% DOT %R% one_or_more(WRD))
+
+# Pregled
+email_pattern
+email_capture
+```
+
+Oba izraza pronalaze znak *a* koji slijedi iza bilo kojeg znaka. Međutim, u drugom slučaju prvi znak (bilo koji znak) je uhvaćen kao posebna grupa. U klasičnoj notaciji regularnih izraza to se prikazuje kao `(.)a`.
+
+Iako `capture()` ne mijenja koji niz se podudara, ono omogućuje izdvajanje specifičnog dijela niza.
+
+Za razliku od `str_extract()` koja hvata samo cijeli podudarni niz, funkcija `str_match()` iz paketa `stringr` omogućuje izdvajanje i pojedinih uhvaćenih grupa. Funkcija zapravo vraća matricu, gdje je prvi stupac cijeli podudarni niz, a svaki sljedeći stupac predstavlja jedan `capture()` u izrazu.
+
+```{r}
+# Primjena
+email_pattern_list <- str_match_all(little_red_riding_hood_city_edition, pattern = email_pattern)
+email_capture_list <- str_match_all(little_red_riding_hood_city_edition, pattern = email_pattern)
+
+# Prikaz rezultata
+unlist(email_pattern_list)
+unlist(email_capture_list)
+```
+
+Zamislimo sada da želimo prepoznati što je majka stavila u torbu i da znamo da to može biti: *cookies*, *vitamins*, *a handwritten note*. Pokušajmo napisati uzorak koji pronalazi jednu od tih stvari.
+
+Možemo to napraviti na prethodno prikazan način hvatanjem.
+
+```{r}
+pattern_capture <- capture(or("cookies", "vitamins", "a handwritten note"))
+match_capture <- str_match_all(little_red_riding_hood_city_edition, pattern_capture)
+match_capture[[1]]
+```
+
+Sada imamo `[,1]` koji prikazuje cijeli podudaran niz i `[,2]` koji prikazuje ono što je `capture()` eksplicitno označio (opcija iz `or()`).
+
+Ponekad želimo grupirati dijelove izraza bez da ih hvatamo. Tada koristimo **non-capturing group** u paketu `rebus` označava s funkcijom `or()`.
+
+```{r}
+pattern_noncapture <- or("cookies", "vitamins", "a handwritten note")
+match_noncapture <- str_extract_all(little_red_riding_hood_city_edition, pattern_noncapture)
+match_noncapture[[1]]
+```
+
+U ovom slučaju ne možemo znati koja točno opcija je bila prepoznata kao dio grupe jer to nismo uhvatili funkcijom `capture()`.
+
+#### Povratne reference
+
+Kada pomoću `capture()` "uhvatimo" dio regularnog izraza, možemo se kasnije u uzorku ponovno pozvati na taj isti sadržaj – to se naziva **povratna referenca** (*backreference*). Time možemo pronaći ponavljanja istog teksta ili odnos između dijelova koji se moraju poklapati. U `rebus` paketu to radimo pomoću `REF1`, `REF2`... `REF9`.
+
+Ako je rečenica bila duplicirana možemo pronaći uzastopno ponavljane fraze.
+
+```{r}
+tekst <- "That’s sweet. Say hi to her for me. Say hi to her for me."
+
+pattern <- capture(one_or_more(WRD)) %R% SPC %R% REF1
+
+str_view_all(tekst, pattern)
+```
+
+Ovaj uzorak hvata riječ koja se ponovi dvaput zaredom s razmakom između.
+
+Konačno, možemo izvesti zamjena ponovljenog s jednim pojavljivanjem funkcijom `str_replace()`.
+
+```{r}
+str_replace(tekst,
+  pattern = capture(one_or_more(WRD)) %R% SPC %R% REF1,
+  replacement = str_c(" ", REF1)
+)
+```
+
+U ovim slučajevima kodovi `capture(one_or_more(WRD))` – hvataju riječ, `REF1` se poziva na istu riječ ponovno, `str_replace(..., str_c(" ", REF1))` zamjenjuje dvostruko ponavljanje s jednom instancom.
+
+Ako želimo prepoznati cijelu frazu koja se ponavlja (npr. *Say hi to her for me*), onda se koristi:
+
+```{r}
+pattern <- capture("Say hi to her for me") %R% DOT %R% SPC %R% REF1
+
+str_view_all(tekst, pattern)
+```
+
+# Kreiranje regularnih nizova od izraza
+
+U prošlom je dijelu prikazano kako ljepilo i sažimanje ljepila mogu biti korisni u radu s nizovima, no ista se tehnika može primijeniti i na regularne izraze.
+
+Ako koristimo operator cijevi kao separator, možemo stvoriti isti uzorak od vektora.
+
+```{r}
+pattern = "Nemo|Harmony|Dory"
+names <- c("Nemo", "Harmony", "Dory")
+pattern = glue_collapse(pattern, sep = "|")
+pattern
+```
+
+Zamislimo da imamo puno teksta, ali nas zanima pronaći ime nakon čega slijede dva broja, prvo broj pokušanih prijava, a zatim broj uspješnih prijava odvojeni zarezom i razmakom. Naravno, mogli bismo napisati uzorak koji bi odgovarao ovom nizu, no to izgleda prilično komplicirano. S ljepilom možemo konstruirati isti uzorak na drugi način. Kako možemo proslijediti bilo koji vektor, čak i onaj koji ima imena, možemo imenovati različite dijelove uzorka. Imena se neće pojaviti u uzorku, ali je to lijep način da se sami dokumentiraju uzorci koje pišemo. Svaki dio uzorka možemo napisati u zasebnu liniju što ga dijeli na mnogo malih dijelova.
+
+```{r}
+pattern = glue_collapse(c(
+  "name" = "[A-Za-z]+",
+  ", ",
+  "attempts" = "\\d+",
+  ", ",
+  "logins" = "\\d+"
+))
+pattern
+```
+
+```{r}
+usernames <- c("Bryan", "Barbara", "Tom")
+
+# Create a pattern using the vector above separated by "or"s
+user_pattern <- glue_collapse(usernames, sep = "|")
+
+str_view(usernames, user_pattern)
+```
+
+```{r}
+# Construct a pattern that searches for all politicians
+polit_pattern <- glue_collapse(politicians, sep = "|")
+
+# Use the pattern to match all names in the column "text"
+articles %<>%
+  mutate(mentions = str_match_all(text, polit_pattern))
+
+# Collapse all items of the column "text"
+all_articles_in_one <- glue_collapse(articles$text)
+
+# Pass the vector politicians to count all its elements
+str_count(all_articles_in_one, politicians)
+```
+
+```{r}
+# Familiarize yourself with users by printing its contents
+print(users)
+
+advanced_pattern <- glue_collapse(c(
+  # Match one or more alphabetical letters
+  "username" = "^[A-Za-z]+",
+  ": ",
+  # Match one or more digit
+  "logins" = "\\d+",
+  ", ",
+  # Match one or more arbitrary characters
+  "email" = ".+$"
+))
+
+str_view(users, advanced_pattern)
+```
+
+### Izdvajanje strukturiranih podataka iz teksta
+
+U prošlim smo primjerima uskladivali korisničko ime i dva broja, broj pokušanih prijava i broj uspješnih prijava. S tim je uzorkom rezultat podudaranja nizova izgledao je ovako:
+
+```{r}
+str_match(
+  "payload: 'Adam, 5, 3', headers: 'Auth...'",
+  pattern = "[A-Za-z]+, \\d+, \\d+"
+)
+```
+
+Sada bismo mogli uzeti ovaj podniz i podijeliti ga dok ne dobijemo dijelove informacija koje tražimo, ali to bi moglo biti komplicirano. Regularni izrazi nude način koji je i brži i precizniji - grupe za hvatanje. Definirane otvaranjem i zatvaranjem zagrada, grupe za hvatanje mogu pomoći u razlikovanju dijelova koji nas zanimaju od onih koji nas ne zanimaju. Kada pozovemo funkciju `string_match()` s uzorkom, ne dobivamo matricu jedan prema jedan, već jedan prema četiri - prva je i dalje potpuno podudaranje, ali ostale sadrže samo dijelove uzorka koje smo omotali zagradama.
+
+```{r}
+str_match(
+  "payload: 'Adam, 5, 3', headers: 'Auth...'",
+  pattern = "([A-Za-z]+), (\\d+), (\\d+)"
+)
+```
+
+Iako je moguće pokrenuti `string_match()` na nizu i dobiti matricu s odvojenim vrijednostima, postoji i drugi način rada s uhvaćenim grupama pomoću `string_replace()` - pišemo mali kod koji prima niz, mijenja korisni teret i prosljeđuje rezultat sljedećem koraku u procesu. Ovaj put dodajemo treći argument, `replace`. U njemu definiramo novi sadržaj koji želimo vidjeti umjesto uzorka koji smo proslijedili kao drugi argument. U ovoj zamjeni možemo pisati prilagođeni tekst, ali ne samo to nego radimo sa sadržajem grupa za snimanje. Kada želimo umetnuti ono što je uhvaćeno prvom grupom, na primjer, možemo umetnuti broj jedan, kojem prethode dvije obrnute kose crte. To govori funkciji zamjene da treba staviti sadržaj prve grupe za snimanje na tu poziciju.
+
+```{r}
+str_replace(
+  "payload: 'Adam, 5, 3', headers: 'Auth...'",
+  pattern = "([A-Za-z]+), (\\d+), (\\d+)",
+  replacement = "\\1 tried to log in \\2 times."
+)
+```
+
+Druga funkcija za razdvajanje teksta na odvojene dijelove je ona za pretvaranje u vektor, `str_split()`. Prvi argument je ulazni tekst, drugi je uzorak koji se koristi kao razdjelnik, a treći da vraća popis vektora znakova (`FALSE`) ili matricu znakova (`TRUE`).
+
+```{r}
+str_split(
+  "a:b:c:d",
+  pattern = ":",
+  simplify = FALSE
+)
+
+str_split(
+  "a:b:c:d",
+  pattern = ":",
+  simplify = TRUE
+)
+```
+
+```{r}
+# Split the input by line break and enable simplify
+top_10_lines <- str_split(
+  top_10,
+  pattern = "\\n",
+  simplify = TRUE
+)
+
+# Inspect the first three lines and analyze their form
+top_10_lines[1:3]
+
+# Add to the pattern two capturing groups that match rank and title
+str_match(
+  top_10_lines,
+  pattern = "(\\d+)\\. (.+)"
+)
+```
+
+```{r}
+# Remove a space followed by "3D" at the end of the line
+str_replace(
+  top_10_lines,
+  pattern = " 3D$",
+  replacement = ""
+)
+
+# Use backreferences 2 and 1 to create a new sentence
+str_replace(
+  top_10_lines,
+  pattern = "(\\d+)\\. (.*)",
+  replacement = "\\2 is at rank \\1"
+)
+```
+
+Osim varijabli i vektora, regularne izraze možemo primijeniti i na podatkovne okvire. Za to se koristi paket `tidyr` koji izdvaja dijelove iz teksta u jednom stupcu podatkovnog okvira, a za to se koristi funkcija `extract()` koja može imati slijedeće argumente:
+
+- `data` - podatkovni okvir,
+
+- `col` - stupac u kojem je pohranjen tekst,
+
+- `into` - kako bi se trebali imenovati novi stupci koje stvaramo,
+
+- `regex` - regularni izrazi koje pišemo, a koji odgovaraju različitim dijelovima unutar teksta,
+
+- `remove` - želimo li zadržati izvorni tekstualni stupac ili ga želimo ukloniti,
+
+- `convert` - na temelju informacija nagađa o tipovima podataka koje izdvajamo (`TRUE`).
+
+Ovdje imamo podatkovni okvir koji sadrži informacije o broju ekrana na kojima se film prikazivao u Švicarskoj. Ali podaci nisu tablični, već samo običan tekst u stupcu "line". Možemo na primjer identificirati filmove koji su prikazani u 3D-u, možemo ih identificirati pomoću `string_match()` usklađivanjem "3D".
+
+```{r}
+screens_per_movie |>
+  mutate(
+    is_3d = str_match(line, "3D")
+  )
+```
+
+S `dplyr`-ovim `mutate()` spremamo rezultat poziva funkcije u novi stupac "is_3d" u podatakovnom okviru - filmovi u 3D-u imat će 3D u ćeliji.
+
+Ali što ako ne želimo spremiti samo informacije o 3D-u već i broj ekrana na kojima su ti filmovi prikazani? Tada moramo izdvojiti dvije stvari. Funkcija `extract()` napravit će upravo to. Korištenjem regularnih izraza i grupa za snimanje možemo pretvoriti tekstualne podatke u podatakovni okvir.
+
+U takvom kodu prosljeđujemo funkciji `extract()` podatkovni okvir `screens_per_movie` kao prvi argument i naziv stupca kao drugi argument. Treći argument su nazivi novih stupaca koje želimo stvoriti i na kraju definiramo regularni izraz s dvije grupe za snimanje definirane zagradama. Funkcija `extract()` će raditi samo ako se broj grupa za snimanje i broj stupaca koje želimo stvoriti podudaraju.
+
+U našem slučaju potrebne su nam dvije grupe za hvatanje. Jedna za "is_3d" i jedna za "screens". Također prosljeđujemo `remove = FALSE`. Za sada želimo zadržati naš izvorni tekstualni stupac kako bismo provjerili je li ekstrakcija funkcionirala kako se očekivalo.
+
+```{r}
+extract(
+  screens_per_movie,
+  col = "line",
+  into = c("is_3d", "screens"),
+  regex = "(3D).*?(\\d+)$",
+  remove = FALSE
+)
+```
+
+```{r}
+extract(
+  screens_per_movie,
+  line,
+  into = c("is_3d", "screens"),
+  # Capture two groups: "3D" and "one or more digits"
+  regex = "(3D).*?(\\d+)$",
+  # Pass TRUE or FALSE, the original column should not be removed
+  remove = FALSE,
+  # Pass TRUE or FALSE, the result should get converted to numbers
+  convert = TRUE
+)
+```
+
+```{r}
+# Print the first three lines of screens_per_movie
+screens_per_movie[1:3, ]
+
+# Match anything, one or more word chars and one or more digits
+str_match(
+  screens_per_movie[3, ]$line,
+  "(.*)\\s{2,}(\\w+)\\s{2,}(\\d+)"
+)
+
+# Extract the column line into title, distributor, screens
+extract(
+  screens_per_movie,
+  col = line,
+  into = c("title", "distributor", "screens"),
+  regex = "(.*)\\s{2,}(\\w+)\\s{2,}(\\d+)")
+```
+
+Do sada su primjeri bili temeljeni na pretpostavci da imamo različite retke teksta koji imaju istu strukturu, no često to nije slučaj. Primjerice, što ako tražimo popis imena u tekstu i želimo pogledati kontekst tih imena.
+
+Zamislimo da imamo kolekciju objava na blogu i želimo saznati jesu li i kako ljudi govorili o izmišljenoj tvrtki "ABC Enterprises". Mogli bismo na primjer izvući naziv tvrtke i deset riječi prije njega i deset riječi poslije njega. Koristeći klase znakova možemo definirati sljedeći uzorak za jednu riječ. Riječ se sastoji od jednog ili više znakova riječi nakon kojih slijedi razmak. Pomoću vitičastih zagrada možemo definirati koliko riječi želimo tražiti, na primjer do deset riječi dodavanjem nule, zareza deset u vitičaste zagrade. Ova definicija ponavljanja primijenit će se na cijelu grupu, dakle na sve unutar zagrada. Ako sada uzmemo ovaj uzorak i stavimo ga ispred i iza naziva naše tvrtke, imamo uzorak koji odgovara nazivu naše tvrtke plus 0 do 10 riječi. Ako spremimo tekst u varijablu i pretražimo ga funkcijom `str_extract_all()` dobit ćemo dio objave u blogu koji sadrži "ABC Enterprises" plus neke riječi s obje strane naziva.
+
+```{r}
+str_extract_all(
+  blog_post,
+  pattern = "(\\w+\\s){1,10}ABC Enterprises\\s?(\\w+\\s){1,10}"
+)
+```
+
+Možda se pitate zašto izdvaja samo 4 riječi ispred i 7 iza naziva tvrtke, kada tekst imao puno više riječi s obje strane. To je zato što nismo dodali nikakvu interpunkciju podudaranju, pa kada se naiđe na nju, uzorak se više ne podudara i bit će odsječen. Ako ne želimo da se to dogodi, mogli bismo zamijeniti našu klasu znakova riječi prilagođenim uzorkom pomoću uglatih zagrada. U uglate zagrade mogli bismo staviti našu klasu znakova riječi i imenovanu klasu "punctuation". Rezultat će tada izdvojiti deset riječi s obje strane naziva tvrtke i također spajamo točke i uskličnike.
+
+```{r}
+str_extract_all(
+  blog_post,
+  pattern = "([\\w[:punct:]]+\\s){1,10}ABC Enterprises\\s?([\\w[:punct:]]+\\s){1,10}"
+)
+```
+
+```{r}
+# Create our polit_pattern again by collapsing "politicians"
+polit_pattern <- glue_collapse(politicians, sep = "|")
+
+# Correct way to match word characters and punctuations
+context <- "([\\w[:punct:]]+\\s){0,10}"
+
+# Add this pattern in front and after the polit_pattern
+polit_pattern_with_context <- glue(
+  "{context}({polit_pattern})\\s?{context}"
+)
+
+str_extract_all(
+  articles$text,
+  pattern = polit_pattern_with_context
+)
+```

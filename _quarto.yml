@@ -26,8 +26,9 @@ book:
     - part: "2_0_POČETAK U RADU S TEKSTOM.qmd"
       chapters:
         - 2_1_tekstualni_nizovi.qmd
-        - 2_2_učitavanje_i_oblikovanje_podataka.qmd
-        - 2_3_pretpostavke_za_analizu_teksta_u_tidytext-u.qmd
+        - 2_2_regularni_izrazi.qmd
+        - 2_3_učitavanje_i_oblikovanje_podataka.qmd
+        - 2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.qmd
     - part: "3_0_POČETAK U RADU S TEKSTOM.qmd"
       chapters:
         - 3_1_deskriptivna_analiza_teksta.qmd

@@ -110,11 +110,11 @@
   {
     "objectID": "2_0_POČETAK U RADU S TEKSTOM.html",
     "href": "2_0_POČETAK U RADU S TEKSTOM.html",
-    "title": "2. Početak u radu s tekstom",
+    "title": "POČETAK U RADU S TEKSTOM",
     "section": "",
     "text": "U ovom dijelu tekstualne podatke pripremamo za analizu u R-u.",
     "crumbs": [
-      "2. Početak u radu s tekstom"
+      "POČETAK U RADU S TEKSTOM"
     ]
   },
   {
@@ -122,149 +122,193 @@
     "href": "2_1_tekstualni_nizovi.html",
     "title": "4  Tekstualni nizovi",
     "section": "",
-    "text": "Tekstualni nizovi (character) osnovni su oblik pohrane rečenica i riječi u R-u. Njima možemo pristupiti pojedinačno ili ih organizirati u vektore.\n\nnaslovi &lt;- c(\"Prvi dokument\", \"Drugi dokument\", \"Treći dokument\")\nnaslovi\n\n[1] \"Prvi dokument\"  \"Drugi dokument\" \"Treći dokument\"",
+    "text": "4.1 Escape sekvence\nTekstualni niz (engl. string) je slijed znakova koji služi za pohranu tekstualnih podataka i rad s njima. Takav niz može sadržavati slova, brojke, razmake, interpunkciju i druge znakove. U R-u se tekstualni nizovi pohranjuju kao podaci tipa character, a zapisuju se unutar dvostrukih ili jednostrukih navodnika.\nIako osnovni R sadrži vlastite funkcije za rad s tekstom (npr. paste(), grepl() ili gsub()), u praksi se najčešće koristi paket stringr koji je dio tidyverse skupa paketa. stringr je izgrađen na paketu stringi koji nudi opsežan skup alata za gotovo sve što bismo ikada mogli raditi s nizovima. Za razliku od njega, stringr obuhvaća samo najbitnije i najčešće operacije potrebne u radu s tekstom, a zbog čega je jednostavniji i intuitivniji za korištenje. Prednost stringr-a je dosljedna sintaksa, odnosno to da sve njegove funkcije počinju prefiksom str_ (npr. str_detect(), str_replace(), str_length()), a tekstualni niz uvijek je prvi argument što olakšava njihovo povezivanje operatorom |&gt;. Paket podržava i regularne izraze za pretraživanje i obradu teksta.\nU R-u se tekstualni nizovi stvaraju tako da se tekst stavi unutar dvostrukih (\"...\") ili jednostrukih ('...') navodnika. Dobiveni niz najčešće se operatorom &lt;- pridružuje nekoj varijabli kako bismo ga poslije mogli koristiti. Obje vrste navodnika funkcioniraju jednako, no preporučuje se koristiti dvostruke navodnike, dok su jednostruki navodnici korisni kada sam tekst sadrži dvostruke navodnike.\nDefinirajmo za početak jednu rečenicu kao tekstualni niz:\nIpak, ako sam tekst sadrži dvostruke navodnike, R će navodnik iz teksta protumačiti kao početak ili kraj niza, a ne kao dio teksta. Taj se problem može izbjeći tako da se niz omeđi jednostrukim navodnicima, pa se dvostruki navodnici unutar njega čitaju kao obični znakovi.\nVidljivo je pritom da R nizove ispisuje na različite načine. U slučaju vektora sentence_one R ispisuje niz samo s dvostrukim navodnicima koji simboliziraju početak i kraj niza. U slučaju korištenja jednostrukih navodnika za označavanje početka i kraja niza, kao kod varijable sentence_two, R i dalje ispisuje niz s dvostrukim navodnicima koji označavaju početak i kraj niza, a tekst koji je originalno označen navodnicima ispisan je znakom \\ ispred navodnika koji je dio teksta.\nIsto tako, ako želimo tekst koji sadrži oba oblika navodnika, i jednostruke i dvostruke, pretvoriti u niz, dvostruke navodnike iz teksta moramo pretvoriti u \\\" kako oni ne bi bili prepoznati kao početak i kraj niza.\nOpćenito, niz bi uvijek trebalo najprije omeđiti dvostrukim navodnicima, a jednostruke koristiti samo ako tekst sadrži dvostruke navodnike. Tek ako tekst sadrži i dvostruke i jednostruke navodnike, dvostruke navodnike unutar teksta označavamo s \\\".\nViše tekstualnih nizova moguće je funkcijom c() objediniti u vektor nizova, bilo da ih navedemo izravno ili preko varijabli u koje su spremljeni.\nZa ispis nizova može se koristiti i funkcija writeLines() koja tekst prikazuje onako kako zaista izgleda, bez navodnika i oznaka elemenata vektora. Funkcija se može primijeniti na pojedinačni niz ili na vektor nizova, a pri čemu se svaki element ispisuje zasebno. U funkciju se može dodati i argument sep koji određuje znak koji se dodaje iza svakog elementa. Zadani je separator novi redak (\"\\n\"), pa se svaki element ispisuje u zasebnom retku, no može se zadati i neki drugi separator.\nPrednost funkcije writeLines() je u tome da ispisuje tekst u originalnom obliku bez navodnika koji su dodani u prvotnom načinu formiranja tekstualnih nizova.\nSlijed u nizu koji počinje obrnutom kosom crtom (\\) naziva se escape sekvenca i omogućuje uključivanje posebnih znakova u nizove. To su znakovi koje je teško ili nemoguće izravno upisati tipkovnicom ili koji bi inače imali drugačije značenje. Već smo spomenuli jedan takav primjer, \\\", kojim označavamo navodnik unutar teksta. Escape sekvence omogućuju umetanje:\nR escape sekvence pretvara u odgovarajuće znakove već pri stvaranju niza, no pri običnom ispisu niza prikazuje ih u izvornom obliku (npr. \\n). Da bismo vidjeli kako tekst zaista izgleda, koristimo funkciju writeLines() ili cat().\nUnicode je standard koji svakom znaku iz gotovo svih svjetskih pisama, kao i brojnim simbolima i emojijima, dodjeljuje jedinstveni kod. U R-u se Unicode znak zapisuje s \\u iza kojeg slijede do 4 heksadecimalne znamenke ili s \\U iza kojeg slijedi do 8 heksadecimalnih znamenki. Ako iza koda u nizu slijedi slovo ili broj koji bi se mogao pročitati kao dio kôda, kod treba staviti u vitičaste zagrade (npr. \\U{1F30D}). U popisima Unicode znakova kodovi se često navode u obliku U+1F30D koji R ne prepoznaje pa oznaku U+ treba zamijeniti s \\U. Popisi Unicode znakova mogu se pronaći na stranicama Unicode Emoji List i Unicode Table.\n# Ispis niza s Unicode znakom\nwriteLines(\"Hello!\\n\\U1F44B\")\n\nHello!\n👋",
     "crumbs": [
-      "2. Početak u radu s tekstom",
+      "POČETAK U RADU S TEKSTOM",
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Tekstualni nizovi</span>"
     ]
   },
   {
-    "objectID": "2_2_učitavanje_i_oblikovanje_podataka.html",
-    "href": "2_2_učitavanje_i_oblikovanje_podataka.html",
-    "title": "5  Učitavanje i oblikovanje podataka",
+    "objectID": "2_1_tekstualni_nizovi.html#escape-sekvence",
+    "href": "2_1_tekstualni_nizovi.html#escape-sekvence",
+    "title": "4  Tekstualni nizovi",
     "section": "",
-    "text": "Tekstualne podatke možemo učitati iz CSV datoteka, tablica ili drugih izvora. Nakon učitavanja važno je provjeriti nazive stupaca, nedostajuće vrijednosti i jedinicu analize.\n\ndokumenti &lt;- data.frame(\n  id = 1:3,\n  tekst = c(\"Prvi tekst\", \"Drugi tekst\", \"Treći tekst\")\n)\ndokumenti\n\n  id       tekst\n1  1  Prvi tekst\n2  2 Drugi tekst\n3  3 Treći tekst",
+    "text": "kontrolnih znakova (npr. novi redak, tabulator),\nposebnih znakova (npr. navodnika unutar nizova) i\nUnicode znakova (npr. simbola, slova iz različitih pisama, matematičkih oznaka i emojija).\n\n\n\n\n\n\n\n\n\nEscape sekvenca\nZnačenje\nPrimjer\n\n\n\n\n\\n\nnovi redak\n\"Hello\\nWorld\" ⟶ Hello (novi redak) World\n\n\n\\t\ntabulator\n\"Hello\\tWorld\" ⟶ Hello (tabulator) World\n\n\n\\\"\ndvostruki navodnik unutar niza\n\"He said \\\"Hello\\\"\" ⟶ He said “Hello”\n\n\n\\\\\nobrnuta kosa crta\n\"C:\\\\Users\\\\Documents\" ⟶ C:\n\n\n\\uxxxx\nUnicode znak (do 4 heksadecimalne znamenke)\n\"\\u03B1\" ⟶ α (grčko slovo alfa)\n\n\n\\Uxxxxxxxx\nUnicode znak (do 8 heksadecimalnih znamenki)\n\"\\U1F30D\" ⟶ 🌍 (emoji globusa)",
     "crumbs": [
-      "2. Početak u radu s tekstom",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Učitavanje i oblikovanje podataka</span>"
+      "POČETAK U RADU S TEKSTOM",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Tekstualni nizovi</span>"
     ]
   },
   {
-    "objectID": "2_3_pretpostavke_za_analizu_teksta_u_tidytext-u.html",
-    "href": "2_3_pretpostavke_za_analizu_teksta_u_tidytext-u.html",
-    "title": "6  Pretpostavke za analizu teksta u tidytextu",
+    "objectID": "2_1_tekstualni_nizovi.html#numeričke-vrijednosti-kao-tekstualni-niz",
+    "href": "2_1_tekstualni_nizovi.html#numeričke-vrijednosti-kao-tekstualni-niz",
+    "title": "4  Tekstualni nizovi",
+    "section": "4.2 Numeričke vrijednosti kao tekstualni niz",
+    "text": "4.2 Numeričke vrijednosti kao tekstualni niz\nNizovi se često koriste i za izvještavanje o numeričkim rezultatima. Primjerice, neku vrijednost možemo htjeti prikazati kao tekstualni niz s određenim brojem znamenki.\n\n# Pridruživanje vrijednosti varijabli\nnumber &lt;- 13.652378540037642375\n\n# Pregled\nnumber\n\n[1] 13.65238\n\n\nU R-u postoji nekoliko funkcija za pretvaranje i formatiranje numeričkih vrijednosti u tekstualne nizove. Prva je as.character() koja broj pretvara u niz bez mogućnosti formatiranja. Broj se pritom zapisuje s najviše 15 značajnih znamenki pa se vrijednosti s više znamenki ipak zaokružuju. Druga je format() kojom argumentom digits određujemo broj značajnih znamenki, a ne broj decimalnih mjesta. Treća je formatC() koja daje najveću kontrolu nad zapisom jer uz odgovarajući format ispisuje točno zadani broj decimalnih mjesta.\n\n# Pretvaranje broja u niz\nas.character(number)\n\n[1] \"13.6523785400376\"\n\n# Formatiranje s određenim brojem značajnih znamenki\nformat(number, digits = 3)\n\n[1] \"13.7\"\n\n# Formatiranje s fiksnim brojem decimalnih mjesta\nformatC(number, digits = 5)\n\n[1] \"13.652\"\n\n\nFunkcije format() i formatC() mogu broj zapisati u fiksnom ili znanstvenom formatu. U fiksnom formatu broj se zapisuje uobičajeno, s određenim brojem znamenki iza decimalne točke (npr. 13.65238). U znanstvenom formatu broj se zapisuje kao umnožak broja s jednom znamenkom ispred decimalne točke i potencije broja 10. Pritom se znak množenja izostavlja, a slovo e znači „puta deset na potenciju” (npr. 1.365238e+01 znači 1,365238 × 10¹). U funkciji format() format se određuje argumentom scientific kojemu se zadaje vrijednost TRUE ili FALSE. U funkciji formatC() koristi se argument format, kojemu se zadaje \"f\" za fiksni format, \"e\" za znanstveni format ili \"g\", pri čemu R sam bira kraći od ta dva zapisa. Kod \"f\" i \"e\" argument digits označava broj decimalnih mjesta, a kod \"g\" broj značajnih znamenki.\n\n# Znanstveni i fiksni format funkcijom format()\nformat(number, scientific = TRUE)\n\n[1] \"1.365238e+01\"\n\nformat(number, scientific = FALSE)\n\n[1] \"13.65238\"\n\n# Fiksni, znanstveni i kraći od ta dva formata funkcijom formatC()\nformatC(number, format = \"f\")\n\n[1] \"13.6524\"\n\nformatC(number, format = \"e\")\n\n[1] \"1.3652e+01\"\n\nformatC(number, format = \"g\")\n\n[1] \"13.65\"",
+    "crumbs": [
+      "POČETAK U RADU S TEKSTOM",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Tekstualni nizovi</span>"
+    ]
+  },
+  {
+    "objectID": "2_1_tekstualni_nizovi.html#operacije-na-nizovima",
+    "href": "2_1_tekstualni_nizovi.html#operacije-na-nizovima",
+    "title": "4  Tekstualni nizovi",
+    "section": "4.3 Operacije na nizovima",
+    "text": "4.3 Operacije na nizovima\nPaket stringr sadrži skup funkcija za najčešće operacije s tekstom. Sve njegove funkcije počinju prefiksom str_ i kao prvi argument uzimaju niz ili vektor nizova.\nJedna od osnovnih funkcija paketa je str_c() koja spaja više nizova u jedan niz. Prema zadanim postavkama kao separator koristi prazan niz (sep = \"\") što znači da se nizovi spajaju bez ikakvog znaka između njih.\n\n# Spajanje nizova u jedan niz\nstr_c(first_part, second_part, third_part, fourth_part)\n\n[1] \"Voldemort had been raised in a Muggle orphanage.Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them.Hardly any wizards believed in the Deathly Hallows.Was it likely that Voldemort knew about them?\"\n\n\nOvdje je dobro istaknuti da je razmak u R-u znak kao i svaki drugi i da se ne dodaje automatski. Spajanjem varijabli dobili smo jedan niz koji sadrži sve četiri rečenice, ali budući da je separator prazan niz, između njih nema razmaka. Tako svaka rečenica počinje odmah iza točke prethodne, iako bi pravopisno ondje trebao biti razmak. Zato je u argumentu sep poželjno kao separator zadati razmak.\n\n# Spajanje nizova u jedan niz s razmakom kao separatorom\nstr_c(\n  first_part, second_part, third_part, fourth_part,\n  sep = \" \"\n)\n\n[1] \"Voldemort had been raised in a Muggle orphanage. Nobody could have told him The Tales of Beedle the Bard when he was a child, any more than Harry had heard them. Hardly any wizards believed in the Deathly Hallows. Was it likely that Voldemort knew about them?\"\n\n\nSljedeća je funkcija str_length() koja vraća broj znakova u svakom nizu vektora, uključujući razmake i interpunkciju. Vrlo je slična osnovnoj funkciji nchar(), ali za razliku od nje radi i s faktorima, dok nchar() u tom slučaju javlja pogrešku.\n\n# Broj znakova u svakom nizu\nstr_length(hp_sentences)\n\n[1]  48 112  51  45\n\n\nFunkcija str_sub() izdvaja dio niza na temelju položaja znakova. Argumenti start i end određuju položaj prvog i posljednjeg znaka koji želimo izdvojiti, a oba se znaka uključuju u rezultat.\n\n# Izdvajanje znakova od petog do šesnaestog\nstr_sub(hp_sentences, start = 5, end = 16)\n\n[1] \"emort had be\" \"dy could hav\" \"ly any wizar\" \"it likely th\"\n\n\n\n4.3.1 Traženje podudaranja u nizovima\nJedna od najkorisnijih mogućnosti paketa stringr je rad s uzorcima. To može biti, primjerice, pronalaženje nizova koji sadrže određeni uzorak, dijeljenje nizova na temelju uzorka ili zamjena dijelova niza koji odgovaraju uzorku. Za pronalaženje podudaranja najčešće se koriste tri funkcije: str_detect(), str_subset() i str_count(). Sve tri traže zadani uzorak, a razlikuju se po rezultatu koji vraćaju.\nFunkcija str_detect() vraća logički vektor s vrijednošću TRUE za svaki niz koji sadrži zadani uzorak i FALSE za svaki niz koji ga ne sadrži. Funkcija str_subset() vraća samo nizove koji sadrže uzorak, a str_count() broj pojavljivanja uzorka u svakom nizu. Dakle, sve se tri funkcije koriste na isti način, a razlikuju se samo po rezultatu. Uzorak se zadaje argumentom pattern. Prema zadanim postavkama stringr uzorak tumači kao regularni izraz u kojem neki znakovi (npr. . ili ?) imaju posebno značenje. Ako želimo da se uzorak tumači doslovno, zadajemo ga unutar funkcije fixed(). Pritom valja imati na umu da se razlikuju velika i mala slova. Primjerice, može nas zanimati sadrži li neki niz riječ Voldemort.\n\n# Sadrži li niz uzorak\nstr_detect(hp_sentences, pattern = fixed(\"Voldemort\"))\n\n[1]  TRUE FALSE FALSE  TRUE\n\n# Nizovi koji sadrže uzorak\nstr_subset(hp_sentences, pattern = fixed(\"Voldemort\"))\n\n[1] \"Voldemort had been raised in a Muggle orphanage.\"\n[2] \"Was it likely that Voldemort knew about them?\"   \n\n# Broj pojavljivanja uzorka u svakom nizu\nstr_count(hp_sentences, pattern = fixed(\"Voldemort\"))\n\n[1] 1 0 0 1\n\n\n\n\n4.3.2 Odvajanje nizova\nSljedeća funkcija paketa stringr, str_split(), dijeli niz na dijelove prema zadanom uzorku. Uzorak se zadaje argumentom pattern i može biti znak, riječ ili bilo koji drugi niz znakova na mjestu kojeg funkcija dijeli niz.\nRecimo da imamo sljedeći niz:\n\n# Definiranje niza\nhp_text &lt;- \"Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, \\\"Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?\\\"\"\n\n# Pregled niza\nhp_text\n\n[1] \"Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, \\\"Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?\\\"\"\n\n\nIz ispisa je vidljivo da je riječ o odlomku od nekoliko rečenica unutar kojih su pojedini dijelovi odijeljeni zarezima. Rečenice završavaju točkom iza koje slijedi razmak, a zarezima također slijedi razmak. Funkcijom str_split() niz možemo podijeliti prema bilo kojem od tih separatora. Budući da točka u regularnim izrazima ima posebno značenje (označava bilo koji znak), uzorak s točkom zadajemo unutar funkcije fixed().\n\n# Podjela niza prema uzorku \". \"\nstr_split(\n  string = hp_text,\n  pattern = fixed(\". \")\n)\n\n[[1]]\n[1] \"Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand\"                                                                                                                             \n[2] \"Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch\"\n[3] \"As Mr\"                                                                                                                                                                                                                                                \n[4] \"Weasley examined the Deluminator for the third or fourth time, Mrs\"                                                                                                                                                                                   \n[5] \"Weasley said tentatively, \\\"Harry, dear, everyone's awfully hungry, we didn't like to start without you...\"                                                                                                                                           \n[6] \"Shall I serve dinner now?\\\"\"                                                                                                                                                                                                                          \n\n# Podjela niza prema uzorku \", \"\nstr_split(\n  string = hp_text,\n  pattern = \", \"\n)\n\n[[1]]\n[1] \"Outside in the garden\"                                                                                                                                                                                                     \n[2] \"over the dinner tables\"                                                                                                                                                                                                    \n[3] \"the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword\"\n[4] \"but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time\"                                                \n[5] \"Mrs. Weasley said tentatively\"                                                                                                                                                                                             \n[6] \"\\\"Harry\"                                                                                                                                                                                                                   \n[7] \"dear\"                                                                                                                                                                                                                      \n[8] \"everyone's awfully hungry\"                                                                                                                                                                                                 \n[9] \"we didn't like to start without you.... Shall I serve dinner now?\\\"\"                                                                                                                                                       \n\n\nNiz je moguće podijeliti i prema više uzoraka odjednom. Uzorci se tada odvajaju znakom |, koji u regularnim izrazima znači ili. Budući da funkcija fixed() ne podržava taj znak, uzorak zadajemo kao regularni izraz, a posebno značenje točke uklanjamo tako da ispred nje stavimo dvije obrnute kose crte (\\\\.).\n\n# Podjela niza prema više uzoraka\nstr_split(\n  string = hp_text,\n  pattern = \"\\\\. |, \"\n)\n\n[[1]]\n [1] \"Outside in the garden\"                                                                                                                          \n [2] \"over the dinner tables\"                                                                                                                         \n [3] \"the three objects Scrimgeour had given them were passed from hand to hand\"                                                                      \n [4] \"Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword\"\n [5] \"but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch\"                                           \n [6] \"As Mr\"                                                                                                                                          \n [7] \"Weasley examined the Deluminator for the third or fourth time\"                                                                                  \n [8] \"Mrs\"                                                                                                                                            \n [9] \"Weasley said tentatively\"                                                                                                                       \n[10] \"\\\"Harry\"                                                                                                                                        \n[11] \"dear\"                                                                                                                                           \n[12] \"everyone's awfully hungry\"                                                                                                                      \n[13] \"we didn't like to start without you...\"                                                                                                         \n[14] \"Shall I serve dinner now?\\\"\"                                                                                                                    \n\n\nU svakom od ovih slučajeva funkcija je niz podijelila na više manjih nizova. Sa separatorom \". \" dobili smo šest nizova. Pritom se vidi da podjela prema točki nije isto što i podjela na rečenice jer je funkcija niz podijelila i iza kratica Mr. i Mrs. pa su one završile u zasebnim dijelovima odvojene od prezimena Weasley. Sa separatorom \", \" dobili smo 9 nizova, a kad smo uključili oba separatora, čak 14.\nBroj dijelova možemo ograničiti argumentom n. Ako zadamo n = 2, niz će se podijeliti na dva dijela pri prvom pojavljivanju uzorka, a ostatak niza ostat će netaknut u drugom dijelu. U našem primjeru prvi dio bit će prva rečenica, a drugi ostatak odlomka.\n\n# Podjela niza na najviše dva dijela\nstr_split(\n  string = hp_text,\n  pattern = fixed(\". \"),\n  n = 2\n)\n\n[[1]]\n[1] \"Outside in the garden, over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand\"                                                                                                                                                                                                                                                                                                                                                 \n[2] \"Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, \\\"Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?\\\"\"\n\n\nVažno je napomenuti da funkcija str_split() prema zadanim postavkama vraća listu jer je lista jedina podatkovna struktura čiji elementi mogu biti različite duljine. Ako zadamo n ili znamo da svi nizovi imaju jednak broj dijelova, možemo dobiti jednostavniji rezultat, matricu. To postižemo tako da argumentu simplify zadamo vrijednost TRUE. Tada svaki redak matrice odgovara jednom ulaznom nizu, a svaki stupac jednom dijelu niza. Matrica ima onoliko stupaca koliko dijelova ima najdulje podijeljeni niz, a nedostajuća mjesta u ostalim retcima popunjavaju se praznim nizovima. Budući da ovdje dijelimo samo jedan niz, dobit ćemo matricu s jednim retkom i 14 stupaca.\n\n# Podjela niza prema uzorcima i prikaz rezultata kao matrice\nstr_split(\n  string = hp_text,\n  pattern = \"\\\\. |, \",\n  simplify = TRUE\n)\n\n     [,1]                    [,2]                    \n[1,] \"Outside in the garden\" \"over the dinner tables\"\n     [,3]                                                                       \n[1,] \"the three objects Scrimgeour had given them were passed from hand to hand\"\n     [,4]                                                                                                                                             \n[1,] \"Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword\"\n     [,5]                                                                                                  \n[1,] \"but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch\"\n     [,6]    [,7]                                                           \n[1,] \"As Mr\" \"Weasley examined the Deluminator for the third or fourth time\"\n     [,8]  [,9]                       [,10]     [,11] \n[1,] \"Mrs\" \"Weasley said tentatively\" \"\\\"Harry\" \"dear\"\n     [,12]                       [,13]                                   \n[1,] \"everyone's awfully hungry\" \"we didn't like to start without you...\"\n     [,14]                        \n[1,] \"Shall I serve dinner now?\\\"\"\n\n\nZa obradu rezultata u obliku liste koriste se funkcije lapply() i sapply(). Funkcija lapply() kao prvi argument uzima listu, a kao drugi funkciju koju primjenjuje na svaki element liste te vraća listu. Funkcija sapply() radi isto, ali rezultat pojednostavljuje u vektor ili matricu kad god je to moguće. Primjerice, funkcijom lapply() možemo izračunati koliko dijelova ima svaki podijeljeni niz.\n\n\n4.3.3 Zamjena dijelova niza\nSljedeće su važne funkcije str_replace() i str_replace_all() koje dijelove niza koji odgovaraju zadanom uzorku zamjenjuju drugim nizom. Razlika je u tome što str_replace() zamjenjuje samo prvo pojavljivanje uzorka, a str_replace_all() svako pojavljivanje. Dva su najvažnija argumenta tih funkcija pattern, koji određuje uzorak koji želimo zamijeniti, i replacement, koji određuje niz kojim ga zamjenjujemo.\n\n# Zamjena prvog pojavljivanja uzorka\nstr_replace(\n  string = hp_text,\n  pattern = \"\\\\. |, \",\n  replacement = \" & \"\n)\n\n[1] \"Outside in the garden & over the dinner tables, the three objects Scrimgeour had given them were passed from hand to hand. Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword, but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch. As Mr. Weasley examined the Deluminator for the third or fourth time, Mrs. Weasley said tentatively, \\\"Harry, dear, everyone's awfully hungry, we didn't like to start without you.... Shall I serve dinner now?\\\"\"\n\n# Zamjena svih pojavljivanja uzorka\nstr_replace_all(\n  string = hp_text,\n  pattern = \"\\\\. |, \",\n  replacement = \" & \"\n)\n\n[1] \"Outside in the garden & over the dinner tables & the three objects Scrimgeour had given them were passed from hand to hand & Everyone exclaimed over the Deluminator and The Tales of Beedle the Bard and lamented the fact that Scrimgeour had refused to pass on the sword & but none of them could offer any suggestion as to why Dumbledore would have left Harry an old Snitch & As Mr & Weasley examined the Deluminator for the third or fourth time & Mrs & Weasley said tentatively & \\\"Harry & dear & everyone's awfully hungry & we didn't like to start without you... & Shall I serve dinner now?\\\"\"\n\n\n\n\n4.3.4 Stvaranje nizova s podacima\nJoš je jedna važna operacija u radu s tekstualnim nizovima stvaranje novih nizova od podataka u R-u. Jedna od funkcija za to je paste() iz osnovnog R-a koja spaja dva ili više niza. Ipak, za složenija spajanja praktičnije je koristiti funkciju glue() iz paketa glue. Taj se paket instalira zajedno s tidyverse-om, ali se ne učitava automatski naredbom library(tidyverse) pa ga treba zasebno učitati naredbom library(glue).\nFunkcija glue() praktičnija je jer se njome lakše stvaraju nizovi kada treba spojiti mnogo varijabli i teksta. Niz se zapisuje unutar navodnika, a sve što stavimo unutar vitičastih zagrada ({}) funkcija tumači kao R kod, izvršava ga i rezultat umeće u niz. Unutar vitičastih zagrada možemo, dakle, navesti gotovo sve što se može pretvoriti u niz, varijablu, niz ili izraz, primjerice računsku operaciju, čiji će se rezultat izračunati i pretvoriti u niz.\n\n# Stvaranje niza od varijabli i izraza\nfirst_name &lt;- \"Harry\"\nlast_name &lt;- \"Potter\"\nglue(\"{first_name} {last_name} started Hogwarts at the age of {1991 - 1980}.\")\n\nHarry Potter started Hogwarts at the age of 11.\n\n\nFunkcija glue() omogućuje i korištenje privremenih varijabli. To su varijable koje definiramo samo unutar poziva funkcije jer nam nisu potrebne nigdje drugdje, a čime se ne spremaju u radno okruženje.\n\n# Stvaranje niza s privremenim varijablama\nglue(\n  \"student = Harry Potter,\\nhouse = {house};\\nwand = {wand},\\npet = {pet};\\npatronus = {patronus};\\nfirst_appearance = {first_appearance}\",\n  house = \"Gryffindor\",\n  wand = \"holly and phoenix feather\",\n  pet = \"Hedwig\",\n  patronus = \"stag\",\n  first_appearance = \"Harry Potter and the Philosopher's Stone\"\n)\n\nstudent = Harry Potter,\nhouse = Gryffindor;\nwand = holly and phoenix feather,\npet = Hedwig;\npatronus = stag;\nfirst_appearance = Harry Potter and the Philosopher's Stone\n\n\nFunkcija glue() može se koristiti i unutar funkcije mutate() iz paketa dplyr za stvaranje novog stupca.\n\n# Stvaranje novog stupca s nizom\nname &lt;- \"Harry Potter\"\ndf &lt;- tibble(name)\ndf |&gt;\n  mutate(new_column = glue(\"Hi, {name}\"))\n\n# A tibble: 1 × 2\n  name         new_column      \n  &lt;chr&gt;        &lt;glue&gt;          \n1 Harry Potter Hi, Harry Potter\n\n\n\n# Stvaranje tablice s podacima\nhp_df &lt;- tibble(\n  segment = c(\"house\", \"wand\", \"pet\", \"patronus\", \"first appearance\"),\n  information = c(\"Gryffindor\", \"holly and phoenix feather\", \"Hedwig\", \"stag\", \"Harry Potter and the Philosopher's Stone\")\n)\n\n# Pregled\nhp_df\n\n# A tibble: 5 × 2\n  segment          information                             \n  &lt;chr&gt;            &lt;chr&gt;                                   \n1 house            Gryffindor                              \n2 wand             holly and phoenix feather               \n3 pet              Hedwig                                  \n4 patronus         stag                                    \n5 first appearance Harry Potter and the Philosopher's Stone\n\n# Stvaranje rečenice za svaki redak tablice\nhp_df |&gt; mutate(sentence = glue(\"Harry's {segment} is {information}.\"))\n\n# A tibble: 5 × 3\n  segment          information                              sentence            \n  &lt;chr&gt;            &lt;chr&gt;                                    &lt;glue&gt;              \n1 house            Gryffindor                               Harry's house is Gr…\n2 wand             holly and phoenix feather                Harry's wand is hol…\n3 pet              Hedwig                                   Harry's pet is Hedw…\n4 patronus         stag                                     Harry's patronus is…\n5 first appearance Harry Potter and the Philosopher's Stone Harry's first appea…\n\n\nPonekad želimo spojiti sve elemente vektora u jedan niz. To je moguće funkcijom glue_collapse(), koja se može koristiti sa sljedećim argumentima:\n\nsep - niz koji se umeće između elemenata vektora,\nlast - poseban separator između posljednja dva elementa vektora,\nwidth - najveća duljina rezultata; dulji rezultat skraćuje se i završava s ....\n\n\n# Spajanje elemenata vektora u jedan niz\ncharacters_names &lt;- c(\"Harry Potter\", \"Hermione Granger\", \"Ron Weasley\", \"Albus Dumbledore\", \"Severus Snape\")\n\nglue_collapse(\n  characters_names,\n  sep = \", \",\n  last = \" and \",\n  width = 10\n)\n\nHarry P...\n\n# Umetanje spojenog vektora u niz\nglue(\n  \"The main characters are: {characters}.\",\n  characters = glue_collapse(\n    characters_names,\n    sep = \", \",\n    last = \" and \"\n  )\n)\n\nThe main characters are: Harry Potter, Hermione Granger, Ron Weasley, Albus Dumbledore and Severus Snape.",
+    "crumbs": [
+      "POČETAK U RADU S TEKSTOM",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Tekstualni nizovi</span>"
+    ]
+  },
+  {
+    "objectID": "2_1_tekstualni_nizovi.html#udaljenost-među-nizovima",
+    "href": "2_1_tekstualni_nizovi.html#udaljenost-među-nizovima",
+    "title": "4  Tekstualni nizovi",
+    "section": "4.4 Udaljenost među nizovima",
+    "text": "4.4 Udaljenost među nizovima\nPosljednji važan dio rada s nizovima je udaljenost među nizovima, odnosno broj koji pokazuje koliko se dva niza međusobno razlikuju. Primjerice, može nas zanimati kolika je udaljenost između riječi Snape i snake. Te se riječi razlikuju u samo jednom znaku, a to je slovo p u prezimenu Snape koje je zamijenjeno slovom k u riječi snake. Budući da se razlikuju u jednom znaku, njihova je udaljenost 1. U drugom primjeru udaljenost između imena Sirius i riječi serious iznosi 2. Obje riječi počinju slovom s, sadrže ri i završavaju s us, a razlikuju se u tome što riječ serious umjesto prvog i ima e te između i i u ima dodatno slovo o.\nTakva mjera može biti korisna u mnogim situacijama. Vjerojatno je najpoznatija primjena automatsko ispravljanje pojmova upisanih u tražilicu. Kada pogrešno upišemo pojam, tražilica nas pita jesmo li mislili na neki drugi, ispravljeni pojam. Jedan od načina da se to postigne jest izračunati udaljenost između upisanog niza i poznatih pojmova te ponuditi onaj koji je najbliži. Druga je česta primjena rad s korisničkim unosom, primjerice podacima koje različite osobe upisuju u obrasce, pri čemu se isti podatak često upiše na više načina ili s pogreškama.\nNajčešće korišten paket za izračun udaljenosti među nizovima u R-u je stringdist koji sadrži istoimenu funkciju. Funkcija kao prva dva argumenta uzima nizove koje uspoređujemo, a argumentom method zadajemo vrstu udaljenosti koju želimo izračunati.\nJedna od najčešće korištenih mjera je Levenshteinova udaljenost koja broji najmanji broj izmjena potrebnih da se jedan niz pretvori u drugi. Izmjena može biti umetanje, brisanje ili zamjena jednog znaka, a svaka izmjena povećava udaljenost za jedan. Upravo je tu mjeru ilustrirao uvodni primjer. Da bi se ime Sirius pretvorilo u riječ serious, potrebne su dvije izmjene, zamjena prvog slova i slovom e i umetanje slova o između i i u. Za izračun Levenshteinove udaljenosti kao metodu zadajemo lv.\n\n# Levenshteinova udaljenost\nstringdist(\n  \"Sirius\",\n  \"Serious\",\n  method = \"lv\"\n)\n\n[1] 2\n\n\nJedna od alternativa Levenshteinovoj udaljenosti je Damerau-Levenshteinova udaljenost. Od nje se razlikuje po tome što kao jednu izmjenu broji i zamjenu mjesta dvaju susjednih znakova (transpoziciju). Primjerice, u unosu Hermoine Granger zamijenjena su mjesta slovima i i o, što je vrlo česta pogreška u pisanju tog imena. Prema Levenshteinovoj udaljenosti za ispravak su potrebne dvije izmjene, zamjena slova o slovom i i zamjena slova i slovom o, a prema Damerau-Levenshteinovoj samo jedna, zamjena mjesta tih dvaju slova. Za izračun Damerau-Levenshteinove udaljenosti kao metodu zadajemo dl.\n\n# Levenshteinova udaljenost\nstringdist(\n  \"Hermione Granger\",\n  \"Hermoine Granger\",\n  method = \"lv\"\n)\n\n[1] 2\n\n# Damerau-Levenshteinova udaljenost\nstringdist(\n  \"Hermione Granger\",\n  \"Hermoine Granger\",\n  method = \"dl\"\n)\n\n[1] 1\n\n\nJoš jedna mjera je optimalno poravnanje nizova (engl. optimal string alignment) koja se zadaje metodom osa. Ona je slična Damerau-Levenshteinovoj udaljenosti, ali s ograničenjem da se svaki dio niza smije izmijeniti najviše jednom. Primjerice, dva znaka kojima smo zamijenili mjesta ne smiju se nakon toga dodatno mijenjati. Ovo je ujedno zadana metoda funkcije stringdist() pa se koristi ako argument method ne zadamo.\nDrugačiji pristup od Levenshteinove udaljenosti imaju metode temeljene na q-gramima. One nizove ne uspoređuju znak po znak, nego ih dijele na podnizove fiksne duljine q (q-grame) čija se duljina u funkciji stringdist() zadaje argumentom q. Postupak uključuje podjelu oba niza na q-grame, brojanje pojavljivanja svakog q-grama u svakom nizu te izračun udaljenosti kao zbroja razlika u tim brojevima. Za izračun kao metodu zadajemo qgram.\n\n# Udaljenost temeljena na q-gramima\nstringdist(\n  \"Hogwarts\",\n  \"Hogwards\",\n  method = \"qgram\",\n  q = 2\n)\n\n[1] 4\n\n\nU ovom je slučaju rezultat 4. Podijelimo li nizove na dijelove od dva znaka (bigrame), dobivamo Ho, og, gw, wa, ar, rt, ts i Ho, og, gw, wa, ar, rd, ds. Bigrami rt i ts pojavljuju se samo u prvom nizu, a rd i ds samo u drugom, pa se nizovi razlikuju u četiri bigrama. Primijetimo da bi Levenshteinova udaljenost za iste nizove iznosila samo 1 jer se razlikuju u jednom slovu. To pokazuje da različite metode mogu dati vrlo različite rezultate, ovisno o tome što mjere.\nNa q-gramima se temelje i metode jaccard i cosine. Jaccardova udaljenost računa se kao udio q-grama koji se pojavljuju samo u jednom od nizova u ukupnom broju različitih q-grama obaju nizova. Kosinusna udaljenost q-grame svakog niza prikazuje kao vektor u višedimenzionalnom prostoru i računa se kao 1 umanjeno za kosinus kuta između tih dvaju vektora.\nPaket stringdist sadrži i funkciju amatch(), koja za zadani niz pronalazi najbliži niz u vektoru i vraća njegov položaj. To je korisno kada u popisu želimo pronaći unos na koji je osoba mislila kada je upisala niz s pogreškom. Primjerice, možemo saznati na kojeg je lika iz vektora characters_names mislila osoba koja je upisala Albus Dumbeldore. Argumentom maxDist određujemo najveću dopuštenu udaljenost, a ako nijedan niz u vektoru nije dovoljno blizu, onda funkcija vraća NA.\n\n# Pronalaženje najbližeg niza u vektoru\namatch(\n  x = \"Albus Dumbeldore\",\n  table = characters_names,\n  maxDist = 5,\n  method = \"lv\"\n)\n\n[1] 4\n\n\nRezultat je 4 jer je četvrti element vektora, Albus Dumbledore, od upisanog niza udaljen samo dvije izmjene, dok su svi ostali elementi udaljeni mnogo više od dopuštenih pet. Kad bi više elemenata bilo jednako blizu, funkcija bi vratila položaj prvog od njih.",
+    "crumbs": [
+      "POČETAK U RADU S TEKSTOM",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Tekstualni nizovi</span>"
+    ]
+  },
+  {
+    "objectID": "2_3_učitavanje_i_oblikovanje_podataka.html",
+    "href": "2_3_učitavanje_i_oblikovanje_podataka.html",
+    "title": "6  Učitavanje i oblikovanje podataka",
+    "section": "",
+    "text": "Tekstualne podatke možemo učitati iz CSV datoteka, tablica ili drugih izvora. Nakon učitavanja važno je provjeriti nazive stupaca, nedostajuće vrijednosti i jedinicu analize.\n\ndokumenti &lt;- data.frame(\n  id = 1:3,\n  tekst = c(\"Prvi tekst\", \"Drugi tekst\", \"Treći tekst\")\n)\ndokumenti\n\n  id       tekst\n1  1  Prvi tekst\n2  2 Drugi tekst\n3  3 Treći tekst",
+    "crumbs": [
+      "POČETAK U RADU S TEKSTOM",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Učitavanje i oblikovanje podataka</span>"
+    ]
+  },
+  {
+    "objectID": "2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html",
+    "href": "2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html",
+    "title": "7  Pretpostavke za analizu teksta u tidytextu",
     "section": "",
     "text": "Paket tidytext tekst prikazuje u obliku uredne tablice u kojoj je svaka riječ jedan red. Takav oblik olakšava povezivanje tekstualnih podataka s alatima iz ekosustava tidyverse.\nPrije tokenizacije potrebno je odlučiti kako postupati s interpunkcijom, velikim i malim slovima, stop-riječima i dijakritičkim znakovima.",
     "crumbs": [
-      "2. Početak u radu s tekstom",
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Pretpostavke za analizu teksta u tidytextu</span>"
+      "POČETAK U RADU S TEKSTOM",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Pretpostavke za analizu teksta u tidytextu</span>"
     ]
   },
   {
     "objectID": "3_0_POČETAK U RADU S TEKSTOM.html",
     "href": "3_0_POČETAK U RADU S TEKSTOM.html",
-    "title": "3. Deskriptivna analiza teksta",
+    "title": "DESKRIPCIJSKA ANALIZA TEKSTA",
     "section": "",
     "text": "Ovaj dio prikazuje osnovne načine opisivanja tekstualnih podataka.",
     "crumbs": [
-      "3. Deskriptivna analiza teksta"
+      "DESKRIPCIJSKA ANALIZA TEKSTA"
     ]
   },
   {
     "objectID": "3_1_deskriptivna_analiza_teksta.html",
     "href": "3_1_deskriptivna_analiza_teksta.html",
-    "title": "7  Deskriptivna analiza teksta",
+    "title": "8  Deskriptivna analiza teksta",
     "section": "",
     "text": "Deskriptivna analiza daje pregled veličine korpusa, broja dokumenata i raspodjele osnovnih tekstualnih obilježja.",
     "crumbs": [
-      "3. Deskriptivna analiza teksta",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Deskriptivna analiza teksta</span>"
+      "DESKRIPCIJSKA ANALIZA TEKSTA",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Deskriptivna analiza teksta</span>"
     ]
   },
   {
     "objectID": "3_2_analiza_učestalosti_riječi.html",
     "href": "3_2_analiza_učestalosti_riječi.html",
-    "title": "8  Analiza učestalosti riječi",
+    "title": "9  Analiza učestalosti riječi",
     "section": "",
     "text": "Učestalost riječi može ukazati na dominantne pojmove u korpusu. Pri interpretaciji treba uzeti u obzir duljinu dokumenata i kontekst u kojem se riječi pojavljuju.\n\nrijeci &lt;- c(\"tekst\", \"tekst\", \"R\", \"podatak\", \"R\")\nsort(table(rijeci), decreasing = TRUE)\n\nrijeci\n      R   tekst podatak \n      2       2       1",
     "crumbs": [
-      "3. Deskriptivna analiza teksta",
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Analiza učestalosti riječi</span>"
+      "DESKRIPCIJSKA ANALIZA TEKSTA",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Analiza učestalosti riječi</span>"
     ]
   },
   {
     "objectID": "3_3_odnosi_među_riječima.html",
     "href": "3_3_odnosi_među_riječima.html",
-    "title": "9  Odnosi među riječima",
+    "title": "10  Odnosi među riječima",
     "section": "",
     "text": "Ko-pojavljivanje riječi omogućuje istraživanje pojmova koji se često javljaju u istim dokumentima ili rečenicama.",
     "crumbs": [
-      "3. Deskriptivna analiza teksta",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Odnosi među riječima</span>"
+      "DESKRIPCIJSKA ANALIZA TEKSTA",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Odnosi među riječima</span>"
     ]
   },
   {
     "objectID": "4_0_ANALIZA_SENTIMENATA.html",
     "href": "4_0_ANALIZA_SENTIMENATA.html",
-    "title": "4. Analiza sentimenta",
+    "title": "ANALIZA SENTIMENATA",
     "section": "",
     "text": "Analiza sentimenta procjenjuje emocionalni ton i stavove izražene u tekstu.",
     "crumbs": [
-      "4. Analiza sentimenta"
+      "ANALIZA SENTIMENATA"
     ]
   },
   {
     "objectID": "4_1_analiza_sentimenata.html",
     "href": "4_1_analiza_sentimenata.html",
-    "title": "10  Analiza sentimenta",
+    "title": "11  Analiza sentimenta",
     "section": "",
     "text": "Analiza sentimenta povezuje riječi s leksičkim oznakama poput pozitivnog ili negativnog sentimenta. Rezultate treba interpretirati u odnosu na jezik, kontekst i primjerenost korištenog leksikona.",
     "crumbs": [
-      "4. Analiza sentimenta",
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Analiza sentimenta</span>"
+      "ANALIZA SENTIMENATA",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Analiza sentimenta</span>"
     ]
   },
   {
     "objectID": "5_0_TEKSTUALNA_MODELIRANJA.html",
     "href": "5_0_TEKSTUALNA_MODELIRANJA.html",
-    "title": "5. Tekstualna modeliranja",
+    "title": "TEKSTUALNA MODELIRANJA",
     "section": "",
     "text": "Tematsko modeliranje omogućuje otkrivanje obrazaca tema u većim zbirkama dokumenata.",
     "crumbs": [
-      "5. Tekstualna modeliranja"
+      "TEKSTUALNA MODELIRANJA"
     ]
   },
   {
     "objectID": "5_1_tematsko_modeliranje.html",
     "href": "5_1_tematsko_modeliranje.html",
-    "title": "11  Tematsko modeliranje",
+    "title": "12  Tematsko modeliranje",
     "section": "",
     "text": "Tematski modeli sažimaju korpus pomoću skupa latentnih tema. Broj tema i interpretaciju modela potrebno je obrazložiti s obzirom na istraživačko pitanje.",
     "crumbs": [
-      "5. Tekstualna modeliranja",
-      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Tematsko modeliranje</span>"
+      "TEKSTUALNA MODELIRANJA",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Tematsko modeliranje</span>"
     ]
   },
   {
     "objectID": "6_0_DODATNE_MOGUĆNOSTI_RADA_S_TEKSTOM.html",
     "href": "6_0_DODATNE_MOGUĆNOSTI_RADA_S_TEKSTOM.html",
-    "title": "6. Dodatne mogućnosti rada s tekstom",
+    "title": "DODATNE MOGUĆNOSTI RADA S TEKSTOM",
     "section": "",
     "text": "Završni dio obrađuje nestrukturirane podatke i vizualizacije teksta.",
     "crumbs": [
-      "6. Dodatne mogućnosti rada s tekstom"
+      "DODATNE MOGUĆNOSTI RADA S TEKSTOM"
     ]
   },
   {
     "objectID": "6_1_rad_s_neurednim_podacima.html",
     "href": "6_1_rad_s_neurednim_podacima.html",
-    "title": "12  Rad s neurednim podacima",
+    "title": "13  Rad s neurednim podacima",
     "section": "",
     "text": "Neuredni podaci mogu sadržavati neujednačeno kodiranje, duplikate, HTML oznake, pogreške u pisanju ili nedovršene zapise. Čišćenje treba biti zabilježeno kako bi analiza ostala provjerljiva.",
     "crumbs": [
-      "6. Dodatne mogućnosti rada s tekstom",
-      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Rad s neurednim podacima</span>"
+      "DODATNE MOGUĆNOSTI RADA S TEKSTOM",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Rad s neurednim podacima</span>"
     ]
   },
   {
     "objectID": "6_2_vizualizacije_teksta.html",
     "href": "6_2_vizualizacije_teksta.html",
-    "title": "13  Vizualizacije teksta",
+    "title": "14  Vizualizacije teksta",
     "section": "",
     "text": "Vizualizacije poput grafikona učestalosti, mreža ko-pojavljivanja i prikaza tema pomažu u istraživanju obrazaca. Svaku vizualizaciju treba povezati s jasnim istraživačkim pitanjem.",
     "crumbs": [
-      "6. Dodatne mogućnosti rada s tekstom",
-      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Vizualizacije teksta</span>"
+      "DODATNE MOGUĆNOSTI RADA S TEKSTOM",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Vizualizacije teksta</span>"
     ]
   },
   {
