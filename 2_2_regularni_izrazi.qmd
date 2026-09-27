@@ -6,891 +6,1124 @@ title-block-banner: "#8B475D"
 title-block-banner-color: "white"
 ---
 
-**Regularni izrazi** (*regular expression*) su jezik koji se koristi za opisivanje uzoraka u nizovima. Riječ je zapravo o nizovima znakova koji imaju posebno značenje. Koriste se za pretraživanje, izdvajanje i manipuliranje nizovima znakova pri čemu, umjesto da ručno provjeravamo znak po znak, regularni izraz omogućuje da jednim uzorkom precizno definiramo što želimo pronaći, primjerice broj, slovo, određenu riječ, skupinu znakova ili složeniji obrazac. U praksi, regularni izrazi se koriste, primjerice, za provjeru podudaranja (npr. počinje li tekst brojem), izdvajanje dijelova teksta (npr. e-mail adrese, brojeva, datuma), čišćenje teksta (npr. uklanjanje višestrukih razmaka, nepotrebnih simbola), pripremu podataka za tekstualnu analizu i slično.
+```{r}
+#| include: FALSE
 
-Iako postoje i neki jednostavniji, paket `stringr` kao nastavak na rad s tekstualnim nizovima, omogućuje i rad s regularnim izrazima dosljedno koristeći slične funkcije i iste nazive argumenata te vraća rezultate u predvidljivim formatima. Možda i najvažnije, `stringr` koristi konciznu sintaksu za detektiranje regularnih izraza u nizovima. Važno je zato znati pojedine znakovi u regularnim izrazima koji u tekstualnim nizovima imaju posebno značenje.
+library(tidyverse)
+library(stringr)
+library(glue)
+```
 
-Jedna od najjednostavnijih funkcija `stringr` paketa je `str_match()` koja iz nekog niza izdvaja prvo definirano podudaranje u nizu. Mnogo korisnija, funkcija `str_match_all()` izdvaja sva definiranja podudaranja iz niza.
+**Regularni izrazi** (*regular expressions*) su jezik za opisivanje uzoraka u nizovima znakova. I sam regularni izraz niz je znakova, ali u njemu pojedini znakovi imaju posebno značenje. Umjesto da tekst ručno provjeravamo znak po znak, uzorkom u regularnom izrazu moguće je precizno opisati što želimo pronaći, primjerice znamenku, slovo, određenu riječ, skupinu znakova ili složeniji obrazac. U praksi se regularni izrazi koriste za:
 
-| Znakovi | Značenje | Primjer |
-|-----------------|----------|-------------------------|
-| `.` | bilo što (broj, slovo, razmak) | `str_match_all("Stan.Marsh_0 8", ".")` > "S", "t", "a", "n", ".", "M", "a", "r", "s", "h", "_", "0", " ", "8" |
-| `^` | početak niza | `str_match_all("Stan.Marsh_0 8", "^.")` > "S" |
-| `$` | kraj niza | `str_match_all("Stan.Marsh_0 8", ".$")` > "8" |
-| `\\.` | točka | `str_match_all("Stan.Marsh_0 8", "\\.")` > "." |
-| `\\d` | brojevi | `str_match_all("Stan.Marsh_0 8", "\\d")` > "0", "8" |
-| `\\D` | sve osim brojeva | `str_match_all("Stan.Marsh_0 8", "\\D")` > "S", "t", "a", "n", " ", "M", "a", "r", "s", "h", "_" |
-| `\\w` | slova, brojevi i doljnja crta | `str_match_all("Stan.Marsh_0 8", "\\w")` > "S", "t", "a", "n", "M", "a", "r", "s", "h", "_" "0", "8" |
-| `\\W` | sve osim slova, brojeva i doljnjih crta | `str_match_all("Stan.Marsh_0 8", "\\W")` > "." |
-| `[A-Za-z]` | velika i mala slova | `str_match_all("Stan.Marsh_0 8", "[A-Za-z]")` > "S", "t", "a", "n", "M", "a", "r", "s", "h" |
-| `[aeiou]` | mala slova samoglasnika | `str_match_all("Stan.Marsh_0 8", "[aeiou]")` > "a", "a" |
-| `\\s` | `" "`, razmak ili prijelom reda | `str_match_all("Stan.Marsh_0 8", "\\s")` > " " |
-| `\\S` | sve osim `" "`, razmaka ili prijeloma reda | `str_match_all("Stan.Marsh_0 8", "\\S")` > "S", "t", "a", "n", ".", "M", "a", "r", "s", "h", "_", "0", "8" |
+- provjeru podudaranja (npr. počinje li tekst brojem),
 
-Osim ovih, postoje još neki znakovi korisni za formiranje znakovlja za prepoznavanje regularnih izraza. Prvi takvi znakovi su znakovi ponavljanja koji se koriste za kontrolu koliko se puta prethodni element smije ili mora ponoviti. Prva je opcija definiranje ponavljanja vitičastim zagradama - `{}` pri čemu:
+- izdvajanje dijelova teksta (npr. adresa e-pošte, brojeva ili datuma),
 
-- zagrada s jednim brojem (npr. `{2}`) znači da se element koji joj prethodi mora pojaviti točno toliko puta,
+- čišćenje teksta (npr. uklanjanje višestrukih razmaka ili suvišnih simbola) te
 
-- zagrada sa dva broja odvojena zarezom (npr. `{2,4}`) dopušta minimalan i maksimalan broj ponavljanja,
+- općenito za pripremu podataka za analizu teksta.
 
-- zagrada s jednim brojem iza kojeg dolazi samo zarez (npr. `{2,}`) znači da postoji donja granica bez gornje granice.
+Iako je s regularnim izrazima moguće raditi i funkcijama osnovnog R-a (`grepl()`, `sub()` i `gsub()`), paket `stringr` taj posao znatno olakšava jer su njegove funkcije dosljednije i jednostavnije za korištenje. Sve funkcije paketa počinju s prefiksom `str_` i imaju iste nazive argumenata, a pri čemu je niz uvijek prvi, a uzorak drugi argument. Osim toga, funkcije `stringr`-a rezultate vraćaju u predvidljivom obliku pa ih je lako povezivati u lance.
 
-Osim ova dva, još se dva znaka koriste kao znakovi ponavljanja, no bez određenih broja pojavljivanja. Znak plus iza elementa označava da se element ponavlja jednom ili više puta (to je kraća verzija od `{1,}`). Drugi znak je zvjezdica koja je skraćeno od `{0,}`, a koja označava nijedno, jedno ili više ponavljanja. Ključno je razumijeti razliku između ova dva znaka. Kod znaka plus izraz kojem je pridružen mora se pojaviti barem jednom da bi se regularni niz smatrao uspješnim, a ako tog elementa uopće nema, uzorak se ne podudara s nizom. S druge strane, znak zvjezdice označava da je pojavljivanje potpuno neobavezno. Primjerice, izraz `[A-Za-z]+` traži niz koji sadrži barem jedno slovo, a ako u tekstu nema slova, ne dobiva se nikakav rezultat. Kada slova postoje, regularni će ih izraz povezati u najduži mogući uzastopni niz. S druge strane, izraz `[A-Za-z]*` je zadovoljen čak i kada u nizu nema nijednog slova. Zbog toga regularni izraz sa zvjezdicom može „uspjeti” i na mjestima gdje zapravo nema onoga što intuitivno tražimo. U praktičnom radu to često rezultira hvatanjem praznih nizova.
+Najjednostavnija i najpraktičnija funkcija paketa je `str_extract_all()` koja iz niza izdvaja sve dijelove koji odgovaraju zadanom uzorku, a za pronalaženje podudaranja koristi se i funkcija `str_view()` koja služi za vizualizaciju podudaranja između regularnog izraza i elemenata u nizovima, odnosno pomaže jasno vidjeti gdje i kako se uzorak podudara s tekstom.
 
-Korištenjem navedenih znakova možemo izvlačiti iz određenog teksta regularne izraze, odnosno skupove nizova koji odgovaraju nekom uzorku. U nastavku ćemo primijeniti ove znakove na tekst pod varijablom `intro_to_sp`.
+Rad s regularnim izrazima zahtijeva poznavanje posebne sintakse u kojoj pojedini znakovi imaju specifično značenje, a kojima se opisuje uzorak koji tražimo. Pritom posebnu ulogu ima obrnuta kosa crta (`\`) kojom se označavaju klase znakova (npr. `\d` za znamenku) ili se metaznaku oduzima posebno značenje (npr. `\.` označava doslovnu točku, a ne bilo koji znak). Budući da je `\` i u R-ovim nizovima znak za izlaz (*escape*), u kodu ga moramo pisati dvaput. Regularni izraz `\d` u R-u se stoga zapisuje kao `"\\d"`.
+
+| Izraz                | Značenje                                                   |
+|----------------------|------------------------------------------------------------|
+| `.`                  | bilo koji znak osim prijeloma reda                         |
+| `^`                  | početak niza                                               |
+| `$`                  | kraj niza                                                  |
+| `\\.`                | doslovna točka                                             |
+| `\\d`                | brojevi (0-9)                                              |
+| `\\D`                | bilo koji znak osim brojeva                                |
+| `\\w`                | slova, brojevi ili donja crta                              |
+| `\\W`                | bilo koji znak osim slova, brojeva i donje crte            |
+| `[A-Za-z]`           | veliko ili malo slovo engleske abecede                     |
+| `[A-Za-zČĆĐŠŽčćđšž]` | veliko ili malo slovo (uključujući č, ć, đ, š i ž)         |
+| `\\p{L}`             | bilo koje slovo (bez obzira na jezik i pismo)              |
+| `[aeiou]`            | bilo koji od navedenih znakova (ovdje mali samoglasnici)   |
+| `\\s`                | bjelina (razmak, tabulator ili prijelom reda)              |
+| `\\S`                | bilo koji znak osim bjeline                                |
+
+```{r}
+# Izdvajanje svih znakova
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "."
+)
+
+# Izdvajanje prvog znaka
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "^."
+)
+
+# Izdvajanje posljednjeg znaka
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = ".$"
+)
+
+# Izdvajanje točaka
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "\\."
+)
+
+# Izdvajanje brojeva
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "\\d"
+)
+
+# Izdvajanje svih znakova osim brojeva
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "\\D"
+)
+
+# Izdvajanje slova, brojeva i donje crte
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "\\w"
+)
+
+# Izdvajanje svih znakova osim slova, brojeva i donje crte
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "\\W"
+)
+
+# Izdvajanje slova engleske abecede
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "[A-Za-z]"
+)
+
+# Izdvajanje malih samoglasnika
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "[aeiou]"
+)
+
+# Izdvajanje bjelina
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "\\s"
+)
+
+# Izdvajanje svih znakova osim bjelina
+str_extract_all(
+  string = "Warner Bros. Studio Tour London, Studio Tour Drive, Leavesden, WD25 7LR",
+  pattern = "\\S"
+)
+```
+
+Osim znakova iz tablice, u regularnim se izrazima koriste i **kvantifikatori** (*quantifiers*). Oni određuju koliko se puta element koji im neposredno prethodi smije ili mora ponoviti. Element pritom može biti jedan znak (npr. `b`), klasa znakova (npr. `\\d` ili `[aeiou]`) ili cijela grupa u zagradama.
+
+Broj ponavljanja najpreciznije se zadaje vitičastim zagradama `{}` pri čemu:
+
+- zagrada s jednim brojem (npr. `{2}`) znači da se element mora pojaviti točno toliko puta,
+
+- zagrada s dva broja odvojena zarezom (npr. `{2,4}`) zadaje najmanji i najveći dopušteni broj ponavljanja, a
+
+- zagrada s jednim brojem iza kojeg slijedi zarez (npr. `{2,}`) zadaje samo donju granicu, dok gornje granice nema.
+
+```{r}
+biljeska <- "Beedle je napisao 5 bajki, a Dumbledore je 1879. godine dodao 10 bilješki."
+
+# Izdvajanje točno dva uzastopna broja
+str_extract_all(
+  string = biljeska,
+  pattern = "\\d{2}"
+)
+
+# Izdvajanje dva do tri uzastopna broja
+str_extract_all(
+  string = biljeska,
+  pattern = "\\d{2,3}"
+)
+
+# Izdvajanje najmanje dva uzastopna broja
+str_extract_all(
+  string = biljeska,
+  pattern = "\\d{2,}"
+)
+```
+
+Rezultati pokazuju da regularni izraz pretražuje niz. Uzorak `\\d{2}` iz godine 1879 izdvaja dva podudaranja, `"18"` i `"79"` jer nakon svakog pronađenog podudaranja pretraživanje nastavlja od sljedećeg znaka. Uzorak `\\d{2,3}` izdvaja `"187"` jer uzima najveći dopušteni broj znamenki, a preostala znamenka `9` sama ne zadovoljava uzorak. Tek uzorak `\\d{2,}` izdvaja cijelu godinu. Broj 5 nijedan od ovih uzoraka ne izdvaja jer se sastoji od samo jedne znamenke.
+
+Za najčešće slučajeve postoje i kraći zapisi. Znak plus (`+`) označava da se element pojavljuje jednom ili više puta, a što je isto kao `{1,}`. Zvjezdica (`*`) označava da se element pojavljuje nula ili više puta, što je isto kao `{0,}`. Upitnik (`?`) označava da se element pojavljuje nula puta ili jednom što je isto kao `{0,1}`, a koristi se za neobavezne dijelove uzorka.
+
+| Kvantifikator | Značenje                         | Isto kao |
+|---------------|----------------------------------|----------|
+| `{n}`         | točno *n* puta                   |          |
+| `{n,m}`       | najmanje *n*, a najviše *m* puta |          |
+| `{n,}`        | najmanje *n* puta                |          |
+| `+`           | jednom ili više puta             | `{1,}`   |
+| `*`           | nula ili više puta               | `{0,}`   |
+| `?`           | nula puta ili jednom             | `{0,1}`  |
+
+Pritom je važno napomenuti da kvantifikatori uvijek uzimaju što je moguće više znakova pa uzorak `\\d+` izdvaja cijele brojeve, a ne pojedinačne znamenke.
+
+```{r}
+# Izdvajanje cijelih brojeva
+str_extract_all(
+  string = biljeska,
+  pattern = "\\d+"
+)
+
+# Izdvajanje riječi s neobaveznim slovom a na kraju
+str_extract_all(
+  string = "Beedle je autor Bajki barda Beedlea.",
+  pattern = "Beedlea?"
+)
+```
+
+Ključno je razumjeti razliku između plusa i zvjezdice. Uz plus element se mora pojaviti barem jednom pa ako ga u nizu nema, uzorak se s nizom ne podudara. Uz zvjezdicu je pojavljivanje elementa potpuno neobavezno pa se uzorak podudara i s praznim nizom (`""`), odnosno s nizom od nula znakova. To se jasno vidi na nizu u kojem nema nijedne znamenke.
+
+```{r}
+# Provjera sadrži li niz barem jednu znamenku
+str_detect(
+  string = "Babbitty Rabbitty",
+  pattern = "\\d+"
+)
+
+# Provjera sadrži li niz nula ili više znamenki
+str_detect(
+  string = "Babbitty Rabbitty",
+  pattern = "\\d*"
+)
+```
+
+Prva provjera vraća `FALSE` jer u nizu nema znamenki. Druga vraća `TRUE` jer nula znamenki postoji u svakom nizu, pa je uzorak `\\d*` uvijek zadovoljen. Isto se događa pri izdvajanju. Uzorak sa zvjezdicom podudara se s praznim nizom na svakom mjestu na kojem nema traženog elementa pa rezultat sadrži mnogo praznih nizova.
+
+```{r}
+# Izdvajanje riječi uzorkom s plusom
+str_extract_all(
+  string = "Bajke barda Beedlea",
+  pattern = "\\p{L}+"
+)
+
+# Izdvajanje riječi uzorkom sa zvjezdicom
+str_extract_all(
+  string = "Bajke barda Beedlea",
+  pattern = "\\p{L}*"
+)
+```
+
+Uzorak `\\p{L}+` vraća samo tri riječi. Uzorak `\\p{L}*` vraća iste riječi, ali i prazan niz na mjestu svakog razmaka te na kraju niza. Zvjezdica je stoga korisna samo kao dio šireg uzorka, odnosno kada je neki njegov dio neobavezan. Kada tražimo nešto što mora postojati, koristimo plus.
+
+Na kraju ćemo pogledati još dva znaka s posebnim značenjem. To su **okomita crta** (`|`) koja znači „ili” i **upitnik** (`?`) koji, osim funkcije kvantifikatora, ima i drugu ulogu. Oba su prikazana na kratkom vektoru s podacima o bajkama.
+
+```{r}
+bajke <- c(
+  "The Wizard and the Hopping Pot, Commentator: Dumbledore, 12 Pages",
+  "The Fountain of Fair Fortune, Commentators: Dumbledore and Granger, 10 Pages",
+  "The Warlock's Hairy Heart, Commentator: Unknown, 1 Page",
+  "The Tale of the Three Brothers, Commentators: Dumbledore and Granger, 8 Pages"
+)
+```
+
+Recimo da nas zanimaju bajke čiji je komentator nepoznat ili ih je komentirala Hermiona Granger. Oba imena možemo tražiti jednim uzorkom tako da ih odvojimo okomitom crtom.
+
+```{r}
+# Pronalaženje riječi Unknown ili Granger
+str_view(
+  string = bajke,
+  pattern = "Unknown|Granger"
+)
+```
+
+Riječ *commentator* u podacima se pojavljuje i u jednini i u množini. Okomitom crtom mogli bismo tražiti oba oblika (`Commentator|Commentators`), no oni se razlikuju samo po slovu *s* na kraju. Zato je jednostavnije to slovo označiti kao neobavezno upitnikom. Upitnik se odnosi samo na znak neposredno ispred sebe pa je neobavezno samo posljednje slovo, a ne cijela riječ.
+
+```{r}
+# Pronalaženje riječi Commentator i Commentators
+str_view(
+  string = bajke,
+  pattern = "Commentators?"
+)
+```
+
+Da bismo razumjeli drugu ulogu upitnika, treba se podsjetiti da kvantifikatori `*` i `+` uvijek uzimaju što je moguće više znakova. U nazivu igre *LEGO Harry Potter: Years 5-7* pojavljuju se dvije znamenke, pa uzorak `.*\\d` obuhvaća sve znakove do posljednje znamenke.
+
+```{r}
+# Pronalaženje svih znakova do posljednje znamenke
+str_view(
+  string = "LEGO Harry Potter: Years 5-7",
+  pattern = ".*\\d"
+)
+```
+
+Ako iza zvjezdice dodamo upitnik, onda uzorak uzima što je moguće manje znakova pa se podudaranje zaustavlja na prvoj znamenki. Funkcija `str_view()` prikazuje sva podudaranja, pa se u rezultatu vidi i drugo podudaranje, *-7*, koje počinje odmah iza prvog.
+
+```{r}
+# Pronalaženje svih znakova do prve znamenke
+str_view(
+  string = "LEGO Harry Potter: Years 5-7",
+  pattern = ".*?\\d"
+)
+```
+
+Okomita crta dijeli cijeli uzorak na mogućnosti, a ne samo riječi koje su joj najbliže. Kada želimo da se mogućnosti odnose samo na dio uzorka, stavljamo ih u zagrade.
+
+```{r}
+# Pronalaženje niza The Wizard, riječi Warlock ili riječi Fountain
+str_view(
+  string = bajke,
+  pattern = "The Wizard|Warlock|Fountain"
+)
+
+# Pronalaženje niza The iza kojeg slijedi Wizard, Warlock ili Fountain
+str_view(
+  string = bajke,
+  pattern = "The (Wizard|Warlock|Fountain)"
+)
+
+# Izdvajanje cijelog podudaranja i dijela u zagradama
+str_match(
+  string = bajke,
+  pattern = "The (Wizard|Warlock|Fountain)"
+)
+```
+
+U prvom uzorku riječ *The* dio je samo prve mogućnosti, pa se *Warlock* i *Fountain* pronalaze bez nje. U drugom uzorku *The* je zajednički dio, a zagrade ograničavaju okomitu crtu na tri mogućnosti unutar njih. Funkcija `str_match()` vraća matricu u kojoj je prvi stupac cijelo podudaranje, a drugi stupac dio uzorka u zagradama. Za četvrtu bajku nema podudaranja, pa su u oba stupca vrijednosti `NA`.
+
+```{r}
+# Izdvajanje riječi Page i Pages
+str_extract(
+  string = bajke,
+  pattern = "Pages?"
+)
+
+# Izdvajanje svih znakova do posljednjeg zareza
+str_extract(
+  string = bajke,
+  pattern = ".*,"
+)
+
+# Izdvajanje svih znakova do prvog zareza
+str_extract(
+  string = bajke,
+  pattern = ".*?,"
+)
+```
+
+Uzorak `.*,` izdvaja naslov i komentatore, jer uzima sve znakove do posljednjeg zareza. Uzorak `.*?,` izdvaja samo naslov, jer se zaustavlja na prvom zarezu.
+
+## Praktičan rad na regularnim izrazima
+
+Znakove iz tablice sada ćemo primijeniti na duži tekst i pomoću njih iz teksta izdvajati dijelove koji odgovaraju zadanom uzorku. Za to ćemo koristiti tekst o Bajkama barda Beedlea s internetske stranice [Harry Potter Wiki](https://harrypotter.fandom.com/wiki/The_Tales_of_Beedle_the_Bard). Stranici je pristupljeno 26. 9. 2026., a tekst je s nje preuzet kopiranjem. Svaki odlomak teksta spremljen je kao zaseban element vektora `tToBtB_wiki`.
 
 ```{r}
 #| include: false
-part_1 <- "The animated series South Park first aired on August 13, 1997, on the Comedy Central television network. The show was created by Trey Parker and Matt Stone, two authors who met in the early 1990s while studying at the University of Colorado in Boulder. Their collaboration began with the short animated film The Spirit of Christmas, which is widely considered the direct predecessor of South Park."
 
-part_2 <- "Trey Parker and Matt Stone were both born in 1969, but in different places. Parker was born in Conifer, Colorado, while Stone was born in Houston, Texas. This combination of local Colorado influence and a broader American cultural background strongly shaped the tone of the series. In multiple interviews, the creators have stated that they wanted to make an animated show that could openly comment on society, politics, and the media, regardless of the audience’s age."
-
-part_3 <- "The story is set in the fictional town of South Park, located in the state of Colorado. Although the town itself is not real, it is inspired by real places, streets, and small communities in the region. Streets such as South Park Street, Main Street, and Kenny Street appear repeatedly, and addresses like 200 South Park Street or 42 Kenny Street are mentioned more than once, sometimes with slight variations."
-
-part_4 <- 'South Park has been on television for more than 25 years, meaning it has aired continuously from 1997 to the present day. During this time, the show has produced over 300 episodes across more than 25 seasons. In promotional materials, this is sometimes written in capital letters as OVER 300 EPISODES, while official descriptions often use the lowercase version “over 300 episodes.”'
-
-part_5 <- "The series is well known for its unusually fast production process, with some episodes being completed just days before they are broadcast. This approach allows the creators to react to current events almost in real time. As a result, one episode might reference an event from 2023, while another might return to 1997 as the year when everything began."
-
-part_6 <- 'In the end, South Park is not just an animated TV show but a long-running cultural project. As it is often stated at the end of descriptions:
-"This is South Park."'
-
-part_7 <- 'And then, on the next line:
-"THIS IS SOUTH PARK."'
-
-intro_to_sp <- c(part_1, part_2, part_3, part_4, part_5, part_6, part_7)
+# Spremanje odlomaka teksta u vektor
+tToBtB_wiki <- c(
+  "The Tales of Beedle the Bard was a collection of stories written for young wizards and witches by Beedle the Bard. It was published by Chelf Press and had original illustrations by Luxo Karuzos. They were popular bedtime stories for centuries, with the result being that The Wizard and the Hopping Pot and The Fountain of Fair Fortune were as familiar to many of the students at Hogwarts, as Cinderella and Sleeping Beauty are to various Muggle children.",
+  "Overview",
+  "Beedle's stories resembled Muggle fairy tales in many respects; for instance, virtue was usually rewarded and wickedness punished. However, there was one very obvious difference. In Muggle fairy tales, magic tended to lie at the root of the hero or heroine's troubles — the wicked witch had poisoned the apple, put the princess into a hundred years' sleep or turned the prince into a hideous beast.",
+  "In The Tales of Beedle the Bard, on the other hand, we met heroes and heroines who could perform magic themselves, and yet find it just as hard to solve their problems as the Muggle heroes did. Beedle's stories had helped generations of wizarding parents to explain this painful fact of life to their young children: that magic caused as much trouble as it cured.",
+  "Another notable difference between these fables and their Muggle counterparts was that Beedle's witches were much more active in seeking their fortunes than our fairy-tale heroines. Asha, Altheda, Amata and Babbitty Rabbity were all witches who took their fate into their own hands, rather than a prolonged nap or waiting for someone to return a lost shoe. The exception to this rule — the unnamed maiden of 'The Warlock's Hairy Heart' — acted more like a Muggle's idea of a storybook princess, but there was no happily ever after at the end of her tale.",
+  "Most of these tales (with the exception of The Warlock's Hairy Heart) had been rewritten by Beatrix Bloxam and compiled into her book The Toadstool Tales, which had since been banned since it had a tendency to induce nausea and vomiting in the children who read, or had to listen to, them.",
+  "In 2008, Minerva McGonagall permitted the publication of a new edition which featured a new translation of the stories from Ancient Runes by Hermione Granger, notes by Albus Dumbledore, and an introduction by J. K. Rowling.[3] A Hogwarts student purchased a copy of it around the 2010–2011 school year and bumped into Hermione herself afterwards, who admitted to being the translator of the book.",
+  "The Tale of the Three Brothers",
+  "One story by Beedle was The Tale of the Three Brothers. This story was about brothers who met Death on the road and avoided his clutches; each in turn received a gift from him, although Death managed to claim them all.",
+  "On 30 December 1997, Harry Potter, Hermione Granger, and Ron Weasley came to hear the legend: The brothers came to a river which was too deep to wade across, and built a bridge using magic. Death appeared before them and congratulated them for their ingenuity, and offered each of them a reward (or so he said; his real intent was to give them traps which would be their undoing, because he felt cheated by their survival). The first brother asked for a weapon that would always win any battle, a weapon worthy of one who had cheated Death. Death snapped a twig off an elder tree and gave it to him — the Elder Wand. The second brother arrogantly wanted to humiliate Death further and asked for something to give him power to bring loved ones back from the grave. Death gave him a river stone, which, by the terms of the deal, became the Resurrection Stone. The third brother, however, did not trust Death, and asked for something that would allow him to continue on his way with Death being able to harm him. Death was trapped by his words, and handed over his own Cloak of Invisibility. The brothers continued on and went their separate ways.",
+  "Time passed. The first brother provoked a duel with a wizard he disliked, left him for dead, and afterwards boasted of his unbeatable wand. He was killed that very night by someone who had heard his boasting, and wanted the wand. The second brother found misery when he brought his former lover back to life with the Resurrection Stone. She was cold and unhappy, as she didn't belong in the living world anymore. He ultimately committed suicide in order to truly join her. The third brother was able to hide from Death his entire life using the cloak. It was only when he finally reached a ripe old age did he finally remove the cloak and gave it to his son. He and Death finally \"met as old friends\", and departed as equals.",
+  "The items mentioned in the tale became legendary artefacts known together as the Deathly Hallows. Ignotus Peverell and his two older brothers, Cadmus and Antioch were believed to be the original owners of the Hallows, and therefore the inspiration for the story. According to legend, if one joined the Hallows together, they would make the wielder extremely powerful, the \"Master of Death\". (Dumbledore later states that the true Master of Death is one who accepts that it is inevitable, in much the same way Ignotus did. Dumbledore was also the one to reveal finally that the three brothers were the Peverells, though he believes that the tale of how they received the items is a fabrication, which would naturally appear around such powerful items, and that the Peverells were simply talented wizards who created the items themselves.)",
+  "Lord Voldemort sought the Elder Wand because he believed it would allow him to defeat Harry Potter. However, it was Harry himself who temporarily became the Master of Death, when he ultimately united all three artefacts.",
+  "Other stories",
+  "Other tales included:",
+  "Babbitty Rabbitty and her Cackling Stump",
+  "The Fountain of Fair Fortune",
+  "The Wizard and the Hopping Pot",
+  "The Warlock's Hairy Heart",
+  "Behind the scenes",
+  "A real version was written by J. K. Rowling and seven copies were produced on the 1st of November 2007 - a copy for herself, five for her close friends, and one copy being auctioned for charity. A mainstream edition was published for the general public on 4 December 2008, with all proceeds going to charity.",
+  "Though the real edition in question contains only five tales, as detailed earlier on this page, Rowling had initially intended there to be as many as thirty Tales of Beedle the Bard, before shrinking back before the daunting task of actually writing them. It is possible that this is still the case in-universe even though only five of the tales are available to us.",
+  'Antioch is also the name of the ancient town (in Phrygia, now southern Turkey) where the disciples of Jesus Christ were first dubbed "Christians".',
+  "Cadmus was also the name of the legendary Greek founder of Thebes. He introduced the alphabet to the Greeks.",
+  "Harry is surprised that Ron has heard of the book while Hermione has not; Hermione has to remind Ron that she and Harry were both raised by Muggles.",
+  "The Warlock's Hairy Heart is the darkest of the five stories within the book, and the only one that has not been censored from its original gruesome version.",
+  "Unlike her other spin-off works which were written under the name of one of the characters in the book, Rowling writes an in-universe introduction to the book (which ostensibly has been edited and translated by Hermione Granger). As such she establishes that J. K. Rowling also exists in the Potter universe.",
+  "In Harry Potter and the Deathly Hallows: Part 1, the book did not appear to be written in ancient runes because when Hermione shows Harry the symbol of the Deathly Hallows on the introductory page of the book, the title and other information were shown to be in English.",
+  "On the other hand, in the iPad app for Harry Potter Film Wizardry, there is a behind the scenes look at Hermione's copy which shows that the book was in fact written in runes.",
+  "Appearances",
+  "Harry Potter and the Deathly Hallows (First appearance)",
+  "Harry Potter and the Deathly Hallows: Part 1",
+  "Harry Potter and the Deathly Hallows: Part 1 (video game)",
+  "The Tales of Beedle the Bard",
+  "The Tales of Beedle the Bard: Illustrated Edition",
+  "Pottermore",
+  "HarryPotter.com",
+  "Harry Potter: The Wand Collection (Mentioned only)",
+  "The Art of Harry Potter: Mini Book of Graphic Design",
+  "LEGO Harry Potter: Years 5-7",
+  "Harry Potter: The Artifact Vault",
+  "The Art of Harry Potter: The Definitive Art Collection of the Magical Film Franchise",
+  "Harry Potter: Hogwarts Mystery",
+  "Harry Potter: Wizards Unite",
+  "Harry Potter: Magic Awakened",
+  "The Magic of MinaLima: Celebrating the Graphic Design Studio Behind the Harry Potter & Fantastic Beasts Films",
+  "Hogwarts Legacy",
+  "Harry Potter: Puzzles & Spells"
+)
 ```
 
 ```{r}
 # Pregled teksta
-intro_to_sp
+tToBtB_wiki
 ```
 
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+Prvi primjer je primjer izdvajanja prve riječi iz svakog niza u tekstu.
+
 ```{r}
-# Hvatanje prvih riječi svakog niza
-intro_to_sp |>
-  str_match_all("^[^\\s]+") |>
+# Izdvajanje prve riječi svakog odlomka
+tToBtB_wiki |>
+  str_extract("^[^\\s]+")
+```
+
+Regularni izraz `^[^\\s]+` sastoji se od tri dijela:
+
+- Prvi dio je sidro (`^`) koje označava početak niza. Uzorak se zato traži samo na početku svakog elementa vektora, a ne bilo gdje u tekstu.
+
+- Drugi je dio negirana klasa znakova (`[^\\s]`). Uglate zagrade obuhvaćaju skup znakova od kojih se bilo koji može pojaviti na tom mjestu. Kada je znak `^` prvi unutar uglatih zagrada, značenje se obrće pa klasa obuhvaća bilo koji znak osim navedenih. Budući da je u zagradama `\\s`, klasa `[^\\s]` obuhvaća bilo koji znak koji nije bjelina. Isto se kraće zapisuje kao `\\S`.
+
+- Treći dio je kvantifikator (`+`) koji označava da se prethodni element pojavljuje jednom ili više puta, a uzima znakove sve dok ne naiđe na prvu bjelinu ili na kraj niza.
+
+Regularni izraz u cjelini znači „*od početka niza uzmi sve znakove do prve bjeline*”.
+
+Znak `^` ima dakle dva različita značenja, ovisno o mjestu na kojem se nalazi. Izvan uglatih zagrada označava početak niza, a kao prvi znak unutar njih negira klasu znakova. U izrazu `^[^\\s]+` pojavljuje se u oba značenja.
+
+Pojam *riječ* ovdje treba shvatiti široko. Uzorak obuhvaća sve znakove osim bjelina pa uz slova uzima i interpunkciju. Zato su među rezultatima i `"Beedle's"` i `"HarryPotter.com"`. Kada bismo htjeli izdvojiti samo slova, koristili bismo uzorak `^\\p{L}+`.
+
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+Drugi primjer je hvatanje godine s točnim formatom broja.
+
+```{r}
+# Izdvajanje godina zapisanih s četiri znamenke
+tToBtB_wiki |>
+  str_extract_all("\\d{4}") |>
   unlist()
 ```
 
-- `^` - početak niza
+Ovaj se regularni izraz sastoji se od dva dijela:
 
-- `[^\\s]+` - cjelina niza:
+- Prvi dio (`\\d`) označava bilo koju znamenka od 0 do 9.
 
-  - `\\s` - bilo koji razmak
+- Drugi dio je kvantifikator (`{4}`) koji označava da se prethodni element mora ponoviti točno četiri puta.
 
-  - `[^\\s]` - bilo koji znak koji nije razmak
+Regularni izraz u cjelini znači „*pronađi četiri uzastopne znamenke*”. U ovom tekstu to su upravo godine pa rezultat sadrži i obje godine iz raspona 2010-2011.
 
-  - `+` - jedan ili više puta
+Za razliku od prethodnog primjera, ovdje nema sidra `^` pa se uzorak traži bilo gdje u nizu, a jedan odlomak može sadržavati više podudaranja. Zato koristimo `str_extract_all()` koja vraća listu s jednim elementom za svaki odlomak. Funkcija `unlist()` tu listu pretvara u jedan vektor.
 
-Regularni izraz zajedno znači: "na početku svakog niza uzmi prvi neprekinuti niz znakova sve dok se ne pojavi razmak"
-
-```{r}
-# Hvatanje prvih riječi svakog niza
-intro_to_sp |>
-  str_match_all("[^\\s]+$") |>
-  unlist()
-```
-- `$` - kraj niza
-
-- `[^\\s]+` - cjelina niza - "uzmi jedan ili više uzastopnih znakova koji nisu razmak"
-
-Regularni izraz zajedno znači: "uzmi posljednji neprekinuti niz znakova koji ne sadrži razmake i koji se nalazi na samom kraju niza"
+Uzorak `\\d{4}` ipak ne provjerava je li riječ o godini, nego samo traži četiri znamenke zaredom. Ako bi se u tekstu pojavio duži broj, uzorak bi iz njega izdvojio prve četiri znamenke. To se sprječava granicom riječi `\\b` (*word boundary*). Ona ne odgovara nijednom znaku, nego mjestu između znaka riječi i znaka koji to nije (ili početka, odnosno kraja niza). Uzorak `\\b\\d{4}\\b` zato izdvaja samo brojeve koji imaju točno četiri znamenke.
 
 ```{r}
-# Hvatanje godine s točnim formatom
-intro_to_sp |>
-  str_match_all("\\d{4}") |>
+# Izdvajanje samo brojeva s točno četiri znamenke
+tToBtB_wiki |>
+  str_extract_all(pattern = "\\b\\d{4}\\b") |>
   unlist()
 ```
 
-- `\\d` - broj
+:::
 
-- `{4}` - točno četiri ponavljanja
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+Treći je primjer izdvajanje datuma iz teksta.
 
 ```{r}
-# Hvatanje punog datuma
-intro_to_sp |>
-  str_match_all("[A-Z][a-z]+ \\d{1,2}, \\d{4}") |>
+# Izdvajanje punih datuma
+tToBtB_wiki |>
+  str_extract_all("\\d{1,2} [A-Z][a-z]+ \\d{4}") |>
   unlist()
 ```
 
-- `[A-Z]` -  prvo slovo veliko
+Regularni izraz `\\d{1,2} [A-Z][a-z]+ \\d{4}` pritom se sastoji od pet dijelova:
 
-- `[a-z]+` - nastavak riječi
+- Prvi dio (`\\d{1,2}`) broj od jedne ili dvije znamenke (dan).
 
-- `\\d{1,2}` - broj koji ima jednu ili dvije znamenke
+- Drugi dio je razmak (` `) koji je u regularnom izrazu običan znak i mora se u nizu pojaviti točno na tom mjestu.
 
-- `\\d{4}` - broj koji ima četiri znamenke
+- Treći je dio znak za jedno veliko slovo (`[A-Z]`), odnsono početno slovo naziva mjeseca.
 
-```{r}
-# Hvatanje imena i prezimena autora
-intro_to_sp |>
-  str_match_all("Trey Parker") |>
-  unlist()
-intro_to_sp |>
-  str_match_all("Matt Stone") |>
-  unlist()
-```
+- Četvrti znak je jedno ili više malih slova (`[a-z]+`), odnosno ostatak naziva mjeseca.
 
-- regularni izraz je tekstualni niz koji se može pojaviti samo u ovom obliku
+- Konačno, posljednji je dio broj od četiri znamenke (`\\d{4}`), odnosno godina.
+
+Regularni izraz u cjelini znači „*pronađi jednu ili dvije znamenke, razmak, riječ s velikim početnim slovom, razmak i četiri znamenke*”. Uzorak time izdvaja datume zapisane u obliku *30 December 1997*.
+
+Ipak, uzorak pritom ne provjerava je li riječ s velikim početnim slovom doista naziv mjeseca. Kada bi postojao, uzorak bi izdvojio i niz poput *12 Hogwarts 2008*. Za potrebe ovog teksta to nije problem, no pri radu s većim korpusom uzorak bi trebalo suziti na nazive mjeseci.
+
+Dodatni je problem da uzorak ne obuhvaća datum *1st of November 2007* jer iza broja slijede nastavak *st* i riječ *of*. Da bismo obuhvatili i taj zapis potrebno je oba dijela treba dodati kao neobavezne.
 
 ```{r}
-# Hvatanje imena ulica
-intro_to_sp |>
-  str_match_all("[A-Z][a-z]+ Street") |>
+# Izdvajanje punih datuma s neobaveznim nastavkom i riječju of
+tToBtB_wiki |>
+  str_extract_all("\\d{1,2}(st|nd|rd|th)? (of )?[A-Z][a-z]+ \\d{4}") |>
   unlist()
 ```
 
+U ovaj je regularni izraz dodan dio `(st|nd|rd|th)?` koji označava jedan od nastavaka rednog broja. Okomita crta pritom `|` znači „ili”, a zagrade povezuju ponuđene mogućnosti u jednu cjelinu. Upitnik iza zagrade označava da cijela cjelina nije obavezna. Osim toga, dio `(of )?` označava neobaveznu riječ *of* s razmakom iza nje.
+
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+Nadalje, najjednostavniji regularni izraz je doslovni niz znakova. Takav uzorak izdvaja samo nizove koji su mu u potpunosti jednaki. Primjerice, ime autorice izdvajamo tako da ga upišemo kao uzorak.
+
 ```{r}
-# Hvatanje izraza pisanih isključivo velikim slovima
-intro_to_sp |>
-  str_match_all("[A-Z]{3,}") |>
+# Izdvajanje imena autorice
+tToBtB_wiki |>
+  str_extract_all("J\\. K\\. Rowling") |>
   unlist()
 ```
 
+Iako je uzorak doslovan, točke u njemu moraju biti escapirane (`\\.`). Bez obrnute kose crte točka bi značila bilo koji znak pa bi uzorak `J. K. Rowling` obuhvatio i nizove poput *J+ K# Rowling*. U ovom tekstu rezultat bi bio isti, no u općenitom slučaju takav bi uzorak mogao izdvojiti i ono što ne tražimo.
+
+Doslovni uzorak pronalazi samo ime koje unaprijed znamo. Kada bismo iz teksta htjeli izdvojiti sva imena i prezimena, mogli bismo pokušati s općim uzorkom od dviju riječi s velikim početnim slovom.
+
 ```{r}
-# Hvatanje citata s navodnicima
-intro_to_sp |>
-  str_match_all("\"[^\"]+\"") |>
+# Izdvajanje dviju uzastopnih riječi s velikim početnim slovom
+tToBtB_wiki |>
+  str_extract_all("[A-Z][a-z]+ [A-Z][a-z]+") |>
   unlist()
 ```
 
+Rezultat pokazuje ograničenja takvog pristupa. Uz imena poput *Hermione Granger* i *Albus Dumbledore* uzorak izdvaja i naslove (*The Tales*, *Three Brothers*), početke rečenica (*In The*) te nazive predmeta (*Ancient Runes*). Prezime *McGonagall* pritom ne izdvaja cijelo, nego samo *Minerva Mc*, jer iza *Mc* slijedi veliko slovo. Regularni izraz prepoznaje oblik niza, a ne njegovo značenje, pa ne može znati je li neki niz ime osobe.
+
+Kada unaprijed znamo koja imena tražimo, pouzdaniji je vlastiti rječnik. Imena spremamo u vektor, a funkcija `str_c()` s argumentom `collapse = "|"` spaja ih u jedan uzorak u kojem okomita crta znači „ili”.
+
 ```{r}
-# Hvatanje raspona “more than X years”
-intro_to_sp |>
-  str_match_all("more than \\d+ years") |>
+# Kreiranje vektora s imenima
+likovi <- c("Harry Potter", "Hermione Granger", "Ron Weasley", "Albus Dumbledore", "Minerva McGonagall", "Lord Voldemort", "Ignotus Peverell", "Beatrix Bloxam")
+
+# Spajanje imena u jedan uzorak
+uzorak_likovi <- str_c(likovi, collapse = "|")
+
+# Brojanje pojavljivanja likova u tekstu
+tToBtB_wiki |>
+  str_extract_all(uzorak_likovi) |>
+  unlist() |>
+  table()
+```
+
+Uzorak dobiven spajanjem glasi `"Harry Potter|Hermione Granger|Ron Weasley|..."`, a iz teksta izdvaja svako pojavljivanje bilo kojeg od navedenih imena. Ime *Harry Potter* pojavljuje se 17 puta jer je dio naslova knjiga, filmova i igara iz popisa na kraju teksta. Rječnik dakle rješava problem oblika, ali ne i problem konteksta.
+
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+Idući primjer izdvaja riječi koje prethode riječi *brother*.
+
+```{r}
+# Izdvajanje riječi koja prethodi riječi brother
+tToBtB_wiki |>
+  str_extract_all("[a-z]+ brother") |>
   unlist()
 ```
 
+Regularni izraz `[a-z]+ brother` sastoji se od tri dijela:
+
+- Prvi dio (`[a-z]+`) označava jedno ili više malih slova (riječ ispred riječi *brother*).
+
+- Drugi dio je razmak (` `).
+
+- Treći dio je doslovni niz znakova (`brother`).
+
+Regularni izraz u cjelini znači „pronađi riječ od malih slova iza koje slijede razmak i riječ *brother*”. Među rezultatima su očekivani *first brother*, *second brother* i *third brother*, ali i nekoliko neželjenih. Nizovi *about brother* i *older brother* dio su nizova *about brothers* i *older brothers*. Uzorak ne zahtijeva da riječ *brother* tu završava, pa se podudara i s početkom riječi *brothers*. Niz *he brother* dio je niza *The brothers*. Veliko slovo *T* nije obuhvaćeno klasom `[a-z]` pa podudaranje počinje tek od slova *h*. Oba problema rješava granica riječi `\\b`. Kada je stavimo ispred uzorka, podudaranje mora početi na početku riječi. Kada je stavimo iza njega, riječ *brother* mora na tom mjestu završiti.
+
 ```{r}
-first_episode_cast <- c("Stan Marsh", "Kyle Broflovski", "Eric Cartman", "Kenny McCormick", "Ike Broflovski", "Chef", "Ms. Crabtree", "Bill Denkins", "Officer Barbrady", "Mr. Garrison", "Mr. Hat", "Train conductor", "A kid", "Jason White", "Wendy Testaburger", "Liane Cartman", "News reporter", "Mr. Kitty", "Carl the Visitor", "Blonde woman", "Visitors", "Cows")
+# Izdvajanje riječi koja prethodi riječi brother, uz granice riječi
+tToBtB_wiki |>
+  str_extract_all("\\b[a-z]+ brother\\b") |>
+  unlist()
 ```
 
-```{r}
-# Pronalaženje nizova koji počinju s "Mr."
-str_match(
-  string = first_episode_cast,
-  pattern = "^Mr."
-)
+Sada rezultat sadrži samo *first brother*, *second brother* i *third brother* i to svaki dva puta.
 
-# Pronalaženje nizova koji imaju točku
-str_match(
-  string = first_episode_cast,
-  pattern = "\\."
-)
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+Idući je primjer izdvajanje dijelova teksta koji je označen citatima pod navodnicima.
+
+```{r}
+# Izdvajanje citata pod navodnicima
+tToBtB_wiki |>
+  str_extract_all("\"[^\"]+\"") |>
+  unlist()
 ```
 
-Osim `str_match()` za pronalaženje podudaranja koristi se i funkcija `str_view()` koja služi za vizualizaciju podudaranja između regularnog izraza i elemenata u nizovima, odnosno pomaže jasno vidjeti gdje i kako se uzorak podudara s tekstom
+Regularni izraz `"[^"]+"` sastoji se od tri dijela:
+
+- Prvi je dio početni navodnik (`"`).
+
+- Drugi dio izriče jedan ili više znakova koji nisu navodnik (`[^"]+`), odnosno sadržaj citata.
+
+- Posljednji dio je završni navodnik (`"`).
+
+Regularni izraz u cjelini znači „pronađi navodnik, zatim sve znakove do sljedećeg navodnika i taj navodnik”. U kodu su navodnici zapisani kao `\"` jer je uzorak i sam zapisan unutar navodnika. Obrnuta kosa crta ovdje nije dio regularnog izraza, nego R-u govori da navodnik ne završava niz. Iz istog razloga R u ispisu rezultata prikazuje navodnike kao `\"`.
+
+Sadržaj citata opisan je klasom `[^"]`, a ne točkom jer točka obuhvaća i navodnik. Kvantifikator `+` uvijek uzima što je moguće više znakova pa bi uzorak `".+"` u odlomku s više citata izdvojio jedan dugi niz od prvog do posljednjeg navodnika. Klasa `[^"]` zaustavlja podudaranje na prvom sljedećem navodniku pa se svaki citat izdvaja zasebno.
+
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+Nadalje, zanimljiv je primjer izdvajanja školskih godina.
 
 ```{r}
-# Pronalaženje nizova koji završavaju sa "ski"
+# Izdvajanje raspona školske godine
+tToBtB_wiki |>
+  str_extract_all("\\d+\\p{Pd}\\d+ school year") |>
+  unlist()
+```
+
+Regularni izraz `\\d+\\p{Pd}\\d+ school year` sastoji se od četiri dijela:
+
+- Prvi dio je jedna ili više znamenki (`\\d+`), odnosno početna godina.
+
+- Drugi dio (`\\p{Pd}`) izražava bilu koja vrsta crtice, primjerice spojnica (-) ili crta (–).
+
+- Treći je dio jedna ili više znamenki (`\\d+`), odnosno završna godina.
+
+- Treći dio je razmak i doslovni niz znakova (` school year`).
+
+Regularni izraz u cjelini znači „pronađi dva broja odvojena crticom iza kojih slijedi izraz *school year*”. U tekstu su godine odvojene crtom (–) koju je teško upisati s tipkovnice. Klasa `\\p{Pd}` obuhvaća i crtu i spojnicu pa uzorak radi bez obzira na to koja je od njih u tekstu.
+
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+```{r}
+# Izdvajanje posvojnih oblika
+tToBtB_wiki |>
+  str_extract_all("\\b[A-Z][a-z]+'s\\b") |>
+  unlist()
+```
+
+- Prvi je dio granica riječi na početku (`\\b`).
+
+- Drugi dio je riječ s velikim početnim slovom (`[A-Z][a-z]+`).
+
+- Treći dio je apostrof i slovo *s* (`'s`).
+
+- Posljednji dio je granica riječi na kraju (`\\b`).
+
+Regularni izraz u cjelini znači „pronađi riječ s velikim početnim slovom iza koje slijede apostrof i slovo *s*”. Apostrof nije metaznak, pa se u uzorku piše bez obrnute kose crte. Rezultat su posvojni oblici poput *Beedle's*, *Warlock's* i *Hermione's*.
+
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+```{r}
+# Izdvajanje složenica sa spojnicom
+tToBtB_wiki |>
+  str_extract_all("\\b\\p{L}+-\\p{L}+\\b") |>
+  unlist()
+```
+
+- Prvi dio je jedno ili više slova (`\\p{L}+`).
+
+- Drugi dio je spojnica (`-`).
+
+- Treći dio je jedno ili više slova (`\\p{L}+`).
+
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+```{r}
+# Brojanje spominjanja Relikvija smrti
+tToBtB_wiki |>
+  str_extract_all("Elder Wand|Resurrection Stone|Cloak of Invisibility") |>
+  unlist() |>
+  table()
+```
+
+- `|` - okomita crta koja znači „ili”.
+
+Regularni izraz u cjelini znači „pronađi *Elder Wand*, *Resurrection Stone* ili *Cloak of Invisibility*”. Okomita crta dijeli uzorak na mogućnosti, a svaka se mogućnost proteže do sljedeće okomite crte ili do kraja uzorka. Funkcija `table()` zatim broji koliko se puta svaka relikvija pojavljuje.
+
+:::
+
+::: {.callout-note icon="false" collapse="true" title="Primjer"}
+
+```{r}
+# Izdvajanje teksta u zagradama
+tToBtB_wiki |>
+  str_extract_all("\\([^)]+\\)") |>
+  unlist()
+```
+
+- `\\(` - doslovna otvorena zagrada.
+
+- `[^)]+` - jedan ili više znakova koji nisu zatvorena zagrada.
+
+- `\\)` - doslovna zatvorena zagrada.
+
+Regularni izraz u cjelini znači „pronađi otvorenu zagradu, zatim sve znakove do prve zatvorene zagrade i tu zagradu”. Obične zagrade su metaznakovi jer služe za grupiranje dijelova uzorka, pa ih izvan uglatih zagrada treba escapirati. Unutar uglatih zagrada zatvorena zagrada gubi posebno značenje, pa se u `[^)]` piše bez obrnute kose crte. Uzorak je građen isto kao uzorak za citate pod navodnicima.
+
+:::
+
+## Sastavljanje regularnih izraza od vektora
+
+U prethodnom poglavlju vidjeli smo kako se funkcijama `glue()` i `glue_collapse()` spajaju nizovi. Isti se postupak može primijeniti i na regularne izraze. Ako funkciji `glue_collapse()` kao separator zadamo okomitu crtu, od vektora dobivamo uzorak u kojem je svaki element jedna od mogućnosti.
+
+```{r}
+relikvije <- c("Elder Wand", "Resurrection Stone", "Cloak of Invisibility")
+
+# Spajanje elemenata vektora u uzorak s okomitom crtom
+uzorak_relikvije <- glue_collapse(relikvije, sep = "|")
+uzorak_relikvije
+
+# Pronalaženje relikvija u tekstu
 str_view(
-  string = first_episode_cast,
-  pattern = "ski$"
+  string = tToBtB_wiki,
+  pattern = uzorak_relikvije
 )
 ```
 
-```{r}
-# Navedi sve nizove koji završavaju razmakom i znamenkom
-str_detect(
-  string = first_episode_cast,
-  pattern = "\\s\\d$"
-)
+Dobiveni uzorak glasi `Elder Wand|Resurrection Stone|Cloak of Invisibility`, a isti bismo uzorak mogli napisati i ručno. Prednost je sastavljanja od vektora u tome što popis pojmova možemo mijenjati, proširivati ili učitati iz datoteke, a uzorak se sastavlja sam.
 
-# Navedi sve nizove koji sadrže "Grey" ili "Gray"
-str_detect(
-  string = first_episode_cast,
-  pattern = "Gr[ae]y"
-)
-
-# Navedite sve nizove s neobičnim likovima (bez riječi ili razmaka)
-str_detect(
-  string = first_episode_cast,
-  pattern = "[^\\w\\s]"
-)
-
-# Ovo navodi sve nizove s dvije ili više znamenki zaredom
-str_detect(
-  string = first_episode_cast,
-  pattern = "\\d{2,}"
-)
-
-# Navedite samo prve riječi svakog niza
-str_match(
-  string = first_episode_cast,
-  pattern = "^\\w+"
-)
-
-# Spoji sve što dolazi prije riječi "Knight"
-str_match(
-  string = first_episode_cast,
-  pattern = ".*Knight"
-)
-```
-
-Posljednja dva posebna znaka koja se koriste u regularnim izrazima je operator cijevi koji služi kao uvjet "ili" i upitnik koji može učiniti stvari opcionalnima.
+Vektor se može koristiti i izravno kao uzorak. Funkcije paketa `stringr` tada svaki element vektora primjenjuju kao zaseban uzorak. Ako cijeli tekst najprije spojimo u jedan niz, funkcija `str_count()` vratit će broj pojavljivanja svake relikvije.
 
 ```{r}
-lines <- c(
-  "Karate Kid 2, Distributor: Columbia, 58 Screens",
-  "Finding Nemo, Distributors: Pixar and Disney, 10 Screens",
-  "Finding Harmony, Distributor: Unknown, 1 Screen",
-  "Finding Dory, Distributor: Pixar and Disney, 8 Screens"
-)
-```
+# Spajanje svih odlomaka u jedan niz
+cijeli_tekst <- glue_collapse(tToBtB_wiki, sep = " ")
 
-Recimo da nas zanimaju distributori filmova, primjerice, Columbia i Pixar. Možemo ih pretraživati upisivanjem Columbia "pipe" Pixar.
-
-```{r}
-str_view(
-  lines,
-  "Columbia|Pixar"
-)
-```
-
-Riječ distributer u podacima ponekad se piše u jednini, a ponekad u množini. S operatorom pipe bismo naravno mogli reći da bismo željeli uskladiti obje verzije riječi: "distributer" ili "distributors", ali u ovom slučaju, zapravo je samo "s" na kraju riječi ono što čini razliku. Regularni izrazi nam također omogućuju da uskladimo dvije verzije riječi tako da "s" na kraju bude opcionalan s upitnikom. Ovo funkcionira kao što regularni izraz tretira sva slova našeg uzorka pojedinačno, pa će se upitnik primijeniti samo na posljednji znak, "s".
-
-```{r}
-str_view(
-  lines,
-  "Distributors?"
-)
-```
-
-Kako bismo razumjeli drugu funkcionalnost upitnika, prvo moramo pogledati još jedan važan koncept u regularnim izrazima - prema zadanim postavkama, regularni izrazi pokušavaju pronaći podudaranje s maksimalnim brojem znakova. Budući da se broj tri pojavljuje dvaput u naslovu filma, podudarat će se sa svime do posljednjeg koji može pronaći.
-
-```{r}
-str_view(
-  "Toy Story 3 In Disney Digital 3D",
-  ".*3"
-)
-```
-
-Ipak, ako zvjezdici dodamo upitnik, naš uzorak neće odgovarati maksimalnom, već minimalnom broju znakova. Tada će odgovarati samo svemu ispred prvog pojavljivanja broja 3.
-
-```{r}
-str_view(
-  "Toy Story 3 In Disney Digital 3D",
-  ".*?3"
-)
-```
-
-```{r}
-# Dodajte tri opcije: Spojite Nema, Harmonyja ili Doryja
-str_view(lines, pattern = "Finding Nemo|Harmony|Dory")
-
-# Stavite tri opcije u zagrade i usporedite rezultate
-str_view(lines, pattern = "Finding (Nemo|Harmony|Dory)")
-
-# Koristite gornji uzorak koji odgovara nazivima cijelih filmova
-str_match(lines, pattern = "Finding (Nemo|Harmony|Dory)")
-```
-
-```{r}
-# Uskladite i Screen i Screens tako da zadnje "s" bude opcionalno
-str_match(lines, pattern = "Screens?")
-
-# Usporedi slučajni broj proizvoljnih znakova, nakon čega slijedi zarez
-str_match(lines, pattern = ".*,")
-
-# Uskladi isti uzorak nakon kojeg slijedi zarez, ali na "lijeni" način
-str_match(lines, pattern = ".*?,")
-```
-
-Ovi su prethodno navedeni primjeri apstraktni jer ne prikazuju neke smislene nizove, nego samo znakove. Regularne je izraze lakše shvatiti s konkretnijim izrazima. `rebus` paket nudi neke prečace koji pojednostavljuju konstruiranje uzoraka regularnih izraza. Primjeri takvih prečaca su već spomenuti `START` i `END` koji se koriste za određivanje regularnih izraza koji odgovaraju početku i kraju niza. Ta se dva prečaca nazivaju i sidra (*anchors*). Ako sidra upišemo u R, onda ćemo dobiti specifične izlaze.
-
-```{r}
-# Sidra
-START
-END
-```
-
-Kod `START`-a je izlaz `<regex> ^`. `<regex>` označava da je ovo poseban objekt regularnog izraza i ima vrijednost `^`, a znak `^` koristi se za označavanje početka niza. Kod `END`-a se pojavljuje vrijednost `$`, znak koji se koristi za definiranje uzoraka koji se moraju nalaziti na kraju niza. Operator `%R%` omogućuje sastavljanje regularnih izraza od jednostavnih dijelova.
-
-Na primjeru vektora `characters`, možemo, primjerice, odrediti prečacem `START` nizove u vektoru koji počinju sa *Mr.*.
-
-```{r}
-# Korištenje `START`-a na vektoru
-str_view(
-  string = first_episode_cast,
-  pattern = START %R% "S",
-)
-```
-
-Ispis koji nam `rebus` funkcija daje su nizovi u kojima se pojavljuje *Th* na početku i redni broj niza u vektoru.
-
-Druga opcija je određivanje nizova koji imaju specifičan završetak, primjerice, *mother*.
-
-```{r}
-# Korištenje `END`-a na vektoru
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = "es." %R% END
-)
-```
-
-Konačno, START i END možemo zajedno koristiti kako bismo dobili ispis nizova koji se sastoje od specifičnih izraza.
-
-```{r}
-# Korištenje `START`-a i `END`-a na vektoru
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = START %R% "." %R% END
-)
-```
-
-Još je jedan prečac `ANY_CHAR` koji se koristi kada nije bitno da se neki znak nalazi na određenom mjestu i kada samo želimo potvrditi da postoji neki znak. Dakle, `ANY_CHAR` ispisuje nizove koji imaju neki znak uopće i znak ispred i iza uzorka, ovisno o rasporedu prečaca, operatora i uzorka.
-
-```{r}
-# Korištenje `ANY_CHAR` na vektoru ispred uzorka
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = ANY_CHAR %R% "forestnet.org"
-)
-
-# Korištenje `ANY_CHAR` na vektoru iza uzorka
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = "forestnet.org" %R% ANY_CHAR
-)
-```
-
-Osim toga, `ANY_CHAR` može se koristiti i za podjelu nizova u vektoru na specifične znakove. Pritom se `ANY_CHAR` u argumentu `pattern` upisuje toliko puta koliko znakova unutar jedne cjeline želimo imati.
-
-```{r}
-# Podjela nizova na dva znaka u svakom dijelu
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = ANY_CHAR %R% ANY_CHAR
-)
-
-# Podjela nizova na tri znaka u svakom dijelu
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = ANY_CHAR %R% ANY_CHAR %R% ANY_CHAR
-)
-```
-
-Regularni izraz kao argument uzorka može se uključiti u bilo koju funkciju `stringr` paketa koja ima argument `pattern` kao što su `str_subset()` za vraćanje nizova s podudaranjima, `str_detect()` za dobivanje logičkog vektora o tome postoji li podudaranje, `str_count()` za brojanje broja podudaranja u svakom nizu i `str_extract()` koji vraća samo dio niza koji odgovara uzorku.
-
-```{r}
-# Vraćanje nizova s podudaranjima
-str_subset(
-  string = little_red_riding_hood_city_edition,
-  pattern = ANY_CHAR %R% "forestnet.org"
-)
-
-# Detektiranje nizova koji se poklapaju s uzorkom
-str_detect(
-  string = little_red_riding_hood_city_edition,
-  pattern = ANY_CHAR %R% "forestnet.org"
-)
-
-# Brojanje podudaranja u svakom nizu
+# Brojanje pojavljivanja svake relikvije
 str_count(
-  string = little_red_riding_hood_city_edition,
-  pattern = ANY_CHAR %R% "forestnet.org"
+  string = cijeli_tekst,
+  pattern = relikvije
 )
+```
 
-# Ispis dijelova nizova koji odgovaraju uzorku
-str_extract(
-  string = little_red_riding_hood_city_edition,
-  pattern = ANY_CHAR %R% "forestnet.org"
+Rezultat pokazuje da se *Elder Wand* i *Resurrection Stone* pojavljuju po dva puta, a *Cloak of Invisibility* jednom.
+
+Funkcija `glue_collapse()` korisna je i kada je uzorak dug i složen. Zamislimo evidenciju hogwartske knjižnice u kojoj svaki redak sadrži ime učenika, broj posuđenih i broj vraćenih knjiga.
+
+```{r}
+posudbe <- c(
+  "Hermione: 12, 11",
+  "Ron: 1, 0",
+  "Harry: 3, 3",
+  "Neville: two, one",
+  "Luna Lovegood: 5, 5"
 )
+```
 
-# Brojanje nizova koji završavaju sa *mother*
-length(
-  str_view(
-    string = little_red_riding_hood_city_edition,
-    pattern = ANY_CHAR %R% "forestnet.org"
+Uzorak koji odgovara takvom retku mogli bismo napisati u jednom nizu, no bio bi nepregledan. Umjesto toga možemo ga rastaviti na dijelove i svaki napisati u zasebnom retku. Dijelovima možemo dati i imena. Imena se u uzorku neće pojaviti, ali služe kao opis onoga što pojedini dio traži.
+
+```{r}
+uzorak_posudbe <- glue_collapse(
+  c(
+    # Ime učenika na početku niza
+    "ime" = "^[A-Za-z]+",
+    ": ",
+    # Broj posuđenih knjiga
+    "posudeno" = "\\d+",
+    ", ",
+    # Broj vraćenih knjiga na kraju niza
+    "vraceno" = "\\d+$"
   )
 )
-```
-
-Postoji još tri prečaca `rebus` paketa: `DOT` koji traži točku u nizovima, `CARAT` koji traži znak kape (\^) i `DOLLAR` koji traži znak za dolar.
-
-```{r}
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = DOT
-)
-```
-
-#### Osnovni koncepti regularnih izraza
-
-Kod regularnih je izraza korisno još nekoliko pojmova: alternacija, klase znakova i ponavljanje.
-
-U regularnom izrazu, ako želimo navesti podudaranje dva uzorka, koristi se **alternacija**. Ona u jeziku regularnih izraza izgleda poput logičkog *ili* (`|`) u R-u. U `rebus`-u se za alteraciju koristi funkcija `or()` koja nam omogućuje da specificiramo skup alternativa koje mogu biti pojedinačni znakovi ili nizovi znakova. Svaka alternativa se prosljeđuje kao zasebni argument.
-
-```{r}
-# Definiranje alteracija
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = or("Mia", "Red")
-)
-
-# Definiranje alteracije u složenom regularnom izrazu
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = or("safety.alert", "tips", "blockwatch") %R% "@forestnet.org"
-)
-```
-
-U regularnim izrazima **klasa znakova** je način specificiranja podudaranja jednog (i samo jednog) od znakova. Klase znakova slične su `ANY_CHAR`, ali s ograničenjem dopuštenih znakova. Umjesto podudaranja s bilo kojim znakom, podudaraju se s bilo kojim pojedinačnim znakom u skupu koji odredimo. U `rebus`-u se za određivanje klase koristi funkcija `char_class()` u koju se upisuje niz koji sadrži sve znakove koje želimo spojiti.
-
-```{r}
-# Definiranje klase znakova
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = char_class("Ss")
-)
-```
-
-U ovom slučaju klasa znakova odgovara malom i velikom slovu S i M.
-
-Postoji mogućnost određivanja i negirana klasa znakova koje navode da treba odgovarati svakom pojedinačnom znaku koji nije u ovom skupu. Za negiranu se klasu koristi funkcija `negatet_char_class()`. U ovom primjeru, svaki pojedinačni znak koji nije malo ili veliko slovo S.
-
-```{r}
-# Definiranje negirane klase znakova
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = negated_char_class("Ss")
-)
-```
-
-Za razliku od drugih mjesta u regularnom izrazu, u ovom slučaju nije potrebno izbjegavati znakove koji bi inače mogli imati posebno značenje unutar klasa znakova. Ako, primjerice, želimo uskladiti `.`, onda možemo uključiti točku izravno u funkciju kao `char_class(".")`.
-
-Konačno, postoji nekoliko načina za određivanje uzorka koji se **ponavlja**. Uzorak može biti neobavezan, pojaviti se nula ili više puta, jedan ili više puta ili se ponavljati unutar određenog raspona vremena. U `rebus` paketu se to može napraviti funkcijama `optional()`, `zero_or_more()`, `one_or_more()` i `repeated()`.
-
-```{r}
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = optional("Ss"),
-  match = TRUE
-)
-
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = zero_or_more("Ss"),
-  match = TRUE
-)
-
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = one_or_more("Ss"),
-  match = TRUE
-)
-
-str_view(
-  string = little_red_riding_hood_city_edition,
-  pattern = repeated("Ss"),
-  match = TRUE
-)
-```
-
-Može se također dodati i `exactly()` koja se koristi za izgradnju regularnog izraza koji doslovno odgovara točno određenom nizu, bez tumačenja posebnih znakova.
-
-#### Prečaci
-
-Regularni izrazi pružaju nekoliko dodatnih prečaca. Prvi prečac je određivanje raspon koristeći crticu (`-`) unutar klase znakova. Tako navođenje `0-9` odgovara bilo kojoj znamenki između 0 i 9 uključivo, a `a-z` odgovara bilo kojem malom slovu od slova a do slova z, dok `A-Z` odgovara bilo kojem velikom slovu od A do Z.
-
-```{r}
-char_class("0-9")
-char_class("a-z")
-char_class("A-Z")
-char_class("0-9a-zA-Z_")
-```
-
-Crtica i `DGT` konstanta imaju iste funkcije i navode bilo koju znamenku. Znak riječi može se navesti s `WRD` i ekvivalentan je bilo kojem malom ili velikom slovu, znamenki ili povlaci, a znak razmaka može se navesti pomoću `SPC` i odgovara svakom pojedinačnom razmaku, kartici ili znaku novog retka. Svi ovi prečaci također imaju negirane verzije - `NOT_DGT`, `NOT_WRD` i `NOT_SPC`.
-
-```{r}
-# Kreiranje uzorka
-street_pattern <- DGT %R% one_or_more(SPC) %R%
-  one_or_more(WRD %R% SPC) %R%
-  or("Street", "Square")
-
-# Pretraživanje podudaranja
-str_view_all(
-  string = little_red_riding_hood_city_edition,
-  pattern = street_pattern
-)
-```
-
-```{r}
-# Kreiranje uzorka
-email_pattern <- one_or_more(or(WRD, DOT)) %R%
-  ANY_CHAR %R% "forestnet.org"
-  one_or_more(WRD) %R%
-  DOT %R%
-  one_or_more(WRD)
-
-# Pretraživanje podudaranja
-str_view_all(
-  string = little_red_riding_hood_city_edition,
-  pattern = email_pattern,
-  match = TRUE
-)
-```
-
-```{r}
-phone_number <- "Call 555-555-0191 or (555) 555-0192 for help."
-
-three_digits <- DGT %R% DGT %R% DGT
-four_digits <- DGT %R% DGT %R% DGT %R% DGT
-separator <- char_class("-.() ")
-
-phone_pattern <- optional(OPEN_PAREN) %R%
-  three_digits %R% zero_or_more(separator) %R%
-  three_digits %R% zero_or_more(separator) %R%
-  four_digits
-
-str_view_all(phone_number, phone_pattern)
-```
-
-### Hvatanje
-
-Jedna od naprednijih tehnika prilikom rada s regularnim izrazima je **hvatanje** (eng. *capturing*), koje omogućuje da određene dijelove uzorka grupiramo i izdvojimo radi daljnje obrade. Unutar paketa `rebus` hvatanje se provodi funkcijom `capture()` koja označava da želimo „uhvatiti” dio podudaranja.
-
-Primjerice, u slijedeća dva slučaja možemo primijetiti razliku:
-
-```{r}
-# Regularni izraz za hvatanje e-mail adresa
-email_pattern <- one_or_more(WRD) %R% "@" %R% one_or_more(WRD) %R% DOT %R% one_or_more(WRD)
-email_capture <- capture(one_or_more(WRD) %R% "@" %R% one_or_more(WRD) %R% DOT %R% one_or_more(WRD))
 
 # Pregled
-email_pattern
-email_capture
-```
+uzorak_posudbe
 
-Oba izraza pronalaze znak *a* koji slijedi iza bilo kojeg znaka. Međutim, u drugom slučaju prvi znak (bilo koji znak) je uhvaćen kao posebna grupa. U klasičnoj notaciji regularnih izraza to se prikazuje kao `(.)a`.
-
-Iako `capture()` ne mijenja koji niz se podudara, ono omogućuje izdvajanje specifičnog dijela niza.
-
-Za razliku od `str_extract()` koja hvata samo cijeli podudarni niz, funkcija `str_match()` iz paketa `stringr` omogućuje izdvajanje i pojedinih uhvaćenih grupa. Funkcija zapravo vraća matricu, gdje je prvi stupac cijeli podudarni niz, a svaki sljedeći stupac predstavlja jedan `capture()` u izrazu.
-
-```{r}
-# Primjena
-email_pattern_list <- str_match_all(little_red_riding_hood_city_edition, pattern = email_pattern)
-email_capture_list <- str_match_all(little_red_riding_hood_city_edition, pattern = email_pattern)
-
-# Prikaz rezultata
-unlist(email_pattern_list)
-unlist(email_capture_list)
-```
-
-Zamislimo sada da želimo prepoznati što je majka stavila u torbu i da znamo da to može biti: *cookies*, *vitamins*, *a handwritten note*. Pokušajmo napisati uzorak koji pronalazi jednu od tih stvari.
-
-Možemo to napraviti na prethodno prikazan način hvatanjem.
-
-```{r}
-pattern_capture <- capture(or("cookies", "vitamins", "a handwritten note"))
-match_capture <- str_match_all(little_red_riding_hood_city_edition, pattern_capture)
-match_capture[[1]]
-```
-
-Sada imamo `[,1]` koji prikazuje cijeli podudaran niz i `[,2]` koji prikazuje ono što je `capture()` eksplicitno označio (opcija iz `or()`).
-
-Ponekad želimo grupirati dijelove izraza bez da ih hvatamo. Tada koristimo **non-capturing group** u paketu `rebus` označava s funkcijom `or()`.
-
-```{r}
-pattern_noncapture <- or("cookies", "vitamins", "a handwritten note")
-match_noncapture <- str_extract_all(little_red_riding_hood_city_edition, pattern_noncapture)
-match_noncapture[[1]]
-```
-
-U ovom slučaju ne možemo znati koja točno opcija je bila prepoznata kao dio grupe jer to nismo uhvatili funkcijom `capture()`.
-
-#### Povratne reference
-
-Kada pomoću `capture()` "uhvatimo" dio regularnog izraza, možemo se kasnije u uzorku ponovno pozvati na taj isti sadržaj – to se naziva **povratna referenca** (*backreference*). Time možemo pronaći ponavljanja istog teksta ili odnos između dijelova koji se moraju poklapati. U `rebus` paketu to radimo pomoću `REF1`, `REF2`... `REF9`.
-
-Ako je rečenica bila duplicirana možemo pronaći uzastopno ponavljane fraze.
-
-```{r}
-tekst <- "That’s sweet. Say hi to her for me. Say hi to her for me."
-
-pattern <- capture(one_or_more(WRD)) %R% SPC %R% REF1
-
-str_view_all(tekst, pattern)
-```
-
-Ovaj uzorak hvata riječ koja se ponovi dvaput zaredom s razmakom između.
-
-Konačno, možemo izvesti zamjena ponovljenog s jednim pojavljivanjem funkcijom `str_replace()`.
-
-```{r}
-str_replace(tekst,
-  pattern = capture(one_or_more(WRD)) %R% SPC %R% REF1,
-  replacement = str_c(" ", REF1)
+# Pronalaženje redaka koji odgovaraju uzorku
+str_view(
+  string = posudbe,
+  pattern = uzorak_posudbe
 )
 ```
 
-U ovim slučajevima kodovi `capture(one_or_more(WRD))` – hvataju riječ, `REF1` se poziva na istu riječ ponovno, `str_replace(..., str_c(" ", REF1))` zamjenjuje dvostruko ponavljanje s jednom instancom.
+Sastavljeni uzorak glasi `^[A-Za-z]+: \d+, \d+$`. Odgovaraju mu prva tri retka. Redak s Nevilleom ne odgovara jer su brojevi napisani riječima, a redak s Lunom jer se njezino ime sastoji od dvije riječi, a klasa `[A-Za-z]` ne obuhvaća razmak. Zbog sidara `^` i `$` uzorak mora obuhvatiti cijeli redak, pa se ni djelomično podudaranje ne prihvaća.
 
-Ako želimo prepoznati cijelu frazu koja se ponavlja (npr. *Say hi to her for me*), onda se koristi:
+## Izdvajanje strukturiranih podataka iz teksta
 
-```{r}
-pattern <- capture("Say hi to her for me") %R% DOT %R% SPC %R% REF1
-
-str_view_all(tekst, pattern)
-```
-
-# Kreiranje regularnih nizova od izraza
-
-U prošlom je dijelu prikazano kako ljepilo i sažimanje ljepila mogu biti korisni u radu s nizovima, no ista se tehnika može primijeniti i na regularne izraze.
-
-Ako koristimo operator cijevi kao separator, možemo stvoriti isti uzorak od vektora.
+U prethodnom smo dijelu sastavili uzorak koji odgovara imenu učenika i dva brojeva, broju posuđenih i broju vraćenih knjiga. Kada takav uzorak primijenimo na duži niz, funkcija `str_match()` vraća dio niza koji mu odgovara.
 
 ```{r}
-pattern = "Nemo|Harmony|Dory"
-names <- c("Nemo", "Harmony", "Dory")
-pattern = glue_collapse(pattern, sep = "|")
-pattern
-```
+zapis <- "evidencija: 'Hermione, 12, 11', napomena: 'vraćeno na vrijeme'"
 
-Zamislimo da imamo puno teksta, ali nas zanima pronaći ime nakon čega slijede dva broja, prvo broj pokušanih prijava, a zatim broj uspješnih prijava odvojeni zarezom i razmakom. Naravno, mogli bismo napisati uzorak koji bi odgovarao ovom nizu, no to izgleda prilično komplicirano. S ljepilom možemo konstruirati isti uzorak na drugi način. Kako možemo proslijediti bilo koji vektor, čak i onaj koji ima imena, možemo imenovati različite dijelove uzorka. Imena se neće pojaviti u uzorku, ali je to lijep način da se sami dokumentiraju uzorci koje pišemo. Svaki dio uzorka možemo napisati u zasebnu liniju što ga dijeli na mnogo malih dijelova.
-
-```{r}
-pattern = glue_collapse(c(
-  "name" = "[A-Za-z]+",
-  ", ",
-  "attempts" = "\\d+",
-  ", ",
-  "logins" = "\\d+"
-))
-pattern
-```
-
-```{r}
-usernames <- c("Bryan", "Barbara", "Tom")
-
-# Create a pattern using the vector above separated by "or"s
-user_pattern <- glue_collapse(usernames, sep = "|")
-
-str_view(usernames, user_pattern)
-```
-
-```{r}
-# Construct a pattern that searches for all politicians
-polit_pattern <- glue_collapse(politicians, sep = "|")
-
-# Use the pattern to match all names in the column "text"
-articles %<>%
-  mutate(mentions = str_match_all(text, polit_pattern))
-
-# Collapse all items of the column "text"
-all_articles_in_one <- glue_collapse(articles$text)
-
-# Pass the vector politicians to count all its elements
-str_count(all_articles_in_one, politicians)
-```
-
-```{r}
-# Familiarize yourself with users by printing its contents
-print(users)
-
-advanced_pattern <- glue_collapse(c(
-  # Match one or more alphabetical letters
-  "username" = "^[A-Za-z]+",
-  ": ",
-  # Match one or more digit
-  "logins" = "\\d+",
-  ", ",
-  # Match one or more arbitrary characters
-  "email" = ".+$"
-))
-
-str_view(users, advanced_pattern)
-```
-
-### Izdvajanje strukturiranih podataka iz teksta
-
-U prošlim smo primjerima uskladivali korisničko ime i dva broja, broj pokušanih prijava i broj uspješnih prijava. S tim je uzorkom rezultat podudaranja nizova izgledao je ovako:
-
-```{r}
+# Izdvajanje dijela niza koji odgovara uzorku
 str_match(
-  "payload: 'Adam, 5, 3', headers: 'Auth...'",
+  string = zapis,
   pattern = "[A-Za-z]+, \\d+, \\d+"
 )
 ```
 
-Sada bismo mogli uzeti ovaj podniz i podijeliti ga dok ne dobijemo dijelove informacija koje tražimo, ali to bi moglo biti komplicirano. Regularni izrazi nude način koji je i brži i precizniji - grupe za hvatanje. Definirane otvaranjem i zatvaranjem zagrada, grupe za hvatanje mogu pomoći u razlikovanju dijelova koji nas zanimaju od onih koji nas ne zanimaju. Kada pozovemo funkciju `string_match()` s uzorkom, ne dobivamo matricu jedan prema jedan, već jedan prema četiri - prva je i dalje potpuno podudaranje, ali ostale sadrže samo dijelove uzorka koje smo omotali zagradama.
+Izdvojeni bismo niz mogli dalje rastavljati dok ne dobijemo pojedine podatke, no to je nespretno. Jednostavnije je koristiti **grupe hvatanja** (*capturing groups*), odnosno dijelove uzorka omeđene zagradama. Kada uzorak sadrži grupe hvatanja, funkcija `str_match()` vraća matricu u kojoj je u prvom stupcu cijelo podudaranje, a u svakom sljedećem stupcu sadržaj jedne grupe. Uzorak s tri grupe zato daje matricu s jednim retkom i četiri stupca.
 
 ```{r}
+# Izdvajanje imena i brojeva u zasebne stupce
 str_match(
-  "payload: 'Adam, 5, 3', headers: 'Auth...'",
+  string = zapis,
   pattern = "([A-Za-z]+), (\\d+), (\\d+)"
 )
 ```
 
-Iako je moguće pokrenuti `string_match()` na nizu i dobiti matricu s odvojenim vrijednostima, postoji i drugi način rada s uhvaćenim grupama pomoću `string_replace()` - pišemo mali kod koji prima niz, mijenja korisni teret i prosljeđuje rezultat sljedećem koraku u procesu. Ovaj put dodajemo treći argument, `replace`. U njemu definiramo novi sadržaj koji želimo vidjeti umjesto uzorka koji smo proslijedili kao drugi argument. U ovoj zamjeni možemo pisati prilagođeni tekst, ali ne samo to nego radimo sa sadržajem grupa za snimanje. Kada želimo umetnuti ono što je uhvaćeno prvom grupom, na primjer, možemo umetnuti broj jedan, kojem prethode dvije obrnute kose crte. To govori funkciji zamjene da treba staviti sadržaj prve grupe za snimanje na tu poziciju.
+Sadržaj grupa hvatanja može se koristiti i pri zamjeni teksta funkcijom `str_replace()`. U argumentu `replacement` zadajemo tekst kojim se zamjenjuje podudaranje, a na sadržaj pojedine grupe pozivamo se njezinim rednim brojem ispred kojeg stoje dvije obrnute kose crte. Oznaka `\\1` zamjenjuje se sadržajem prve grupe, `\\2` sadržajem druge i tako dalje. Takve se oznake nazivaju povratne reference (*backreferences*).
 
 ```{r}
+# Zamjena podudaranja rečenicom sastavljenom od sadržaja grupa
 str_replace(
-  "payload: 'Adam, 5, 3', headers: 'Auth...'",
+  string = zapis,
   pattern = "([A-Za-z]+), (\\d+), (\\d+)",
-  replacement = "\\1 tried to log in \\2 times."
+  replacement = "\\1 je posudila \\2 knjiga"
 )
 ```
 
-Druga funkcija za razdvajanje teksta na odvojene dijelove je ona za pretvaranje u vektor, `str_split()`. Prvi argument je ulazni tekst, drugi je uzorak koji se koristi kao razdjelnik, a treći da vraća popis vektora znakova (`FALSE`) ili matricu znakova (`TRUE`).
+Zamjenjuje se samo dio niza koji odgovara uzorku, dok ostatak niza ostaje nepromijenjen. Treća grupa u zamjeni se ne koristi, pa se broj vraćenih knjiga u rezultatu ne pojavljuje.
+
+Niz se na dijelove može rastaviti i funkcijom `str_split()`. Prvi je argument niz, a drugi uzorak koji služi kao razdjelnik. Argument `simplify` određuje oblik rezultata. Uz `simplify = FALSE` funkcija vraća listu s jednim vektorom za svaki niz, a uz `simplify = TRUE` vraća matricu znakova.
 
 ```{r}
+relikvije_niz <- "Elder Wand, Resurrection Stone, Cloak of Invisibility"
+
+# Rastavljanje niza u listu
 str_split(
-  "a:b:c:d",
-  pattern = ":",
+  string = relikvije_niz,
+  pattern = ", ",
   simplify = FALSE
 )
 
+# Rastavljanje niza u matricu
 str_split(
-  "a:b:c:d",
-  pattern = ":",
+  string = relikvije_niz,
+  pattern = ", ",
   simplify = TRUE
 )
 ```
 
+Funkcija `str_split()` posebno je korisna kada je tekst zapisan u više redaka. Primjerice, sadržaj knjige možemo rastaviti na retke prema znaku za prijelom reda (`\\n`).
+
 ```{r}
-# Split the input by line break and enable simplify
-top_10_lines <- str_split(
-  top_10,
+sadrzaj <- "1. The Wizard and the Hopping Pot\n2. The Fountain of Fair Fortune\n3. The Warlock's Hairy Heart\n4. Babbitty Rabbitty and her Cackling Stump\n5. The Tale of the Three Brothers"
+
+# Rastavljanje sadržaja na retke
+sadrzaj_retci <- str_split(
+  string = sadrzaj,
   pattern = "\\n",
   simplify = TRUE
 )
 
-# Inspect the first three lines and analyze their form
-top_10_lines[1:3]
+# Pregled prva tri retka
+sadrzaj_retci[1:3]
 
-# Add to the pattern two capturing groups that match rank and title
+# Izdvajanje rednog broja i naslova bajke
 str_match(
-  top_10_lines,
+  string = sadrzaj_retci,
   pattern = "(\\d+)\\. (.+)"
 )
 ```
 
+U uzorku `(\\d+)\\. (.+)` prva grupa hvata redni broj, a druga naslov. Točka iza prve grupe je escapirana jer označava doslovnu točku iza rednog broja, a točka u drugoj grupi nije jer označava bilo koji znak.
+
 ```{r}
-# Remove a space followed by "3D" at the end of the line
+# Uklanjanje rednog broja s početka retka
 str_replace(
-  top_10_lines,
-  pattern = " 3D$",
+  string = sadrzaj_retci,
+  pattern = "^\\d+\\. ",
   replacement = ""
 )
 
-# Use backreferences 2 and 1 to create a new sentence
+# Sastavljanje nove rečenice od sadržaja grupa
 str_replace(
-  top_10_lines,
-  pattern = "(\\d+)\\. (.*)",
-  replacement = "\\2 is at rank \\1"
+  string = sadrzaj_retci,
+  pattern = "(\\d+)\\. (.+)",
+  replacement = "\\2 je \\1. bajka u knjizi"
 )
 ```
 
-Osim varijabli i vektora, regularne izraze možemo primijeniti i na podatkovne okvire. Za to se koristi paket `tidyr` koji izdvaja dijelove iz teksta u jednom stupcu podatkovnog okvira, a za to se koristi funkcija `extract()` koja može imati slijedeće argumente:
+U drugom primjeru grupe se u zamjeni pojavljuju obrnutim redoslijedom, pa naslov dolazi ispred rednog broja.
+
+## Izdvajanje strukturiranih podataka iz teksta
+
+U prethodnom smo dijelu sastavili uzorak koji odgovara imenu učenika i dvama brojevima, broju posuđenih i broju vraćenih knjiga. Kada takav uzorak primijenimo na duži niz, funkcija `str_match()` vraća dio niza koji mu odgovara.
+
+```{r}
+zapis <- "evidencija: 'Hermione, 12, 11', napomena: 'vraćeno na vrijeme'"
+
+# Izdvajanje dijela niza koji odgovara uzorku
+str_match(
+  string = zapis,
+  pattern = "[A-Za-z]+, \\d+, \\d+"
+)
+```
+
+Izdvojeni bismo niz mogli dalje rastavljati dok ne dobijemo pojedine podatke, no to je nespretno. Jednostavnije je koristiti **grupe hvatanja** (*capturing groups*), odnosno dijelove uzorka omeđene zagradama. Kada uzorak sadrži grupe hvatanja, funkcija `str_match()` vraća matricu u kojoj je u prvom stupcu cijelo podudaranje, a u svakom sljedećem stupcu sadržaj jedne grupe. Uzorak s tri grupe zato daje matricu s jednim retkom i četiri stupca.
+
+```{r}
+# Izdvajanje imena i brojeva u zasebne stupce
+str_match(
+  string = zapis,
+  pattern = "([A-Za-z]+), (\\d+), (\\d+)"
+)
+```
+
+Sadržaj grupa hvatanja može se koristiti i pri zamjeni teksta funkcijom `str_replace()`. U argumentu `replacement` zadajemo tekst kojim se zamjenjuje podudaranje, a na sadržaj pojedine grupe pozivamo se njezinim rednim brojem ispred kojeg stoje dvije obrnute kose crte. Oznaka `\\1` zamjenjuje se sadržajem prve grupe, `\\2` sadržajem druge i tako dalje. Takve se oznake nazivaju povratne reference (*backreferences*).
+
+```{r}
+# Zamjena podudaranja rečenicom sastavljenom od sadržaja grupa
+str_replace(
+  string = zapis,
+  pattern = "([A-Za-z]+), (\\d+), (\\d+)",
+  replacement = "\\1 je posudila \\2 knjiga"
+)
+```
+
+Zamjenjuje se samo dio niza koji odgovara uzorku, dok ostatak niza ostaje nepromijenjen. Treća grupa u zamjeni se ne koristi, pa se broj vraćenih knjiga u rezultatu ne pojavljuje.
+
+Niz se na dijelove može rastaviti i funkcijom `str_split()`. Prvi je argument niz, a drugi uzorak koji služi kao razdjelnik. Argument `simplify` određuje oblik rezultata. Uz `simplify = FALSE` funkcija vraća listu s jednim vektorom za svaki niz, a uz `simplify = TRUE` vraća matricu znakova.
+
+```{r}
+relikvije_niz <- "Elder Wand, Resurrection Stone, Cloak of Invisibility"
+
+# Rastavljanje niza u listu
+str_split(
+  string = relikvije_niz,
+  pattern = ", ",
+  simplify = FALSE
+)
+
+# Rastavljanje niza u matricu
+str_split(
+  string = relikvije_niz,
+  pattern = ", ",
+  simplify = TRUE
+)
+```
+
+Funkcija `str_split()` posebno je korisna kada je tekst zapisan u više redaka. Primjerice, sadržaj knjige možemo rastaviti na retke prema znaku za prijelom reda (`\\n`).
+
+```{r}
+sadrzaj <- "1. The Wizard and the Hopping Pot\n2. The Fountain of Fair Fortune\n3. The Warlock's Hairy Heart\n4. Babbitty Rabbitty and her Cackling Stump\n5. The Tale of the Three Brothers"
+
+# Rastavljanje sadržaja na retke
+sadrzaj_retci <- str_split(
+  string = sadrzaj,
+  pattern = "\\n",
+  simplify = TRUE
+)
+
+# Pregled prva tri retka
+sadrzaj_retci[1:3]
+
+# Izdvajanje rednog broja i naslova bajke
+str_match(
+  string = sadrzaj_retci,
+  pattern = "(\\d+)\\. (.+)"
+)
+```
+
+U uzorku `(\\d+)\\. (.+)` prva grupa hvata redni broj, a druga naslov. Točka iza prve grupe je escapirana jer označava doslovnu točku iza rednog broja, a točka u drugoj grupi nije jer označava bilo koji znak.
+
+```{r}
+# Uklanjanje rednog broja s početka retka
+str_replace(
+  string = sadrzaj_retci,
+  pattern = "^\\d+\\. ",
+  replacement = ""
+)
+
+# Sastavljanje nove rečenice od sadržaja grupa
+str_replace(
+  string = sadrzaj_retci,
+  pattern = "(\\d+)\\. (.+)",
+  replacement = "\\2 je \\1. bajka u knjizi"
+)
+```
+
+U drugom primjeru grupe se u zamjeni pojavljuju obrnutim redoslijedom, pa naslov dolazi ispred rednog broja.
+
+### Izdvajanje podataka u podatkovni okvir
+
+Regularni izrazi mogu se primijeniti i na stupce podatkovnog okvira. Tako iz nestrukturiranog teksta možemo izdvojiti podatke i spremiti ih u zasebne stupce. Za to služi funkcija `separate_wider_regex()` iz paketa `tidyr` koja ima sljedeće argumente:
 
 - `data` - podatkovni okvir,
 
-- `col` - stupac u kojem je pohranjen tekst,
+- `cols` - stupac u kojem je tekst,
 
-- `into` - kako bi se trebali imenovati novi stupci koje stvaramo,
+- `patterns` - imenovani vektor dijelova regularnog izraza (svaki imenovani dio postaje novi stupac istog naziva, a neimenovani dijelovi moraju se podudarati s tekstom, ali se ne spremaju),
 
-- `regex` - regularni izrazi koje pišemo, a koji odgovaraju različitim dijelovima unutar teksta,
+- `too_few` - što učiniti kada se uzorak s nekim retkom ne podudara (zadana vrijednost `"error"` znači da funkcija javlja grešku),
 
-- `remove` - želimo li zadržati izvorni tekstualni stupac ili ga želimo ukloniti,
+- `cols_remove` - treba li ukloniti izvorni stupac (zadana vrijednost je `TRUE`).
 
-- `convert` - na temelju informacija nagađa o tipovima podataka koje izdvajamo (`TRUE`).
+Uzorak se, dakle, ne piše kao jedan niz, nego kao vektor dijelova, slično kao kada smo uzorak sastavljali funkcijom `glue_collapse()`. Razlika je u tome što imena ovdje nisu samo opis, nego nazivi novih stupaca.
 
-Ovdje imamo podatkovni okvir koji sadrži informacije o broju ekrana na kojima se film prikazivao u Švicarskoj. Ali podaci nisu tablični, već samo običan tekst u stupcu "line". Možemo na primjer identificirati filmove koji su prikazani u 3D-u, možemo ih identificirati pomoću `string_match()` usklađivanjem "3D".
+Tekst o *Bajkama barda Beedlea* najprije ćemo pretvoriti u podatkovni okvir s jednim stupcem u kojem je svaki odlomak zaseban redak. Podaci u njemu nisu raspoređeni u stupce, nego je svaki odlomak običan tekst.
 
 ```{r}
-screens_per_movie |>
-  mutate(
-    is_3d = str_match(line, "3D")
+# Pretvaranje vektora u podatkovni okvir
+bajke_df <- tibble(odlomak = tToBtB_wiki)
+bajke_df
+```
+
+Kada iz svakog retka želimo izdvojiti samo jedan podatak, dovoljna je funkcija `str_extract()` unutar funkcije `mutate()` iz paketa `dplyr`. Funkcija `mutate()` rezultat sprema u novi stupac podatkovnog okvira. Primjerice, u novi stupac možemo spremiti godinu koja se spominje u odlomku.
+
+```{r}
+# Izdvajanje godine iz svakog odlomka
+bajke_df |>
+  mutate(godina = str_extract(odlomak, "\\b\\d{4}\\b"))
+```
+
+U odlomcima bez godine uzorak se ne podudara, pa stupac `godina` u tim retcima ima vrijednost `NA`. Budući da je takvih redaka većina, korisno je zadržati samo retke u kojima je godina pronađena. Za to služi funkcija `filter()`.
+
+```{r}
+# Izdvajanje godine i zadržavanje samo redaka s godinom
+bajke_df |>
+  mutate(godina = str_extract(odlomak, "\\b\\d{4}\\b")) |>
+  filter(!is.na(godina))
+```
+
+Rezultat su tri odlomka s godinama 2008, 1997 i 2007.
+
+Ako iz teksta želimo izdvojiti više podataka odjednom, primjerice dan, mjesec i godinu iz datuma, koristimo funkciju `separate_wider_regex()`. Uzorak se nastavlja na onaj iz primjera s datumima, ali je rastavljen na dijelove.
+
+```{r}
+uzorak_datum <- c(
+  # Tekst ispred datuma
+  ".*?",
+  # Dan
+  dan = "\\d{1,2}",
+  # Neobavezni nastavak rednog broja i riječ of
+  "(?:st|nd|rd|th)? (?:of )?",
+  # Mjesec
+  mjesec = "[A-Z][a-z]+",
+  " ",
+  # Godina
+  godina = "\\d{4}",
+  # Tekst iza datuma
+  ".*"
+)
+```
+
+Funkcija `separate_wider_regex()` zahtijeva da se uzorak podudara s cijelim nizom, od prvog do posljednjeg znaka. Zato uzorak počinje dijelom `.*?` koji obuhvaća tekst ispred datuma, a završava dijelom `.*` koji obuhvaća tekst iza njega. Budući da ti dijelovi nemaju imena, ne postaju stupci. Dio `.*?` uzima što je moguće manje znakova pa se izdvaja prvi datum u odlomku.
+
+Imenovane dijelove funkcija sama stavlja u zagrade i od njih stvara grupe hvatanja. Zato neimenovani dijelovi ne smiju sadržavati obične zagrade, nego zagrade koje počinju oznakom `?:`. One služe samo za grupiranje, a ne za hvatanje. Kada bismo napisali `(st|nd|rd|th)?`, funkcija bi javila grešku i upozorila da umjesto `()` treba koristiti `(?:)`.
+
+Prije primjene na cijeli podatkovni okvir korisno je uzorak isprobati na jednom retku. Funkcija `slice()` zadržava samo deseti odlomak, u kojem se nalazi datum.
+
+```{r}
+# Provjera uzorka na desetom odlomku
+bajke_df |>
+  slice(10) |>
+  separate_wider_regex(
+    cols = odlomak,
+    patterns = uzorak_datum
   )
 ```
 
-S `dplyr`-ovim `mutate()` spremamo rezultat poziva funkcije u novi stupac "is_3d" u podatakovnom okviru - filmovi u 3D-u imat će 3D u ćeliji.
+Rezultat je redak s tri nova stupca, `dan`, `mjesec` i `godina`, u kojima su vrijednosti 30, December i 1997.
 
-Ali što ako ne želimo spremiti samo informacije o 3D-u već i broj ekrana na kojima su ti filmovi prikazani? Tada moramo izdvojiti dvije stvari. Funkcija `extract()` napravit će upravo to. Korištenjem regularnih izraza i grupa za snimanje možemo pretvoriti tekstualne podatke u podatakovni okvir.
-
-U takvom kodu prosljeđujemo funkciji `extract()` podatkovni okvir `screens_per_movie` kao prvi argument i naziv stupca kao drugi argument. Treći argument su nazivi novih stupaca koje želimo stvoriti i na kraju definiramo regularni izraz s dvije grupe za snimanje definirane zagradama. Funkcija `extract()` će raditi samo ako se broj grupa za snimanje i broj stupaca koje želimo stvoriti podudaraju.
-
-U našem slučaju potrebne su nam dvije grupe za hvatanje. Jedna za "is_3d" i jedna za "screens". Također prosljeđujemo `remove = FALSE`. Za sada želimo zadržati naš izvorni tekstualni stupac kako bismo provjerili je li ekstrakcija funkcionirala kako se očekivalo.
+Kada isti uzorak primijenimo na sve odlomke, funkcija javlja grešku jer se uzorak ne podudara s odlomcima bez datuma. Funkcija nas time upozorava da podaci nisu izdvojeni iz svih redaka, umjesto da takve retke tiho popuni vrijednostima `NA`. Zato najprije funkcijom `filter()` zadržavamo samo odlomke s datumom. Za provjeru koristimo isti uzorak spojen u jedan niz funkcijom `glue_collapse()`. Argumentom `cols_remove = FALSE` zadržavamo izvorni stupac kako bismo mogli provjeriti je li izdvajanje uspjelo.
 
 ```{r}
-extract(
-  screens_per_movie,
-  col = "line",
-  into = c("is_3d", "screens"),
-  regex = "(3D).*?(\\d+)$",
-  remove = FALSE
-)
+# Izdvajanje dana, mjeseca i godine iz odlomaka s datumom
+bajke_df |>
+  filter(str_detect(odlomak, glue_collapse(uzorak_datum))) |>
+  separate_wider_regex(
+    cols = odlomak,
+    patterns = uzorak_datum,
+    cols_remove = FALSE
+  )
 ```
+
+Rezultat su dva datuma, 30. prosinca 1997. i 1. studenoga 2007. Treći datum iz teksta, *4 December 2008*, nalazi se u istom odlomku kao i drugi, a uzorak izdvaja samo prvi datum u odlomku.
+
+Novi stupci su tekstualni, iako dan i godina sadrže brojeve. Funkcija `separate_wider_regex()` nema argument za pretvaranje tipa podataka, pa dan i godinu pretvaramo u cijele brojeve funkcijom `as.integer()` unutar funkcije `mutate()`.
 
 ```{r}
-extract(
-  screens_per_movie,
-  line,
-  into = c("is_3d", "screens"),
-  # Capture two groups: "3D" and "one or more digits"
-  regex = "(3D).*?(\\d+)$",
-  # Pass TRUE or FALSE, the original column should not be removed
-  remove = FALSE,
-  # Pass TRUE or FALSE, the result should get converted to numbers
-  convert = TRUE
-)
+# Izdvajanje datuma uz pretvaranje dana i godine u brojeve
+bajke_df |>
+  filter(str_detect(odlomak, glue_collapse(uzorak_datum))) |>
+  separate_wider_regex(
+    cols = odlomak,
+    patterns = uzorak_datum
+  ) |>
+  mutate(
+    dan = as.integer(dan),
+    godina = as.integer(godina)
+  )
 ```
+
+Stupci `dan` i `godina` sada su cjelobrojni (`<int>`), a izvorni stupac je uklonjen jer nismo zadali `cols_remove = FALSE`.
+
+Na kraju teksta nalazi se popis djela u kojima se knjiga pojavljuje. Mnogi naslovi imaju oblik *naziv: podnaslov*, pa naziv i podnaslov možemo izdvojiti u zasebne stupce.
 
 ```{r}
-# Print the first three lines of screens_per_movie
-screens_per_movie[1:3, ]
-
-# Match anything, one or more word chars and one or more digits
-str_match(
-  screens_per_movie[3, ]$line,
-  "(.*)\\s{2,}(\\w+)\\s{2,}(\\d+)"
-)
-
-# Extract the column line into title, distributor, screens
-extract(
-  screens_per_movie,
-  col = line,
-  into = c("title", "distributor", "screens"),
-  regex = "(.*)\\s{2,}(\\w+)\\s{2,}(\\d+)")
+# Izdvajanje naziva i podnaslova iz popisa djela
+bajke_df |>
+  slice(31:48) |>
+  filter(str_detect(odlomak, ":")) |>
+  separate_wider_regex(
+    cols = odlomak,
+    patterns = c(
+      naziv = "[^:]+",
+      ": ",
+      podnaslov = ".+"
+    )
+  )
 ```
 
-Do sada su primjeri bili temeljeni na pretpostavci da imamo različite retke teksta koji imaju istu strukturu, no često to nije slučaj. Primjerice, što ako tražimo popis imena u tekstu i želimo pogledati kontekst tih imena.
+- `naziv = "[^:]+"` - jedan ili više znakova koji nisu dvotočka (naziv).
 
-Zamislimo da imamo kolekciju objava na blogu i želimo saznati jesu li i kako ljudi govorili o izmišljenoj tvrtki "ABC Enterprises". Mogli bismo na primjer izvući naziv tvrtke i deset riječi prije njega i deset riječi poslije njega. Koristeći klase znakova možemo definirati sljedeći uzorak za jednu riječ. Riječ se sastoji od jednog ili više znakova riječi nakon kojih slijedi razmak. Pomoću vitičastih zagrada možemo definirati koliko riječi želimo tražiti, na primjer do deset riječi dodavanjem nule, zareza deset u vitičaste zagrade. Ova definicija ponavljanja primijenit će se na cijelu grupu, dakle na sve unutar zagrada. Ako sada uzmemo ovaj uzorak i stavimo ga ispred i iza naziva naše tvrtke, imamo uzorak koji odgovara nazivu naše tvrtke plus 0 do 10 riječi. Ako spremimo tekst u varijablu i pretražimo ga funkcijom `str_extract_all()` dobit ćemo dio objave u blogu koji sadrži "ABC Enterprises" plus neke riječi s obje strane naziva.
+- `": "` - dvotočka i razmak, koji se ne spremaju.
+
+- `podnaslov = ".+"` - svi preostali znakovi (podnaslov).
+
+Funkcija `slice()` zadržava samo retke od 31. do 48., odnosno popis djela, a funkcija `filter()` samo naslove s dvotočkom. Naziv je opisan negiranom klasom `[^:]`, pa se sigurno zaustavlja na prvoj dvotočki. Rezultat pokazuje da se najčešći naziv, *Harry Potter*, pojavljuje s različitim podnaslovima.
+
+### Izdvajanje konteksta
+
+Dosadašnji primjeri pretpostavljali su da svi retci imaju istu strukturu, no u tekstu to često nije slučaj. Recimo da nas zanima u kakvom se kontekstu u tekstu o *Bajkama barda Beedlea* spominje *Elder Wand*. Uz sam naziv možemo izdvojiti i do deset riječi ispred i iza njega.
+
+Jednu riječ opisujemo uzorkom `\\w+\\s`, odnosno jednim ili više znakova riječi iza kojih slijedi bjelina. Stavimo li ga u zagrade i dodamo kvantifikator `{0,10}`, uzorak `(\\w+\\s){0,10}` odgovara nizu od nula do deset riječi. Kvantifikator se tada odnosi na cijelu grupu u zagradama, a ne samo na posljednji znak. Isti uzorak stavljamo ispred i iza naziva.
 
 ```{r}
-str_extract_all(
-  blog_post,
-  pattern = "(\\w+\\s){1,10}ABC Enterprises\\s?(\\w+\\s){1,10}"
-)
+# Izdvajanje naziva s do deset riječi ispred i iza njega
+tToBtB_wiki |>
+  str_extract_all("(\\w+\\s){0,10}Elder Wand\\s?(\\w+\\s){0,10}") |>
+  unlist()
 ```
 
-Možda se pitate zašto izdvaja samo 4 riječi ispred i 7 iza naziva tvrtke, kada tekst imao puno više riječi s obje strane. To je zato što nismo dodali nikakvu interpunkciju podudaranju, pa kada se naiđe na nju, uzorak se više ne podudara i bit će odsječen. Ako ne želimo da se to dogodi, mogli bismo zamijeniti našu klasu znakova riječi prilagođenim uzorkom pomoću uglatih zagrada. U uglate zagrade mogli bismo staviti našu klasu znakova riječi i imenovanu klasu "punctuation". Rezultat će tada izdvojiti deset riječi s obje strane naziva tvrtke i također spajamo točke i uskličnike.
+U prvom rezultatu izdvojeno je samo *the Elder Wand*, iako u tekstu ima mnogo riječi s obje strane naziva. Ispred riječi *the* nalazi se crta (—), a iza naziva točka. Nijedno od toga nije znak riječi, pa se uzorak na tim mjestima prekida. To se rješava tako da riječ opišemo klasom `[\\w[:punct:]]`, koja uz znakove riječi obuhvaća i interpunkciju.
 
 ```{r}
-str_extract_all(
-  blog_post,
-  pattern = "([\\w[:punct:]]+\\s){1,10}ABC Enterprises\\s?([\\w[:punct:]]+\\s){1,10}"
-)
+# Izdvajanje naziva s do deset riječi i interpunkcije ispred i iza njega
+tToBtB_wiki |>
+  str_extract_all("([\\w[:punct:]]+\\s){0,10}Elder Wand\\s?([\\w[:punct:]]+\\s){0,10}") |>
+  unlist()
 ```
+
+Sada se uzorak više ne prekida na interpunkciji, pa rezultat s obje strane naziva sadrži do deset riječi, zajedno sa znakovima interpunkcije. U drugom je rezultatu ispred naziva manje riječi jer je *Elder Wand* blizu početka odlomka. Uzorak za kontekst možemo spremiti u varijablu i funkcijom `glue()` spojiti s uzorkom za sve tri relikvije iz prethodnog dijela.
 
 ```{r}
-# Create our polit_pattern again by collapsing "politicians"
-polit_pattern <- glue_collapse(politicians, sep = "|")
+# Uzorak za do deset riječi i interpunkcije
+kontekst <- "([\\w[:punct:]]+\\s){0,10}"
 
-# Correct way to match word characters and punctuations
-context <- "([\\w[:punct:]]+\\s){0,10}"
-
-# Add this pattern in front and after the polit_pattern
-polit_pattern_with_context <- glue(
-  "{context}({polit_pattern})\\s?{context}"
+# Spajanje uzorka za kontekst s uzorkom za relikvije
+uzorak_relikvije_kontekst <- glue(
+  "{kontekst}({uzorak_relikvije})\\s?{kontekst}"
 )
 
-str_extract_all(
-  articles$text,
-  pattern = polit_pattern_with_context
-)
+# Izdvajanje relikvija s kontekstom
+tToBtB_wiki |>
+  str_extract_all(uzorak_relikvije_kontekst) |>
+  unlist()
 ```
+
+Uzorak za relikvije stavljen je u zagrade kako bi se okomite crte odnosile samo na nazive relikvija, a ne na cijeli uzorak. Rezultat sadrži svih pet spominjanja relikvija, svako s pripadajućim kontekstom.
