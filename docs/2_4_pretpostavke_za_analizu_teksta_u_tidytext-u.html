@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Tekst u izvornom obliku nije pogodan za kvantitativnu analizu. Da bi se riječi mogle brojati, uspoređivati i povezivati s drugim podacima, tekst je najprije potrebno razložiti na manje jedinice i urediti u strukturu s kojom se može raditi. Tokenizacija, uklanjanje zaustavnih riječi i lematizacija osnovni su postupci takve pripreme, a kojima se iz teksta izdvaja ono što nosi značenje. Iako se čine tehničkima, ti postupci nisu neutralni jer o odlukama donesenima u njima ovise i rezultati svake daljnje analize.">
 
-<title>7&nbsp; Pretpostavke za analizu teksta u tidytextu – Analiza teksta u R-u</title>
+<title>7&nbsp; Pretpostavke za analizu teksta u tidytext-u – Analiza teksta u R-u</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -22,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -73,6 +109,23 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
 
 
 <link rel="stylesheet" href="custom.css">
@@ -81,13 +134,13 @@ ul.task-list li input[type="checkbox"] {
 <body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">POČETAK U RADU S TEKSTOM</a></li><li class="breadcrumb-item"><a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytextu</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">POČETAK U RADU S TEKSTOM</a></li><li class="breadcrumb-item"><a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytext-u</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -97,7 +150,28 @@ ul.task-list li input[type="checkbox"] {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">POČETAK U RADU S TEKSTOM</a></li><li class="breadcrumb-item"><a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytext-u</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytext-u</span></h1>
+                  <div>
+        <div class="description">
+          Tekst u izvornom obliku nije pogodan za kvantitativnu analizu. Da bi se riječi mogle brojati, uspoređivati i povezivati s drugim podacima, tekst je najprije potrebno razložiti na manje jedinice i urediti u strukturu s kojom se može raditi. Tokenizacija, uklanjanje zaustavnih riječi i lematizacija osnovni su postupci takve pripreme, a kojima se iz teksta izdvaja ono što nosi značenje. Iako se čine tehničkima, ti postupci nisu neutralni jer o odlukama donesenima u njima ovise i rezultati svake daljnje analize.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -174,7 +248,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytextu</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytext-u</span></span></a>
   </div>
 </li>
       </ul>
@@ -277,34 +351,261 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#tokenizacija" id="toc-tokenizacija" class="nav-link active" data-scroll-target="#tokenizacija"><span class="header-section-number">7.1</span> Tokenizacija</a></li>
+  <li><a href="#uklanjanje-zaustavnih-riječi" id="toc-uklanjanje-zaustavnih-riječi" class="nav-link" data-scroll-target="#uklanjanje-zaustavnih-riječi"><span class="header-section-number">7.2</span> Uklanjanje zaustavnih riječi</a></li>
+  <li><a href="#lematizacija" id="toc-lematizacija" class="nav-link" data-scroll-target="#lematizacija"><span class="header-section-number">7.3</span> Lematizacija</a></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">POČETAK U RADU S TEKSTOM</a></li><li class="breadcrumb-item"><a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytextu</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytextu</span></h1>
+
+
+
+
+<p>Prije same analize teksta potrebno je provesti nekoliko postupaka koji tekst pripremaju za analizu. Prvi je tokenizacija kojom se tekst dijeli na manje jedinice, poput riječi ili nizova riječi, i slaže u strukturu prikladnu za analizu. Drugi je uklanjanje zaustavnih riječi, odnosno vrlo čestih riječi koje malo govore o sadržaju teksta. Zajedno, ti postupci čine predobradu teksta, odnosno <strong>pretpostavke tekstualne analize</strong>. Treći, neobavezan, ali često koristan postupak je lematizacija kojom se različiti oblici iste riječi svode na njezin rječnički oblik, a što je posebno korisno pri brojanju riječi.</p>
+<section id="tokenizacija" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="tokenizacija"><span class="header-section-number">7.1</span> Tokenizacija</h2>
+<p><strong>Uredan tekstni format</strong> (eng. <em>tidy text format</em>) prikladan za analizu podatkovni je okvir strukturiran kao <strong>jedan token po retku</strong>. <strong>Token</strong> je smislena jedinica teksta koja nas zanima u analizi. Tokenizacija je ključna pretpostavka analize teksta jer se s cjelovitim odlomcima ne mogu provesti smislene kvantitativne analize s obzirom na to da je gotovo svaki odlomak jedinstven pa ih nema smisla brojati ni uspoređivati. Tokeni su najčešće riječi jer su riječi najčešće semantički značajne jedinice teksta, no token može biti i n-gram, rečenica ili odlomak. Uredan format omogućuje obradu i vizualizaciju podataka paketima kao što su <code>dplyr</code>, <code>tidyr</code>, <code>ggplot2</code> i <code>broom</code>.</p>
+<p>Tokenizacija se u paketu <code>tidytext</code> provodi funkcijom <code>unnest_tokens()</code>. Funkcija ima tri obavezna argumenta:</p>
+<ul>
+<li><p><code>tbl</code> - podatkovni okvir u kojem se nalazi tekst,</p></li>
+<li><p><code>output</code> - naziv novog stupca u kojem će biti tokeni i</p></li>
+<li><p><code>input</code> - naziv stupca u kojem se nalazi tekst.</p></li>
+</ul>
+<p>Neobavezan, ali bitan argument je <code>token</code> kojim se određuje vrsta tokena. Ako se ne navede, zadana vrijednost je <code>"words"</code> pa se tekst dijeli na riječi. Osnovna i najčešća tokenizacija je tokenizacija na riječi. Tada je svaka riječ u tekstu, kao smislena jedinica teksta, jedan token. Zato ćemo stupac s tokenima nazvati <code>word</code>. Tekst se nalazi u podatkovnom okviru <code>tToBtB_df</code>, u stupcu <code>text</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na riječi</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens <span class="ot">&lt;-</span> <span class="fu">unnest_tokens</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tbl =</span> tToBtB_df,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> word,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">input =</span> text</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled tokeniziranog podatkovnog okvira</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,950 × 4
+    line fairy_tale                       paragraph_no word  
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt; 
+ 1    20 1_the_wizard_and_the_hopping_pot            1 there 
+ 2    20 1_the_wizard_and_the_hopping_pot            1 was   
+ 3    20 1_the_wizard_and_the_hopping_pot            1 once  
+ 4    20 1_the_wizard_and_the_hopping_pot            1 a     
+ 5    20 1_the_wizard_and_the_hopping_pot            1 kindly
+ 6    20 1_the_wizard_and_the_hopping_pot            1 old   
+ 7    20 1_the_wizard_and_the_hopping_pot            1 wizard
+ 8    20 1_the_wizard_and_the_hopping_pot            1 who   
+ 9    20 1_the_wizard_and_the_hopping_pot            1 used  
+10    20 1_the_wizard_and_the_hopping_pot            1 his   
+# ℹ 5,940 more rows</code></pre>
+</div>
+</div>
+<p>Nakon tokenizacije svaki redak podatkovnog okvira sadrži jedan token (riječ), a pritom:</p>
+<ul>
+<li><p>ostali stupci (<code>line</code>, <code>fairy_tale</code> i <code>paragraph_no</code>) se zadržavaju, pa za svaku riječ znamo iz koje bajke i odlomka dolazi;</p></li>
+<li><p>izvorni stupac <code>text</code> se uklanja;</p></li>
+<li><p>interpunkcija se uklanja (osim apostrofa unutar riječi, npr. <em>didn’t</em> ili <em>beedle’s</em> koji ostaju jedan token);</p></li>
+<li><p>sva se slova pretvaraju u mala.</p></li>
+</ul>
+<p>Ponekad je poželjno da riječi zadrže izvorna velika i mala slova, primjerice, kako bi se imena razlikovala od običnih riječi. Tada se funkciji <code>unnest_tokens()</code> dodaje argument <code>to_lower = FALSE</code>. Slično tome, interpunkcijski znakovi zadržavaju se argumentom <code>strip_punct = FALSE</code>.</p>
+<p>Tokenizacija ne mora biti ograničena na riječi, nego se tekst može podijeliti i prema drugim kriterijima, ovisno o tome što želimo analizirati.</p>
+<p>Umjesto riječi, osnovna jedinica mogu biti <strong>rečenice</strong>. Za to se argumentu <code>token</code> zadaje vrijednost <code>"sentences"</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na rečenice</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tToBtB_sentence_token <span class="ot">&lt;-</span> tToBtB_df <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> sentence,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> text,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="st">"sentences"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled tokeniziranog podatkovnog okvira</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>tToBtB_sentence_token</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 316 × 4
+    line fairy_tale                       paragraph_no sentence                 
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;                    
+ 1    20 1_the_wizard_and_the_hopping_pot            1 "there was once a kindly…
+ 2    20 1_the_wizard_and_the_hopping_pot            1 "rather than reveal the …
+ 3    20 1_the_wizard_and_the_hopping_pot            1 "from miles around peopl…
+ 4    21 1_the_wizard_and_the_hopping_pot            2 "this well-beloved wizar…
+ 5    21 1_the_wizard_and_the_hopping_pot            2 "this son was of a very …
+ 6    21 1_the_wizard_and_the_hopping_pot            2 "those who could not wor…
+ 7    22 1_the_wizard_and_the_hopping_pot            3 "upon the father's death…
+ 8    22 1_the_wizard_and_the_hopping_pot            3 "he opened it, hoping fo…
+ 9    22 1_the_wizard_and_the_hopping_pot            3 "a fragment of parchment…
+10    23 1_the_wizard_and_the_hopping_pot            4 "the son cursed his fath…
+# ℹ 306 more rows</code></pre>
+</div>
+</div>
+<p>Sada je svaki token, odnosno svaki redak podatkovnog okvira, jedna rečenica. Stupci <code>line</code>, <code>fairy_tale</code> i <code>paragraph_no</code> i dalje se zadržavaju, pa možemo, primjerice, usporediti prosječnu duljinu rečenica u pojedinim bajkama. Slova su i ovdje pretvorena u mala, ali se interpunkcija, za razliku od tokenizacije na riječi, zadržava.</p>
+<p>Problem može nastati u postupku tokenizacije na rečenice. Naime, granice rečenica određuju se prema interpunkciji na kraju rečenice, odnosno točki, upitniku i uskličniku. Postupak nije savršen jer se točka iza kratice, npr. <em>Mr.</em> ili <em>Dr.</em>, prepoznaje kao kraj rečenice pa se takva rečenica dijeli na dva tokena. Budući da se tokenizira svaki odlomak zasebno, rečenica nikad ne prelazi granicu odlomka.</p>
+<p>Za neke posebne analize, primjerice stilometriju ili analizu učestalosti slova, tekst se može podijeliti na pojedinačne znakove vrijednošću <code>"characters"</code>. Tada svaki redak sadrži jedan znak. Pritom se uklanjaju razmaci i interpunkcija pa ostaju samo slova i znamenke. Ovakva se tokenizacija rjeđe koristi u sociološkoj analizi teksta, ali je korisna za stilsku analizu ili za prikaz razlike između različitih jezičnih razina.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na znakove</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tToBtB_character_token <span class="ot">&lt;-</span> tToBtB_df <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> char,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> text,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="st">"characters"</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled tokeniziranog podatkovnog okvira</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>tToBtB_character_token</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 25,878 × 4
+    line fairy_tale                       paragraph_no char 
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;
+ 1    20 1_the_wizard_and_the_hopping_pot            1 t    
+ 2    20 1_the_wizard_and_the_hopping_pot            1 h    
+ 3    20 1_the_wizard_and_the_hopping_pot            1 e    
+ 4    20 1_the_wizard_and_the_hopping_pot            1 r    
+ 5    20 1_the_wizard_and_the_hopping_pot            1 e    
+ 6    20 1_the_wizard_and_the_hopping_pot            1 w    
+ 7    20 1_the_wizard_and_the_hopping_pot            1 a    
+ 8    20 1_the_wizard_and_the_hopping_pot            1 s    
+ 9    20 1_the_wizard_and_the_hopping_pot            1 o    
+10    20 1_the_wizard_and_the_hopping_pot            1 n    
+# ℹ 25,868 more rows</code></pre>
+</div>
+</div>
+<p>Funkcijom <code>unnest_tokens()</code> tekst se može podijeliti i na nizove uzastopnih riječi koji se nazivaju <strong>n-grami</strong>. Na taj način možemo promatrati koliko često neka riječ slijedi drugu i na temelju toga ispitivati odnose među riječima. N-grami se dobivaju vrijednošću <code>token = "ngrams"</code>, a argumentom <code>n</code> određuje se koliko riječi čini jedan n-gram. Nizovi od dvije uzastopne riječi nazivaju se <strong>bigrami</strong>, a nizovi od tri riječi <strong>trigrami</strong>. Tekst tada ima strukturu jedan bigram po retku, odnosno jedan trigram po retku. Ako odlomak ima manje riječi nego što iznosi <code>n</code> (npr. odlomak od samo jedne riječi kod bigrama), iz njega se ne može stvoriti nijedan n-gram pa funkcija za njega vraća <code>NA</code>. Takve retke uklanjamo funkcijom <code>filter()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na bigrame</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram <span class="ot">&lt;-</span> tToBtB_df <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> bigram,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> text,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="st">"ngrams"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">2</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uklanjanje redaka iz kojih se nije mogao stvoriti bigram</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(bigram))</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled bigrama</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,775 × 4
+    line fairy_tale                       paragraph_no bigram    
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;     
+ 1    20 1_the_wizard_and_the_hopping_pot            1 there was 
+ 2    20 1_the_wizard_and_the_hopping_pot            1 was once  
+ 3    20 1_the_wizard_and_the_hopping_pot            1 once a    
+ 4    20 1_the_wizard_and_the_hopping_pot            1 a kindly  
+ 5    20 1_the_wizard_and_the_hopping_pot            1 kindly old
+ 6    20 1_the_wizard_and_the_hopping_pot            1 old wizard
+ 7    20 1_the_wizard_and_the_hopping_pot            1 wizard who
+ 8    20 1_the_wizard_and_the_hopping_pot            1 who used  
+ 9    20 1_the_wizard_and_the_hopping_pot            1 used his  
+10    20 1_the_wizard_and_the_hopping_pot            1 his magic 
+# ℹ 5,765 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na trigrame</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tToBtB_trigram <span class="ot">&lt;-</span> tToBtB_df <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> trigram,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> text,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="st">"ngrams"</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">3</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uklanjanje redaka iz kojih se nije mogao stvoriti trigram</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(trigram))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled trigrama</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>tToBtB_trigram</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,600 × 4
+    line fairy_tale                       paragraph_no trigram             
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;               
+ 1    20 1_the_wizard_and_the_hopping_pot            1 there was once      
+ 2    20 1_the_wizard_and_the_hopping_pot            1 was once a          
+ 3    20 1_the_wizard_and_the_hopping_pot            1 once a kindly       
+ 4    20 1_the_wizard_and_the_hopping_pot            1 a kindly old        
+ 5    20 1_the_wizard_and_the_hopping_pot            1 kindly old wizard   
+ 6    20 1_the_wizard_and_the_hopping_pot            1 old wizard who      
+ 7    20 1_the_wizard_and_the_hopping_pot            1 wizard who used     
+ 8    20 1_the_wizard_and_the_hopping_pot            1 who used his        
+ 9    20 1_the_wizard_and_the_hopping_pot            1 used his magic      
+10    20 1_the_wizard_and_the_hopping_pot            1 his magic generously
+# ℹ 5,590 more rows</code></pre>
+</div>
+</div>
+<p>Dobivene tablice izgledaju slično kao tablica s jednim tokenom po retku, osim što su u stupcu <code>bigram</code> bigrami (<em>there was</em>, <em>was once</em>, <em>once a</em>, <em>a kindly</em> itd.), a u stupcu <code>trigram</code> trigrami (<em>there was once</em>, <em>was once a</em>, <em>once a kindly</em>, <em>a kindly old</em> itd.). Uzastopni n-grami preklapaju se, a svaka se riječ, osim prve i posljednje, pojavljuje u dva bigrama.</p>
+</section>
+<section id="uklanjanje-zaustavnih-riječi" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="uklanjanje-zaustavnih-riječi"><span class="header-section-number">7.2</span> Uklanjanje zaustavnih riječi</h2>
+<p>Tekst u obliku jednog tokena po retku može se lako obrađivati i vizualizirati. Ipak, u analizi je često poželjno ukloniti riječi koje su iznimno česte, a malo govore o sadržaju teksta, poput <em>the</em>, <em>of</em> ili <em>to</em>. Takve riječi nazivaju se <strong>zaustavne riječi</strong> (engl. <em>stop words</em>). To su uglavnom veznici, prijedlozi, članovi, zamjenice i pomoćni glagoli koji povezuju dijelove rečenice, ali ne nose specifično značenje, a uklanjaju se iz analize kako bi se analiza usmjerila na riječi koje više govore o sadržaju.</p>
+<p>Paket <code>tidytext</code> sadrži skup podataka <code>stop_words</code> s popisom engleskih zaustavnih riječi iz tri rječnika (<code>onix</code>, <code>SMART</code> i <code>snowball</code>). Zaustavne riječi iz tokeniziranog teksta uklanjamo funkcijom <code>anti_join()</code> iz paketa <code>dplyr</code>. Ona zadržava samo one retke prvog podatkovnog okvira koji nemaju odgovarajući redak u drugom, odnosno samo one riječi koje se ne nalaze na popisu zaustavnih riječi. Argumentom <code>by = "word"</code> navodimo da se podatkovni okviri uspoređuju prema stupcu <code>word</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje zaustavnih riječi</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words <span class="ot">&lt;-</span> tToBtB_word_tokens <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(stop_words, <span class="at">by =</span> <span class="st">"word"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,344 × 4
+    line fairy_tale                       paragraph_no word      
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;     
+ 1    20 1_the_wizard_and_the_hopping_pot            1 kindly    
+ 2    20 1_the_wizard_and_the_hopping_pot            1 wizard    
+ 3    20 1_the_wizard_and_the_hopping_pot            1 magic     
+ 4    20 1_the_wizard_and_the_hopping_pot            1 generously
+ 5    20 1_the_wizard_and_the_hopping_pot            1 wisely    
+ 6    20 1_the_wizard_and_the_hopping_pot            1 benefit   
+ 7    20 1_the_wizard_and_the_hopping_pot            1 neighbours
+ 8    20 1_the_wizard_and_the_hopping_pot            1 reveal    
+ 9    20 1_the_wizard_and_the_hopping_pot            1 true      
+10    20 1_the_wizard_and_the_hopping_pot            1 source    
+# ℹ 2,334 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="lematizacija" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="lematizacija"><span class="header-section-number">7.3</span> Lematizacija</h2>
+<p>Posljednji je korak pretpostavke za analizu teksta lematizacija samog teksta. <strong>Lematizacija</strong> je postupak svođenja riječi na njihov rječnički oblik (lemu), primjerice:</p>
+<ul>
+<li><p><em>walking</em>, <em>walks</em>, <em>walked</em> → <em>walk</em></p></li>
+<li><p><em>stories</em> → <em>story</em></p></li>
+<li><p><em>children</em> → <em>child</em></p></li>
+<li><p><em>better</em> → <em>good</em>.</p></li>
+</ul>
+<p>Lematizacijom se različiti oblici iste riječi broje kao jedna riječ. To je korisno u analizama koje se temelje na učestalosti riječi, poput analize frekvencija, TF-IDF-a ili tematskog modeliranja, jer se inače, primjerice, <em>story</em> i <em>stories</em> broje kao dvije različite riječi.</p>
+<p>Najjednostavnije se lematizacija u R-u provodi funkcijom <code>lemmatize_words()</code> iz paketa <code>textstem</code>. Ona za svaku riječ u rječniku traži njezin osnovni oblik pa se primjenjuje na tekst tokeniziran na riječi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lematizacija tokena</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lemma =</span> <span class="fu">lemmatize_words</span>(word)) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(line, fairy_tale, paragraph_no, word, lemma)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled lematiziranih riječi</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,344 × 5
+    line fairy_tale                       paragraph_no word       lemma     
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;     
+ 1    20 1_the_wizard_and_the_hopping_pot            1 kindly     kindly    
+ 2    20 1_the_wizard_and_the_hopping_pot            1 wizard     wizard    
+ 3    20 1_the_wizard_and_the_hopping_pot            1 magic      magic     
+ 4    20 1_the_wizard_and_the_hopping_pot            1 generously generously
+ 5    20 1_the_wizard_and_the_hopping_pot            1 wisely     wisely    
+ 6    20 1_the_wizard_and_the_hopping_pot            1 benefit    benefit   
+ 7    20 1_the_wizard_and_the_hopping_pot            1 neighbours neighbour 
+ 8    20 1_the_wizard_and_the_hopping_pot            1 reveal     reveal    
+ 9    20 1_the_wizard_and_the_hopping_pot            1 true       true      
+10    20 1_the_wizard_and_the_hopping_pot            1 source     source    
+# ℹ 2,334 more rows</code></pre>
+</div>
 </div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>Paket <code>tidytext</code> tekst prikazuje u obliku uredne tablice u kojoj je svaka riječ jedan red. Takav oblik olakšava povezivanje tekstualnih podataka s alatima iz ekosustava <code>tidyverse</code>.</p>
-<p>Prije tokenizacije potrebno je odlučiti kako postupati s interpunkcijom, velikim i malim slovima, stop-riječima i dijakritičkim znakovima.</p>
-
-
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

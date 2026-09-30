@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Između teksta kakav nalazimo u knjigama, dokumentima i na internetu te teksta s kojim se može provesti analiza postoji korak koji se lako podcijeni, njegova priprema. Tekstovi dolaze iz različitih izvora, u različitim formatima i kodiranjima, a uz sadržaj koji nas zanima gotovo uvijek nose i ono što nam smeta, poput naslova, prijeloma redaka, nevidljivih znakova i tipografskih neujednačenosti. Takvi problemi često nisu vidljivi na prvi pogled, a mogu tiho iskriviti svaki kasniji rezultat jer je analiza teksta pouzdana onoliko koliko je pouzdan tekst na kojem se provodi. Zato je uvoz, čišćenje i oblikovanje teksta u strukturu prikladnu za analizu temelj na kojem počiva sav daljnji rad s tekstualnim podacima.">
 
 <title>6&nbsp; Učitavanje i oblikovanje podataka – Analiza teksta u R-u</title>
 <style>
@@ -108,6 +109,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
 
 
 <link rel="stylesheet" href="custom.css">
@@ -116,7 +134,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -132,7 +150,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">POČETAK U RADU S TEKSTOM</a></li><li class="breadcrumb-item"><a href="./2_3_učitavanje_i_oblikovanje_podataka.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></h1>
+                  <div>
+        <div class="description">
+          Između teksta kakav nalazimo u knjigama, dokumentima i na internetu te teksta s kojim se može provesti analiza postoji korak koji se lako podcijeni, njegova priprema. Tekstovi dolaze iz različitih izvora, u različitim formatima i kodiranjima, a uz sadržaj koji nas zanima gotovo uvijek nose i ono što nam smeta, poput naslova, prijeloma redaka, nevidljivih znakova i tipografskih neujednačenosti. Takvi problemi često nisu vidljivi na prvi pogled, a mogu tiho iskriviti svaki kasniji rezultat jer je analiza teksta pouzdana onoliko koliko je pouzdan tekst na kojem se provodi. Zato je uvoz, čišćenje i oblikovanje teksta u strukturu prikladnu za analizu temelj na kojem počiva sav daljnji rad s tekstualnim podacima.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -209,7 +248,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytextu</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytext-u</span></span></a>
   </div>
 </li>
       </ul>
@@ -312,46 +351,768 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#preuzimanje-unos-i-učitavanje-podataka-u-r" id="toc-preuzimanje-unos-i-učitavanje-podataka-u-r" class="nav-link active" data-scroll-target="#preuzimanje-unos-i-učitavanje-podataka-u-r"><span class="header-section-number">6.1</span> Preuzimanje, unos i učitavanje podataka u R</a>
+  <ul class="collapse">
+  <li><a href="#preuzimanje-sadržaja-s-interneta" id="toc-preuzimanje-sadržaja-s-interneta" class="nav-link" data-scroll-target="#preuzimanje-sadržaja-s-interneta"><span class="header-section-number">6.1.1</span> Preuzimanje sadržaja s interneta</a></li>
+  </ul></li>
+  <li><a href="#čišćenje-teksta" id="toc-čišćenje-teksta" class="nav-link" data-scroll-target="#čišćenje-teksta"><span class="header-section-number">6.2</span> Čišćenje teksta</a>
+  <ul class="collapse">
+  <li><a href="#provjera-i-ujednačavanje-posebnih-znakova" id="toc-provjera-i-ujednačavanje-posebnih-znakova" class="nav-link" data-scroll-target="#provjera-i-ujednačavanje-posebnih-znakova"><span class="header-section-number">6.2.1</span> Provjera i ujednačavanje posebnih znakova</a></li>
+  <li><a href="#uklanjanje-kontrolnih-znakova" id="toc-uklanjanje-kontrolnih-znakova" class="nav-link" data-scroll-target="#uklanjanje-kontrolnih-znakova"><span class="header-section-number">6.2.2</span> Uklanjanje kontrolnih znakova</a></li>
+  <li><a href="#spajanje-redaka-u-jedan-tekst" id="toc-spajanje-redaka-u-jedan-tekst" class="nav-link" data-scroll-target="#spajanje-redaka-u-jedan-tekst"><span class="header-section-number">6.2.3</span> Spajanje redaka u jedan tekst</a></li>
+  <li><a href="#spajanje-riječi-prelomljenih-spojnicom" id="toc-spajanje-riječi-prelomljenih-spojnicom" class="nav-link" data-scroll-target="#spajanje-riječi-prelomljenih-spojnicom"><span class="header-section-number">6.2.4</span> Spajanje riječi prelomljenih spojnicom</a></li>
+  <li><a href="#podjela-teksta-na-odlomke" id="toc-podjela-teksta-na-odlomke" class="nav-link" data-scroll-target="#podjela-teksta-na-odlomke"><span class="header-section-number">6.2.5</span> Podjela teksta na odlomke</a></li>
+  </ul></li>
+  <li><a href="#podatkovni-okvir-i-tibble" id="toc-podatkovni-okvir-i-tibble" class="nav-link" data-scroll-target="#podatkovni-okvir-i-tibble"><span class="header-section-number">6.3</span> Podatkovni okvir i tibble</a></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./2_0_POČETAK U RADU S TEKSTOM.html">POČETAK U RADU S TEKSTOM</a></li><li class="breadcrumb-item"><a href="./2_3_učitavanje_i_oblikovanje_podataka.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></h1>
+
+
+
+
+<section id="preuzimanje-unos-i-učitavanje-podataka-u-r" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="preuzimanje-unos-i-učitavanje-podataka-u-r"><span class="header-section-number">6.1</span> Preuzimanje, unos i učitavanje podataka u R</h2>
+<p>Rad s tekstom počinje uvozom podataka u R. Ako je tekst spremljen u formatu .txt, u kojem se tekstualni podaci najčešće i čuvaju, u R se može učitati funkcijom <code>readLines()</code>, kojoj se kao argument zadaje putanja do datoteke.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Napomena">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-
-
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>Tekstualne podatke možemo učitati iz CSV datoteka, tablica ili drugih izvora. Nakon učitavanja važno je provjeriti nazive stupaca, nedostajuće vrijednosti i jedinicu analize.</p>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Napomena
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Putanju do vanjske datoteke u R-u možete zapisati na nekoliko načina, ovisno o operacijskom sustavu (Windows, macOS ili Linux) i organizaciji projekta. Najjednostavnije je zapisati je kao tekstualni niz. U Windowsu se mape odvajaju obrnutom kosom crtom (<code>\</code>), no ona u R-u ima posebno značenje, pa je treba udvostručiti (<code>\\</code>) ili umjesto nje koristiti kosu crtu (<code>/</code>) koja radi na svim operacijskim sustavima. Primjerice:</p>
+<p><code>"C:\\Users\\Ime\\Dokumenti\\datoteka.csv"</code> ili <code>"C:/Users/Ime/Dokumenti/datoteka.csv"</code>.</p>
+<p>Osim apsolutnih, mogu se koristiti i relativne putanje, koje R tumači u odnosu na radni direktorij (provjerava se funkcijom <code>getwd()</code>). Ako se datoteka nalazi u mapi <code>podaci</code> unutar radnog direktorija, dovoljno je napisati <code>"podaci/datoteka.csv"</code>.</p>
+<p>Znak <code>~</code> označava korisnikovu početnu (kućnu) mapu, pa putanja poput <code>"~/podaci/datoteka.csv"</code> nije relativna u odnosu na projekt i na tuđem računalu najčešće neće raditi.</p>
+</div>
+</div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dokumenti <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tekst =</span> <span class="fu">c</span>(<span class="st">"Prvi tekst"</span>, <span class="st">"Drugi tekst"</span>, <span class="st">"Treći tekst"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dokumenti</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje teksta (uz preskakanje NUL znakova)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_txt <span class="ot">&lt;-</span> <span class="fu">readLines</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data_pictures_and_graphs/The Tales of Beedle the Bard.txt"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">skipNul =</span> <span class="cn">TRUE</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled prvih 30 redaka</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(The_Tales_of_Beedle_the_Bard_txt, <span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  id       tekst
-1  1  Prvi tekst
-2  2 Drugi tekst
-3  3 Treći tekst</code></pre>
+<pre><code> [1] "THE TALES OF BEEDLE THE BARD"                                  
+ [2] ""                                                              
+ [3] ""                                                              
+ [4] "Translated from the original"                                  
+ [5] "runes by Hermione Granger"                                     
+ [6] ""                                                              
+ [7] ""                                                              
+ [8] "BY"                                                            
+ [9] ""                                                              
+[10] "J. K. ROWLING"                                                 
+[11] ""                                                              
+[12] ""                                                              
+[13] "CONTENTS"                                                      
+[14] "Introduction"                                                  
+[15] "THE WIZARD AND THE HOPPING POT"                                
+[16] "THE FOUNTAIN OF FAIR FORTUNE"                                  
+[17] "THE WARLOCK'S HAIRY HEART"                                     
+[18] "BABBITTY RABBITTY AND HER CACKLING STUMP"                      
+[19] "THE TALE OF THE THREE BROTHERS"                                
+[20] "A Personal Message from Baroness Nicholson of Winterbourne MEP"
+[21] ""                                                              
+[22] "Introduction"                                                  
+[23] ""                                                              
+[24] "The Tales of Beedle the Bard is a collection of"               
+[25] "stories written for young wizards and witches."                
+[26] "They have been popular bedtime reading for"                    
+[27] "centuries, with the result that the Hopping Pot"               
+[28] "and the Fountain of Fair Fortune are as familiar"              
+[29] "to many of the students at Hogwarts as"                        
+[30] "Cinderella and Sleeping Beauty are to Muggle"                  </code></pre>
+</div>
+</div>
+<p>Argumentom <code>skipNul = TRUE</code> pri učitavanju se preskaču znakovi NUL (<code>\x00</code>). To je nevidljiv kontrolni znak koji ima smisla u binarnim datotekama, ali se u tekstnim datotekama ne bi smio pojavljivati. Najčešće nastaje pri pogrešnoj pretvorbi kodiranja, pri optičkom prepoznavanju znakova (OCR), starijim alatima ili kad je datoteka preuzeta ili raspakirana nestandardnim alatima. Znakovni nizovi u R-u ne mogu sadržavati znak NUL pa ga nakon učitavanja nije moguće pronaći ni ukloniti. Bez tog argumenta <code>readLines()</code> pri nailasku na NUL javlja upozorenje i odbacuje ostatak retka. Zato ga je najbolje ukloniti već pri učitavanju. Ako datoteka ne sadrži taj znak, argument ne mijenja ništa.</p>
+<p>Pri učitavanju i kasnijoj obradi teksta može se pojaviti problem s neprepoznatim znakovima koji se u tekstu prikazuju kao �. Uzrok je u tome što sadržaj .txt datoteke nisu „čista slova”, nego niz bajtova. Koji bajt odgovara kojem znaku, određuje kodiranje znakova. Starije Windows datoteke i mnoge e-knjige često su kodirane u obliku Windows-1252 (za zapadnoeuropske jezike) ili Windows-1250 (za srednjoeuropske jezike, uključujući hrvatski). UTF-8 danas je standard za internetske stranice, a koriste ga i novije verzije R-a, RStudio te paket <code>stringr</code>. Ako R datoteku pročita pod pogrešnim kodiranjem, pojedine bajtove ne može ispravno protumačiti i u tekstu se pojavljuju znakovi �.</p>
+<p>Zato je dobro prije daljnje obrade provjeriti kodiranje datoteke. Funkcija <code>guess_encoding()</code> iz paketa <code>readr</code> procjenjuje najvjerojatnija kodiranja i uz svako navodi stupanj pouzdanosti. Riječ je o procjeni, a ne o jamstvu pa rezultat valja provjeriti pregledom teksta.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Procjena kodiranja datoteke</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">guess_encoding</span>(<span class="st">"data_pictures_and_graphs/The Tales of Beedle the Bard.txt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `guess_encoding()` was deprecated in rvest 1.0.0.
+ℹ Please use `html_encoding_guess()` instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     encoding language confidence
+1  ISO-8859-1       en       0.98
+2  ISO-8859-9       tr       0.20
+3       UTF-8                0.15
+4    UTF-16BE                0.10
+5    UTF-16LE                0.10
+6  ISO-8859-2       cs       0.10
+7   Shift_JIS       ja       0.10
+8     GB18030       zh       0.10
+9      EUC-JP       ja       0.10
+10     EUC-KR       ko       0.10
+11       Big5       zh       0.10</code></pre>
+</div>
+</div>
+<p>Kada je kodiranje poznato, tekst se u UTF-8 pretvara funkcijom <code>iconv()</code>. Njezin je prvi argument, <code>x</code>, znakovni vektor koji se pretvara. U argument <code>from</code> upisuje se trenutačno kodiranje, a u argument <code>to</code> željeno. Ako se neki znak ne može pretvoriti, cijeli element vektora u kojem se nalazi postaje <code>NA</code>. To se ponašanje može promijeniti argumentom <code>sub</code>, primjerice <code>sub = "?"</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pretvaranje kodiranja iz Windows-1252 u UTF-8</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_txt <span class="ot">&lt;-</span> <span class="fu">iconv</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> The_Tales_of_Beedle_the_Bard_txt,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">from =</span> <span class="st">"Windows-1252"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">to =</span> <span class="st">"UTF-8"</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Tekst se u R može unijeti i drugim funkcijama i paketima, ovisno o vrsti datoteke u kojoj su podaci spremljeni i obliku u kojem ih želimo pohraniti u R-u.</p>
+<div style="width: 100%">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 12%">
+<col style="width: 9%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Vrsta datoteke</th>
+<th>Funkcija</th>
+<th>Paket</th>
+<th>Primjer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Običan tekst (redak po redak)</td>
+<td><code>readLines()</code></td>
+<td>base R</td>
+<td><code>readLines("clanak.txt")</code></td>
+</tr>
+<tr class="even">
+<td>Običan tekst (kao jedan niz)</td>
+<td><code>read_file()</code></td>
+<td><code>readr</code></td>
+<td><code>read_file("clanak.txt")</code></td>
+</tr>
+<tr class="odd">
+<td>Tablični tekst (npr. odvojen tabulatorom)</td>
+<td><code>read.table()</code></td>
+<td>base R</td>
+<td><code>read.table("podaci.txt", header = TRUE, sep = "\t")</code></td>
+</tr>
+<tr class="even">
+<td>Tablični tekst (npr. odvojen tabulatorom)</td>
+<td><code>read_delim()</code></td>
+<td><code>readr</code></td>
+<td><code>read_delim("podaci.txt", delim = "\t")</code></td>
+</tr>
+<tr class="odd">
+<td>CSV</td>
+<td><code>read.csv()</code></td>
+<td>base R</td>
+<td><code>read.csv("podaci.csv")</code></td>
+</tr>
+<tr class="even">
+<td>CSV</td>
+<td><code>read_csv()</code></td>
+<td><code>readr</code></td>
+<td><code>read_csv("podaci.csv")</code></td>
+</tr>
+<tr class="odd">
+<td>Excel (.xls, .xlsx)</td>
+<td><code>read_excel()</code></td>
+<td><code>readxl</code></td>
+<td><code>read_excel("podaci.xlsx", sheet = 1)</code></td>
+</tr>
+<tr class="even">
+<td>OpenDocument proračunska tablica (.ods)</td>
+<td><code>read_ods()</code></td>
+<td><code>readODS</code></td>
+<td><code>read_ods("podaci.ods")</code></td>
+</tr>
+<tr class="odd">
+<td>SPSS (.sav)</td>
+<td><code>read_sav()</code></td>
+<td><code>haven</code></td>
+<td><code>read_sav("anketa.sav")</code></td>
+</tr>
+<tr class="even">
+<td>Stata (.dta)</td>
+<td><code>read_dta()</code></td>
+<td><code>haven</code></td>
+<td><code>read_dta("analiza.dta")</code></td>
+</tr>
+<tr class="odd">
+<td>SAS (.sas7bdat)</td>
+<td><code>read_sas()</code></td>
+<td><code>haven</code></td>
+<td><code>read_sas("podaci.sas7bdat")</code></td>
+</tr>
+<tr class="even">
+<td>JSON</td>
+<td><code>fromJSON()</code></td>
+<td><code>jsonlite</code></td>
+<td><code>fromJSON("podaci.json")</code></td>
+</tr>
+<tr class="odd">
+<td>XML</td>
+<td><code>read_xml()</code></td>
+<td><code>xml2</code></td>
+<td><code>read_xml("podaci.xml")</code></td>
+</tr>
+<tr class="even">
+<td>R-ova binarna datoteka (.RData)</td>
+<td><code>load()</code></td>
+<td>base R</td>
+<td><code>load("moji_podaci.RData")</code></td>
+</tr>
+<tr class="odd">
+<td>R-ova binarna datoteka (.rds)</td>
+<td><code>readRDS()</code></td>
+<td>base R</td>
+<td><code>objekt &lt;- readRDS("objekt.rds")</code></td>
+</tr>
+<tr class="even">
+<td>ZIP arhiva</td>
+<td><code>unzip()</code></td>
+<td>base R</td>
+<td><code>unzip("arhiva.zip", exdir = "podaci/")</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="preuzimanje-sadržaja-s-interneta" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="preuzimanje-sadržaja-s-interneta"><span class="header-section-number">6.1.1</span> Preuzimanje sadržaja s interneta</h3>
+<p>Mnogi tekstovi koje želimo analizirati nisu spremljeni u urednim datotekama na računalu, nego se nalaze na internetu. Primjeri takvih datoteka su novinski članci, objave na forumima, saborske rasprave, recenzije proizvoda, enciklopedijski članci i slično. Takvi tekstualni podaci, umjesto da ručno kopiraju sa stranice u datoteku, mogu se <strong>automatizirano preuzimati s web stranica</strong> (eng. <em>web scraping</em>). Riječ je o postupku u kojem se u R-u piše kod koji stranicu preuzme, u njoj pronađe dijelove koji nas zanimaju i spremi ih u R kao objekt spreman za daljnju obradu. Takav je pristup bolji od ručnog preuzimanja zbog brzine i opsega pisanja koda, ponovljivost postupka i manje pogrešaka koje mogu nastati ručnim kopiranjem.</p>
+<p>Kad u pregledniku otvorimo web stranicu, preglednik s poslužitelja preuzima tekstnu datoteku napisanu u jeziku <strong>HTML</strong> (engl. <em>HyperText Markup Language</em>) i prikazuje je u obliku koji vidimo na zaslonu. HTML nije programski jezik, nego jezik za označavanje kojim se opisuje što je koji dio sadržaja (naslov, odlomak, poveznica, tablica).</p>
+<p>HTML dokument sastoji se od <strong>elemenata</strong>. Element obično počinje početnom oznakom, primjerice <code>&lt;p&gt;</code>, a završava završnom oznakom s kosom crtom, primjerice <code>&lt;/p&gt;</code>. Između njih nalazi se sadržaj elementa. Pojednostavljena web stranica mogla bi izgledati ovako:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode html code-with-copy"><code class="sourceCode html"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">html</span><span class="dt">&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">head</span><span class="dt">&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">title</span><span class="dt">&gt;</span>Naslov u kartici preglednika<span class="dt">&lt;/</span><span class="kw">title</span><span class="dt">&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">head</span><span class="dt">&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">body</span><span class="dt">&gt;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">h1</span><span class="dt">&gt;</span>Glavni naslov stranice<span class="dt">&lt;/</span><span class="kw">h1</span><span class="dt">&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">"uvod"</span><span class="dt">&gt;</span>Prvi <span class="dt">&lt;</span><span class="kw">b</span><span class="dt">&gt;</span>odlomak<span class="dt">&lt;/</span><span class="kw">b</span><span class="dt">&gt;</span> teksta.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">p</span><span class="dt">&gt;</span>Drugi odlomak s <span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> href</span><span class="op">=</span><span class="st">"https://www.r-project.org"</span><span class="dt">&gt;</span>poveznicom<span class="dt">&lt;/</span><span class="kw">a</span><span class="dt">&gt;</span>.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">body</span><span class="dt">&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">html</span><span class="dt">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Iz ovog primjera vidljive su tri važne osobine HTML-a:</p>
+<ol type="1">
+<li><p><strong>Elementi imaju značenje.</strong> Oznaka <code>&lt;h1&gt;</code> označava naslov prve razine (postoje i <code>&lt;h2&gt;</code> do <code>&lt;h6&gt;</code>), <code>&lt;p&gt;</code> odlomak, <code>&lt;a&gt;</code> poveznicu, <code>&lt;b&gt;</code> podebljani tekst, <code>&lt;table&gt;</code> tablicu, a <code>&lt;div&gt;</code> i <code>&lt;section&gt;</code> općenite odjeljke kojima se sadržaj grupira.</p></li>
+<li><p><strong>Elementi su ugniježđeni.</strong> Element <code>&lt;b&gt;</code> nalazi se unutar elementa <code>&lt;p&gt;</code> koji se nalazi unutar <code>&lt;body&gt;</code>, a on unutar <code>&lt;html&gt;</code>. HTML dokument zato ima strukturu stabla u kojoj svaki element ima svog „roditelja” i može imati „djecu”.</p></li>
+<li><p><strong>Elementi mogu imati atribute.</strong> Atributi se pišu u početnoj oznaci, u obliku <code>ime="vrijednost"</code>. Atribut <code>href</code> elementa <code>&lt;a&gt;</code> sadrži adresu na koju poveznica vodi. Za preuzimanje su posebno važni atributi <code>class</code> i <code>id</code>. <code>class</code> označava skupinu elemenata iste vrste (više elemenata može imati istu klasu), a <code>id</code> jedinstveno označava jedan element na stranici.</p></li>
+</ol>
+<p>Upravo nam te tri osobine omogućuju da u kodu točno opišemo koji dio stranice želimo. Za to se koriste <strong>CSS selektori</strong>, odnosno kratki izrazi koji opisuju elemente prema oznaci, klasi, identifikatoru ili položaju u stablu.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 62%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Selektor</th>
+<th>Što odabire</th>
+<th>Primjer iz gornjeg HTML-a</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>p</code></td>
+<td>sve elemente s tom oznakom</td>
+<td>oba odlomka</td>
+</tr>
+<tr class="even">
+<td><code>.uvod</code></td>
+<td>sve elemente s klasom <code>uvod</code> (točka označava klasu)</td>
+<td>prvi odlomak</td>
+</tr>
+<tr class="odd">
+<td><code>#glavni</code></td>
+<td>element s identifikatorom <code>glavni</code> (ljestve označavaju <code>id</code>)</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td><code>body p</code></td>
+<td>elemente <code>p</code> bilo gdje unutar elementa <code>body</code> (razmak)</td>
+<td>oba odlomka</td>
+</tr>
+<tr class="odd">
+<td><code>p &gt; b</code></td>
+<td>elemente <code>b</code> koji su izravna djeca elementa <code>p</code> (znak <code>&gt;</code>)</td>
+<td>riječ „odlomak”</td>
+</tr>
+<tr class="even">
+<td><code>p, h1</code></td>
+<td>elemente <code>p</code> i elemente <code>h1</code> (zarez)</td>
+<td>oba odlomka i naslov</td>
+</tr>
+</tbody>
+</table>
+<p>Na stvarnim web stranicama HTML je puno složeniji nego u gornjem primjeru pa ručno traženje pravog selektora može biti zamorno. Tu pomaže <strong>SelectorGadget</strong>, besplatan alat otvorenog koda koji nam klikanjem po stranici predlaže CSS selektor za odabrane elemente. U pregledniku Google Chrome (i drugim preglednicima temeljenima na Chromiumu, poput Microsoft Edgea ili Bravea) SelectorGadget se instalira kao proširenje iz trgovine <a href="https://chromewebstore.google.com/">Chrome Web Store</a>.</p>
+<p>SelectorGadget se koristi na način da se, nakon što otvorimo stranicu i pokrenemo SelectorGadget, u donjem desnom kutu pojavljuje se traka alata koja pokazuje elemente. Pritom, prelaskom miša preko stranice pojedini se elementi uokviruju, a klikom na element odabiremo ga i on postaje zelen, a SelectorGadget na temelju odabira predlaže selektor i ispisuje ga u traci. Svi ostali elementi koje taj selektor obuhvaća označe se žuto. Ako je među žutima neki element koji ne želimo, klikom na njega isključujemo ga i on postaje crven, a Selektor se tada prilagođava. Klikanje se tako ponavlja dok selektor ne obuhvati točno ono što želimo, a zatim ga kopiramo iz trake u kod. U traci se nalaze i gumbi <em>Clear</em> koji poništava odabir (broj u zagradi pokazuje koliko je elemenata trenutačno obuhvaćeno), <em>Toggle Position</em> koji traku premješta u drugi kut zaslona te <em>XPath</em> koji umjesto CSS selektora prikazuje isti izraz u jeziku XPath.</p>
+<p>Za preuzimanje sadržaja s web stranica u R-u najčešće se koristi paket <code>rvest</code>.</p>
+<p>Prvi je korak uvijek učitavanje internetske stranice funkcijom <code>read_html()</code> u koju se kao argument zadaje adresa stranice. R pritom preuzima njezin HTML i sprema ga kao objekt klase <code>xml_document</code> u kojem je sačuvana cijela struktura stabla.</p>
+<p>Kao primjer koristit ćemo članak s Wikipedije o knjizi <a href="https://en.wikipedia.org/wiki/The_Tales_of_Beedle_the_Bard">The Tales of Beedle the Bard</a>. Članak je razmjerno kratak i jasno strukturiran pa je prikladan za prvi primjer, a, osim uvoda, sadrži odjeljke o knjizi u serijalu o Harryju Potteru, o povijesti objavljivanja te o sadržaju pet bajki. Slijede odjeljci o prijemu knjige i njezinim adaptacijama te popis izvora.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://en.wikipedia.org/wiki/The_Tales_of_Beedle_the_Bard"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>stranica <span class="ot">&lt;-</span> <span class="fu">read_html</span>(url)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>stranica</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{html_document}
+&lt;html class="client-nojs vector-feature-language-in-header-enabled vector-feature-language-in-main-menu-disabled vector-feature-language-in-main-page-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-custom-font-size-clientpref-1 vector-feature-appearance-pinned-clientpref-1 skin-theme-clientpref-day vector-sticky-header-enabled vector-toc-available skin-thumbsize-clientpref-standard" lang="en" dir="ltr"&gt;
+[1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8 ...
+[2] &lt;body class="skin--responsive skin-vector skin-vector-search-vue mediawik ...</code></pre>
+</div>
+</div>
+<p>Idući je korak odabir elemenata i izvlačenje teksta iz stranice spremljene u R-u. Takav se postupak izvodi funkcijama <code>html_element()</code> i <code>html_elements()</code>. Pritom, <code>html_elements()</code> vraća sve elemente koji odgovaraju selektoru, a <code>html_element()</code> vraća prvi element koji odgovara selektoru. Primjerice, možemo preuzeti naslov članka koji se nalazi u elementu <code>&lt;h1&gt;</code>, a kako na stranici postoji samo jedan takav element, dovoljna je funkcija <code>html_element()</code>. Nakon toga je potrebno koristiti funkciju <code>html_text2()</code> koja izvlači tekst iz elemenata onako kako bi ga preglednik prikazao. Ovaj se cijeli postupak može izvesti u istom kodu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>stranica <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_element</span>(<span class="st">"h1"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "The Tales of Beedle the Bard"</code></pre>
+</div>
+</div>
+<p>Kako bismo preuzeli prvi odlomak, u funkciju stavljamo selektor <code>#mwCg</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>stranica <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_element</span>(<span class="st">"#mwCg"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "The Tales of Beedle the Bard is a book of fairy tales by author J. K. Rowling. There is a storybook of the same name mentioned in Harry Potter and the Deathly Hallows, the final novel of the Harry Potter series.[1]"</code></pre>
+</div>
+</div>
+<p>Obično nas, međutim, zanima cijeli tekst članka, a ne samo jedan odlomak. Svi odlomci članka elementi su <code>&lt;p&gt;</code>, a sam sadržaj članka na Wikipediji nalazi se unutar elementa s identifikatorom <code>mw-content-text</code>. Ograničavanjem na taj element (<code>#mw-content-text p</code>) izbjegavamo odlomke u izbornicima i podnožju stranice. Budući da sada želimo sve odlomke, koristimo funkciju <code>html_elements()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>odlomci <span class="ot">&lt;-</span> stranica <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_elements</span>(<span class="st">"#mw-content-text p"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj preuzetih odlomaka i prva tri odlomka</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(odlomci)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 46</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(odlomci, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+[2] "The Tales of Beedle the Bard is a book of fairy tales by author J. K. Rowling. There is a storybook of the same name mentioned in Harry Potter and the Deathly Hallows, the final novel of the Harry Potter series.[1]"                                                                                                                                                                                                                                                                                                                                
+[3] "The book was originally produced in a limited edition of only seven copies, each handwritten and illustrated by J. K. Rowling.[2] One of them was offered for auction through Sotheby's in late 2007 and was expected to sell for £50,000 (US$77,000, €69,000); ultimately it was bought for £1.95 million ($3 million, €2.7 million) by Amazon, making the selling price the highest achieved at auction for a modern literary manuscript.[3][4] The money earned at the auction of the book was donated to The Children's Voice charity campaign.[5]"</code></pre>
+</div>
+</div>
+<p>Rezultat je znakovni vektor u kojem je svaki element jedan odlomak članka.</p>
+<p>Opisani postupak radi na stranicama čiji se sadržaj nalazi izravno u HTML-u koji poslužitelj šalje pregledniku, kao što je slučaj s Wikipedijom i većinom novinskih portala. Neke stranice, međutim, sadržaj učitavaju naknadno s pomoću JavaScripta, pa funkcija <code>read_html()</code> dobiva gotovo praznu stranicu. Takve stranice zahtijevaju drugačije alate, poput funkcije <code>read_html_live()</code> iz novijih verzija paketa <code>rvest</code> koja stranicu otvara u pravom pregledniku. Prije toga uvijek je dobro provjeriti nudi li stranica API jer je preuzimanje podataka preko njega jednostavnije i pouzdanije.</p>
+</section>
+</section>
+<section id="čišćenje-teksta" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="čišćenje-teksta"><span class="header-section-number">6.2</span> Čišćenje teksta</h2>
+<p>Nakon učitavanja tekst je potrebno očistiti. Ovdje je čišćenje podijeljeno u dva dijela. Prvi se provodi odmah nakon učitavanja teksta u R, a drugi nakon tokenizacije, odnosno nakon što se tekst podijeli na manje jedinice. Takva je podjela praktičnija jer neki elementi teksta trebaju ostati „nečisti” sve do tokenizacije. Interpunkcija, primjerice, označava granice rečenica, a velika slova pomažu prepoznati imena. Zato se u prvom dijelu bavimo strukturom teksta kao cjeline, a pojedinim riječima tek kasnije.</p>
+<section id="provjera-i-ujednačavanje-posebnih-znakova" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="provjera-i-ujednačavanje-posebnih-znakova"><span class="header-section-number">6.2.1</span> Provjera i ujednačavanje posebnih znakova</h3>
+<p>Prvi je korak provjeriti koji se neobični ili posebni znakovi nalaze u tekstu. Prvom provjerom brojimo retke koji su pri pretvorbi funkcijom <code>iconv()</code> postali <code>NA</code>. Takvih redaka ne smije biti jer jedan <code>NA</code> u sljedećim bi koracima cijeli tekst pretvorio u <code>NA</code>. Drugom provjerom brojimo retke u kojima se pojavljuje zamjenski znak (<code>\uFFFD</code>) koji se prikazuje kao romb s upitnikom i označava znak koji nije bilo moguće protumačiti. Trećom provjerom ispisujemo sve znakove izvan osnovnog skupa ASCII koji sadrži engleska slova, znamenke i osnovnu interpunkciju, zajedno s time koliko se puta pojavljuju.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj redaka koji su pri pretvorbi kodiranja postali NA (treba biti 0)</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(The_Tales_of_Beedle_the_Bard_txt))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj redaka sa zamjenskim znakom (treba biti 0)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">str_detect</span>(The_Tales_of_Beedle_the_Bard_txt, <span class="st">"\uFFFD"</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Popis svih znakova izvan osnovnog skupa ASCII i njihova učestalost</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_txt <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_extract_all</span>(<span class="st">"[^</span><span class="sc">\\</span><span class="st">x00-</span><span class="sc">\\</span><span class="st">x7F]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>() <span class="sc">|&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">table</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  –   ’   “   ”   «   é 
+ 28 122 113 116   1   1 </code></pre>
+</div>
+</div>
+<p>Pretvorba kodiranja je uspjela s obzirom da nema redaka s vrijednošću <code>NA</code> ni zamjenskih znakova. U tekstu se ipak nalaze tipografski znakovi: zaobljeni apostrof, otvoreni i zatvoreni navodnici te crtica. Osim njih pojavljuju se i dva znaka koji se javljaju samo jednom (« i é). Kod takvih je rijetkih znakova dobro pogledati u kojem se kontekstu nalaze. To se radi funkcijom <code>str_subset()</code> koja vraća samo one elemente vektora u kojima je uzorak pronađen.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retci u kojima se nalaze rijetki znakovi</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_subset</span>(The_Tales_of_Beedle_the_Bard_txt, <span class="st">"[«é]"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "“Tomorrow,” said the King, «we shall invite our" 
+[2] "philosopher Bertrand de Pensées-Profondes writes"</code></pre>
+</div>
+</div>
+<p>Znak « pogreška je u izvornoj datoteci jer su navodnici otvoreni znakom «, a zatvoreni ravnim navodnikom (“). Zato ćemo ga zamijeniti ravnim navodnikom, zajedno s ostalim navodnicima. Znak é dio je imena <em>Pensées-Profondes</em> i ispravno je zapisan pa ga ne mijenjamo.</p>
+<p>Tipografski znakovi nisu pogreška, ali mogu stvarati probleme u daljnjoj obradi. Zaobljeni apostrof (’) i ravni apostrof (’) za računalo su dva različita znaka. Riječ <em>don’t</em> zato se ne bi podudarala s riječju <em>don’t</em> iz popisa zaustavnih riječi koji se koriste u kasnijoj obradi i pišu se s ravnim apostrofom. Zato zaobljene apostrofe i navodnike zamjenjujemo njihovim jednostavnim inačicama.</p>
+<p>Za to koristimo funkciju <code>str_replace_all()</code>. Njezin je prvi argument (<code>string</code>) znakovni vektor koji se čisti, drugi (<code>pattern</code>) uzorak koji se traži, a treći (<code>replacement</code>) tekst kojim se pronađeni uzorak zamjenjuje. Kad treba napraviti više zamjena, umjesto jednog uzorka i jedne zamjene može se zadati imenovani vektor. Imena njegovih elemenata su uzorci koje tražimo, a vrijednosti su zamjene. Znakove u uzorcima zapisujemo njihovim Unicode oznakama (npr. <code>\u2019</code> za ’) jer se tako ne mogu zamijeniti sa sličnim znakovima niti pokvariti pri spremanju datoteke.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zamjena zaobljenih apostrofa i navodnika ravnima</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_txt <span class="ot">&lt;-</span> <span class="fu">str_replace_all</span>(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> The_Tales_of_Beedle_the_Bard_txt,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="fu">c</span>(</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"\u2018"</span> <span class="ot">=</span> <span class="st">"'"</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"\u2019"</span> <span class="ot">=</span> <span class="st">"'"</span>,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"\u201C"</span> <span class="ot">=</span> <span class="st">'"'</span>,</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"\u201D"</span> <span class="ot">=</span> <span class="st">'"'</span>,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"\u00AB"</span> <span class="ot">=</span> <span class="st">'"'</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Ponovnom provjerom znakova izvan skupa ASCII potvrđujemo da su apostrofi i navodnici zamijenjeni. U tekstu su ostali samo crtica i slovo é.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ponovna provjera znakova izvan osnovnog skupa ASCII</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_txt <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_extract_all</span>(<span class="st">"[^</span><span class="sc">\\</span><span class="st">x00-</span><span class="sc">\\</span><span class="st">x7F]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">table</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ –  é 
+28  1 </code></pre>
+</div>
+</div>
+<p>Crticu (–) ne mijenjamo jer je ona interpunkcijski znak, a ne dio riječi pa će se ukloniti zajedno s ostalom interpunkcijom pri tokenizaciji. Kad bismo je zamijenili spojnicom (-), više je ne bismo mogli razlikovati od spojnice kojom su riječi prelomljene na kraju retka, a upravo tu razliku koristimo u jednom od sljedećih koraka.</p>
+</section>
+<section id="uklanjanje-kontrolnih-znakova" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="uklanjanje-kontrolnih-znakova"><span class="header-section-number">6.2.2</span> Uklanjanje kontrolnih znakova</h3>
+<p>Sljedeći je korak uklanjanje <strong>kontrolnih znakova</strong>. To su znakovi koji ne predstavljaju slova, brojeve ni interpunkciju, nego su izvorno služili za upravljanje uređajima poput pisača ili terminala. Većina ih se u R konzoli ne vidi ili se prikazuje kao neobične oznake poput <code>\a</code> ili <code>\f</code>. Takvi znakovi mogu izazvati pogreške u funkcijama ili neočekivane rezultate u daljnjoj obradi pa ih je dobro ukloniti.</p>
+<p>Najproblematičniji kontrolni znak, NUL (<code>\x00</code>), uklonili smo već pri učitavanju teksta argumentom <code>skipNul = TRUE</code>. Ostale kontrolne znakove uklanjamo istom funkcijom <code>str_replace_all()</code>. Uzorak <code>"\\p{Cc}"</code> obuhvaća sve kontrolne znakove pa ih ne moramo navoditi jednog po jednog. Budući da smo u prethodnom koraku provjerili da u tekstu nema pogrešno protumačenih tipografskih znakova, ovim uzorkom uklanjamo samo stvarne kontrolne znakove. Kontrolne znakove zamjenjujemo razmakom. Među njima se nalazi i tabulator (<code>\t</code>) koji često odvaja riječi pa bi se njegovim uklanjanjem one spojile.</p>
+<p>Nakon toga funkcijom <code>str_trim()</code> uklanjamo razmake na početku i kraju svakog retka. Tako retci koji su sadržavali samo razmake ili tabulatore postaju potpuno prazni, a što je važno za prepoznavanje odlomaka u jednom od sljedećih koraka.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zamjena svih kontrolnih znakova razmakom</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_txt <span class="ot">&lt;-</span> <span class="fu">str_replace_all</span>(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> The_Tales_of_Beedle_the_Bard_txt,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">p{Cc}"</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">replacement =</span> <span class="st">" "</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje razmaka na početku i kraju svakog retka</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_txt <span class="ot">&lt;-</span> <span class="fu">str_trim</span>(The_Tales_of_Beedle_the_Bard_txt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Znak za povratak na početak retka (<code>\r</code>), koji Windows zajedno sa znakom <code>\n</code> koristi za kraj retka, nije potrebno posebno uklanjati. Funkcija <code>readLines()</code> prepoznaje sve uobičajene oznake kraja retka i uklanja ih pri učitavanju. Ako bi <code>\r</code> ipak ostao u tekstu, npr. kod teksta učitanog kao jedan niz funkcijom <code>read_file()</code>, obuhvaća ga uzorak <code>"\\p{Cc}"</code>. Ako znak treba samo ukloniti, bez zamjene, umjesto <code>str_replace_all(x, uzorak, "")</code> može se koristiti kraća funkcija <code>str_remove_all(x, uzorak)</code>.</p>
+</section>
+<section id="spajanje-redaka-u-jedan-tekst" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="spajanje-redaka-u-jedan-tekst"><span class="header-section-number">6.2.3</span> Spajanje redaka u jedan tekst</h3>
+<p>Funkcija <code>readLines()</code> vratila je znakovni vektor u kojem je svaki element jedan redak datoteke: prvi element je prvi redak, drugi element drugi redak i tako dalje. Retci pritom odgovaraju prijelomu teksta u izvornoj datoteci, a ne rečenicama ni odlomcima. Dio rečenice, pa čak i dio riječi, zato može biti u jednom elementu vektora, a ostatak u sljedećem. Takav je prijelom ponekad koristan (npr. kad nas zanima na kojem se retku nešto nalazi), no za analizu teksta obično je bolje da tekst bude podijeljen na smislene cjeline, odnosno na odlomke.</p>
+<p>Da bismo do toga došli, sve retke najprije spajamo u jedan znakovni niz funkcijom <code>str_c()</code>. Argumentom <code>collapse = "\n"</code> određujemo da se između spojenih redaka umetne znak za novi redak (<code>\n</code>). Tako podatak o tome gdje je izvorni tekst imao prijelome ostaje sačuvan i možemo ga iskoristiti u sljedećim koracima.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spajanje svih redaka u jedan znakovni niz, sa znakom \n između redaka</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>text_raw <span class="ot">&lt;-</span> <span class="fu">str_c</span>(The_Tales_of_Beedle_the_Bard_txt, <span class="at">collapse =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="spajanje-riječi-prelomljenih-spojnicom" class="level3" data-number="6.2.4">
+<h3 data-number="6.2.4" class="anchored" data-anchor-id="spajanje-riječi-prelomljenih-spojnicom"><span class="header-section-number">6.2.4</span> Spajanje riječi prelomljenih spojnicom</h3>
+<p>Sljedeći su problem riječi prelomljene na kraju retka. Takva riječ počinje u jednom retku, a završava u sljedećem, a pri čemu prvi dio završava spojnicom (<code>-</code>), npr. <code>neigh-\nbours</code>. Takve riječi spajamo funkcijom <code>str_replace_all()</code> i regularnim izrazom <code>"(\\p{L})-\\n(\\p{L})"</code> koji se sastoji od sljedećih dijelova:</p>
+<ul>
+<li><p><code>(\\p{L})</code> - slovo ispred spojnice (zagrade ga spremaju kao prvu skupinu),</p></li>
+<li><p><code>-</code> - spojnica na kraju retka,</p></li>
+<li><p><code>\\n</code> - prijelom retka</p></li>
+<li><p><code>(\\p{L})</code> - prvo slovo nastavka riječi spremljeno kao druga skupina.</p></li>
+</ul>
+<p>Zamjena <code>"\\1\\2"</code> znači „vrati samo prvu i drugu skupinu”, odnosno oba slova bez spojnice i prijeloma između njih. Uzorak <code>\\p{L}</code> obuhvaća slova bilo kojeg pisma pa ispravno radi i sa slovima poput č, ć ili đ. Budući da zahtijevamo slovo neposredno ispred spojnice, izraz ne spaja retke koji završavaju spojnicom odvojenom razmakom (npr. <code>the Hopping Pot -</code>). Crticu (–) ionako ne obuhvaća jer je to drugi znak.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spajanje riječi prelomljenih spojnicom na kraju retka</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>text_no_hyphens <span class="ot">&lt;-</span> <span class="fu">str_replace_all</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">string =</span> text_raw,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"(</span><span class="sc">\\</span><span class="st">p{L})-</span><span class="sc">\\</span><span class="st">n(</span><span class="sc">\\</span><span class="st">p{L})"</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">replacement =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">1</span><span class="sc">\\</span><span class="st">2"</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Iz samog teksta nije moguće razlikovati spojnicu koja je dodana samo zbog prijeloma retka od spojnice koja je dio polusloženice. Riječ <code>fairy-\ntale</code> ovim će se postupkom pretvoriti u <code>fairytale</code>, iako je možda izvorno bila <code>fairy-tale</code>. Kod većine analiza to nije velik problem, no dobro je znati da se događa.</p>
+<p>Cijeli je tekst sada jedan dugačak znakovni niz u kojem su izvorni prijelomi redaka označeni znakom <code>\n</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled prvih 600 znakova teksta</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_sub</span>(text_no_hyphens, <span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">600</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "THE TALES OF BEEDLE THE BARD\n\n\nTranslated from the original\nrunes by Hermione Granger\n\n\nBY\n\nJ. K. ROWLING\n\n\nCONTENTS\nIntroduction\nTHE WIZARD AND THE HOPPING POT\nTHE FOUNTAIN OF FAIR FORTUNE\nTHE WARLOCK'S HAIRY HEART\nBABBITTY RABBITTY AND HER CACKLING STUMP\nTHE TALE OF THE THREE BROTHERS\nA Personal Message from Baroness Nicholson of Winterbourne MEP\n\nIntroduction\n\nThe Tales of Beedle the Bard is a collection of\nstories written for young wizards and witches.\nThey have been popular bedtime reading for\ncenturies, with the result that the Hopping Pot\nand the Fountain of Fair Fortune are as familiar"</code></pre>
+</div>
+</div>
+</section>
+<section id="podjela-teksta-na-odlomke" class="level3" data-number="6.2.5">
+<h3 data-number="6.2.5" class="anchored" data-anchor-id="podjela-teksta-na-odlomke"><span class="header-section-number">6.2.5</span> Podjela teksta na odlomke</h3>
+<p>Jedan dugačak znakovni niz teško je analizirati pa ga dijelimo na odlomke. Odlomci su u tekstu odvojeni praznim retkom, odnosno s dva ili više uzastopna znaka <code>\n</code>, dok jedan znak <code>\n</code> označava samo prijelom retka unutar odlomka. Postupak je sljedeći:</p>
+<ol type="1">
+<li><p>Funkcijom <code>str_split()</code> tekst dijelimo na mjestima s dva ili više uzastopnih znakova <code>\n</code> (uzorak <code>"\n{2,}"</code>). Funkcija vraća listu s jednim elementom za svaki niz koji je dijelila, a kako dijelimo samo jedan niz, s <code>[[1]]</code> uzimamo prvi element liste i dobivamo znakovni vektor.</p></li>
+<li><p>Preostale znakove <code>\n</code>, koji označavaju prijelome redaka unutar odlomka, zamjenjujemo razmakom.</p></li>
+<li><p>Funkcijom <code>str_squish()</code> uklanjamo razmake na početku i kraju svakog odlomka te višestruke razmake unutar njega zamjenjujemo jednim.</p></li>
+<li><p>Izbacujemo prazne odlomke.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela teksta na odlomke</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_clean <span class="ot">&lt;-</span> <span class="fu">str_split</span>(text_no_hyphens, <span class="st">"</span><span class="sc">\n</span><span class="st">{2,}"</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Zamjena prijeloma redaka unutar odlomka razmakom</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_clean <span class="ot">&lt;-</span> <span class="fu">str_replace_all</span>(The_Tales_of_Beedle_the_Bard_clean, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="st">" "</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje suvišnih razmaka</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_clean <span class="ot">&lt;-</span> <span class="fu">str_squish</span>(The_Tales_of_Beedle_the_Bard_clean)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Izbacivanje praznih odlomaka</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard <span class="ot">&lt;-</span> The_Tales_of_Beedle_the_Bard_clean[The_Tales_of_Beedle_the_Bard_clean <span class="sc">!=</span> <span class="st">""</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Nakon ovih koraka tekst je znakovni vektor u kojem je:</p>
+<ul>
+<li><p>svaki element jedan odlomak,</p></li>
+<li><p>tekst unutar odlomka u jednom retku bez oznaka <code>\n</code> i suvišnih razmaka,</p></li>
+<li><p>riječi prelomljene na kraju retka ponovno spojene,</p></li>
+<li><p>sačuvana podjela na odlomke iz izvorne knjige.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled prvih devet odlomaka</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(The_Tales_of_Beedle_the_Bard, <span class="dv">9</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "THE TALES OF BEEDLE THE BARD"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+[2] "Translated from the original runes by Hermione Granger"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[3] "BY"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+[4] "J. K. ROWLING"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+[5] "CONTENTS Introduction THE WIZARD AND THE HOPPING POT THE FOUNTAIN OF FAIR FORTUNE THE WARLOCK'S HAIRY HEART BABBITTY RABBITTY AND HER CACKLING STUMP THE TALE OF THE THREE BROTHERS A Personal Message from Baroness Nicholson of Winterbourne MEP"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+[6] "Introduction"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+[7] "The Tales of Beedle the Bard is a collection of stories written for young wizards and witches. They have been popular bedtime reading for centuries, with the result that the Hopping Pot and the Fountain of Fair Fortune are as familiar to many of the students at Hogwarts as Cinderella and Sleeping Beauty are to Muggle (non-magical) children."                                                                                                                                                                                                                                                                                                                                                                                                                 
+[8] "Beedle's stories resemble our fairy tales in many respects; for instance, virtue is usually rewarded and wickedness punished. However, there is one very obvious difference. In Muggle fairy tales, magic tends to lie at the root of the hero or heroine's troubles – the wicked witch has poisoned the apple, or put the princess into a hundred years' sleep, or turned the prince into a hideous beast. In The Tales of Beedle the Bard, on the other hand, we meet heroes and heroines who can perform magic themselves, and yet find it just as hard to solve their problems as we do. Beedle's stories have helped generations of wizarding parents to explain this painful fact of life to their young children: that magic causes as much trouble as it cures."
+[9] "Another notable difference between these fables and their Muggle counterparts is that Beedle's witches are much more active in seeking their fortunes than our fairy-tale heroines. Asha, Altheda, Amata and Babbitty Rabbitty are all witches who take their fate into their own hands, rather than taking a prolonged nap or waiting for someone to return a lost shoe. The exception to this rule – the unnamed maiden of The Warlock's Hairy Heart – acts more like our idea of a storybook princess, but there is no \"happily ever after\" at the end of her tale."                                                                                                                                                                                               </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="podatkovni-okvir-i-tibble" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="podatkovni-okvir-i-tibble"><span class="header-section-number">6.3</span> Podatkovni okvir i tibble</h2>
+<p>Tekstualni podaci u R-u mogu biti organizirani u nekoliko različitih oblika, a svaki od njih ima svoje prednosti, ovisno o vrsti analize. Najčešće se koriste znakovni vektori, podatkovni okviri (i njihova inačica <em>tibble</em>), korpusi, matrice dokumenata i pojmova te tokenizirani objekti.</p>
+<p>Podatkovni okvir (engl. <em>data frame</em>) i njegova modernija inačica <em>tibble</em> tablični su oblici podataka. U njima svaki redak obično predstavlja jednu jedinicu analize (dokument, odlomak, rečenicu ili riječ), a stupci sadrže tekst i pripadajuće metapodatke, poput naslova poglavlja ili rednog broja odlomka. Takav oblik omogućuje korištenje alata iz skupa paketa <code>tidyverse</code>.</p>
+<p>Nakon učitavanja i čišćenja tekst je znakovni vektor u kojem je svaki element jedan odlomak. U podatkovni okvir pretvaramo ga funkcijom <code>tibble()</code>. Svaki argument te funkcije postaje jedan stupac: ime argumenta ime je stupca, a vrijednost argumenta njegov sadržaj. Ovdje stvaramo dva stupca:</p>
+<ul>
+<li><p><code>line</code> - redni broj odlomka u cijeloj knjizi (funkcija <code>seq_along()</code> stvara niz brojeva od 1 do broja elemenata vektora) i</p></li>
+<li><p><code>text</code> - sam tekst odlomka.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stvaranje podatkovnog okvira od vektora odlomaka</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">line =</span> <span class="fu">seq_along</span>(The_Tales_of_Beedle_the_Bard),</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> The_Tales_of_Beedle_the_Bard</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled podatkovnog okvira</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 274 × 2
+    line text                                                                   
+   &lt;int&gt; &lt;chr&gt;                                                                  
+ 1     1 "THE TALES OF BEEDLE THE BARD"                                         
+ 2     2 "Translated from the original runes by Hermione Granger"               
+ 3     3 "BY"                                                                   
+ 4     4 "J. K. ROWLING"                                                        
+ 5     5 "CONTENTS Introduction THE WIZARD AND THE HOPPING POT THE FOUNTAIN OF …
+ 6     6 "Introduction"                                                         
+ 7     7 "The Tales of Beedle the Bard is a collection of stories written for y…
+ 8     8 "Beedle's stories resemble our fairy tales in many respects; for insta…
+ 9     9 "Another notable difference between these fables and their Muggle coun…
+10    10 "Beedle the Bard lived in the fifteenth century and much of his life r…
+# ℹ 264 more rows</code></pre>
+</div>
+</div>
+<p><em>Tibble</em> je modernija inačica podatkovnog okvira razvijena u sklopu skupa paketa <code>tidyverse</code>. Od klasičnog podatkovnog okvira (<code>data.frame()</code>) razlikuje se ponajprije u ponašanju:</p>
+<ul>
+<li><p>pri ispisu prikazuje samo prvih nekoliko redaka i onoliko stupaca koliko stane na zaslon uz vrstu podataka u svakom stupcu (npr. <code>&lt;int&gt;</code> za cijele brojeve, <code>&lt;chr&gt;</code> za tekst),</p></li>
+<li><p>nikad sam ne mijenja vrstu podataka ni imena stupaca te</p></li>
+<li><p>upozorava kad se pozove stupac koji ne postoji, umjesto da tiho vrati <code>NULL</code>.</p></li>
+</ul>
+<p>Zbog toga se s njim lakše radi, osobito kod velikih tablica, a on je i uobičajen oblik za rad s paketom <code>tidytext</code>.</p>
+<p>Podatkovni okvir može osim samog teksta sadržavati i podatke o tome odakle koji odlomak dolazi: iz koje bajke ili dodatnog teksta te koji je po redu u tom poglavlju. Takvi podaci omogućuju da kasnije uspoređujemo bajke međusobno ili pratimo kako se nešto mijenja kroz pojedinu bajku. Na kraju ovog potpoglavlja podatkovni okvir imat će sljedeće stupce:</p>
+<ul>
+<li><p><code>line</code> - redni broj odlomka u cijeloj knjizi,</p></li>
+<li><p><code>section_type</code> - vrsta dijela knjige (<code>tales</code> za bajke i <code>additional_text</code> za dodatne tekstove poput uvoda i komentara),</p></li>
+<li><p><code>chapter_title</code> - naziv poglavlja (bajke ili dodatnog teksta),</p></li>
+<li><p><code>paragraph_no</code> - redni broj odlomka unutar poglavlja i</p></li>
+<li><p><code>text</code> - tekst odlomka.</p></li>
+</ul>
+<p>Prvi je korak zapisati naslove poglavlja. Knjiga se sastoji od pet bajki, ali i od dodatnih dijelova, odnosno uvoda, napomena o bilješkama, komentara Albusa Dumbledorea uz svaku bajku i poruke barunice Nicholson. Sve naslove spremamo u vektor <code>titles_all</code>, a naslove samih bajki još i u zaseban vektor <code>story_titles</code>.</p>
+<p>Naslovi moraju biti zapisani točno onako kako se pojavljuju u očišćenom tekstu. Budući da smo pri čišćenju zaobljene apostrofe i navodnike zamijenili ravnima, i u naslovima moramo koristiti ravne (<code>'</code> i <code>"</code>). Naslove koji sadrže dvostruke navodnike zato pišemo unutar jednostrukih navodnika.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Naslovi svih poglavlja</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>titles_all <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"THE TALES OF BEEDLE THE BARD"</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Introduction"</span>,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A Note on the Footnotes"</span>,</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"1 THE WIZARD AND THE HOPPING POT"</span>,</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Albus Dumbledore on "The Wizard and the Hopping Pot"'</span>,</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2 THE FOUNTAIN OF FAIR FORTUNE"</span>,</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Albus Dumbledore on "The Fountain of Fair Fortune"'</span>,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"3 THE WARLOCK'S HAIRY HEART"</span>,</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Albus Dumbledore on "The Warlock</span><span class="sc">\'</span><span class="st">s Hairy Heart"'</span>,</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"4 BABBITTY RABBITTY AND HER CACKLING STUMPS"</span>,</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Albus Dumbledore on "Babbitty Rabbitty and her Cackling Stump"'</span>,</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"5 THE TALE OF THE THREE BROTHERS"</span>,</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Albus Dumbledore on "The Tale of the Three Brothers"'</span>,</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A Personal Message from Baroness Nicholson of Winterbourne MEP"</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Naslovi bajki</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>story_titles <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"1 THE WIZARD AND THE HOPPING POT"</span>,</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2 THE FOUNTAIN OF FAIR FORTUNE"</span>,</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"3 THE WARLOCK'S HAIRY HEART"</span>,</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"4 BABBITTY RABBITTY AND HER CACKLING STUMPS"</span>,</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">"5 THE TALE OF THE THREE BROTHERS"</span></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Prije nastavka dobro je provjeriti pojavljuje li se svaki naslov u tekstu kao zaseban odlomak. Funkcija <code>setdiff()</code> vraća elemente prvog vektora kojih nema u drugome. Ako su svi naslovi pronađeni, rezultat je prazan vektor (<code>character(0)</code>). Ako nisu, ispisuju se naslovi koje treba ispraviti, npr. zbog drugačijeg apostrofa, navodnika ili razmaka.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Naslovi koji se ne pojavljuju u tekstu</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(titles_all, The_Tales_of_Beedle_the_Bard_df<span class="sc">$</span>text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>character(0)</code></pre>
+</div>
+</div>
+<p>Sada svakom odlomku pridružujemo naslov poglavlja kojem pripada. To radimo u tri koraka:</p>
+<ol type="1">
+<li><p>Funkcijom <code>mutate()</code> stvaramo stupac <code>is_heading</code>. Operator <code>%in%</code> za svaki odlomak provjerava podudara li se njegov tekst točno s nekim od naslova iz vektora <code>titles_all</code>. Rezultat je <code>TRUE</code> za odlomke koji su naslovi, a <code>FALSE</code> za sve ostale.</p></li>
+<li><p>U istom pozivu funkcije <code>mutate()</code> stvaramo stupac <code>chapter_title</code>. Funkcija <code>if_else()</code> u njega upisuje tekst odlomka ako je odlomak naslov (<code>is_heading</code> je <code>TRUE</code>), a vrijednost <code>NA</code> ako nije. Nakon ovog koraka naziv poglavlja zapisan je samo u retcima s naslovima.</p></li>
+<li><p>Funkcija <code>fill()</code> iz paketa <code>tidyr</code> popunjava prazne (<code>NA</code>) vrijednosti u stupcu <code>chapter_title</code>. Uz argument <code>.direction = "down"</code> ide od vrha tablice prema dnu i svaku praznu vrijednost zamjenjuje posljednjim naslovom koji je vidjela. Tako svaki naslov „spušta” niz tablicu sve dok ne naiđe na sljedeći.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df <span class="ot">&lt;-</span> The_Tales_of_Beedle_the_Bard_df <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Je li odlomak jedan od naslova?</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_heading =</span> text <span class="sc">%in%</span> titles_all,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ako je odlomak naslov, chapter_title je njegov tekst, a inače NA</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">chapter_title =</span> <span class="fu">if_else</span>(is_heading, text, <span class="cn">NA_character_</span>)</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Spuštanje posljednjeg viđenog naslova na sve sljedeće odlomke</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fill</span>(chapter_title, <span class="at">.direction =</span> <span class="st">"down"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Zatim stvaramo stupac <code>section_type</code> koji razlikuje bajke od dodatnih tekstova. Funkcija <code>if_else()</code> za svaki odlomak provjerava nalazi li se njegov naziv poglavlja (<code>chapter_title</code>) u vektoru <code>story_titles</code>. Ako se nalazi, odlomak pripada bajci i dobiva vrijednost <code>tales</code>. Ako se ne nalazi, odlomak pripada nekom od dodatnih tekstova i dobiva vrijednost <code>additional_text</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df <span class="ot">&lt;-</span> The_Tales_of_Beedle_the_Bard_df <span class="sc">|&gt;</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">section_type =</span> <span class="fu">if_else</span>(</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>      chapter_title <span class="sc">%in%</span> story_titles,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"tales"</span>,</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">"additional_text"</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>U posljednjem koraku podatkovni okvir uređujemo za daljnju analizu. Postupak ima četiri dijela:</p>
+<ul>
+<li><p><strong>Uređivanje naziva poglavlja.</strong> Nazivi u stupcu <code>chapter_title</code> zapisani su onako kako se pojavljuju u knjizi, odnosno s velikim slovima, razmacima, apostrofima i navodnicima. Takav je zapis čitljiv, ali nezgodan za rad u kodu (npr. pri filtriranju ili kao naziv datoteke). Zato ga pretvaramo u kratak tehnički oblik. Najprije funkcijom <code>str_to_lower()</code> sva slova pretvaramo u mala. Zatim uklanjamo apostrofe, kako bi <em>warlock’s</em> postao <em>warlocks</em>, a ne <em>warlock s</em>. Nakon toga sve znakove koji nisu slova, znamenke ili razmaci (uzorak <code>"[^a-z0-9 ]"</code>) zamjenjujemo razmakom. Višestruke razmake koji pritom nastanu uklanjamo funkcijom <code>str_squish()</code>. Na kraju razmake zamjenjujemo podvlakama (<code>_</code>). Tako naslov <code>3 THE WARLOCK'S HAIRY HEART</code> postaje <code>3_the_warlocks_hairy_heart</code>.</p></li>
+<li><p><strong>Uklanjanje naslova iz teksta.</strong> Naslovi poglavlja nisu dio teksta koji želimo analizirati, a sada su sačuvani u stupcu <code>chapter_title</code>. Zato funkcijom <code>filter()</code> uklanjamo retke u kojima je stupac <code>is_heading</code> jednak <code>TRUE</code>. Operator <code>!</code> pritom obrće logičku vrijednost pa zadržavamo samo retke koji nisu naslovi.</p></li>
+<li><p><strong>Redni broj odlomka unutar poglavlja.</strong> Funkcijom <code>group_by()</code> podatke grupiramo prema poglavlju, a funkcija <code>row_number()</code> unutar svake grupe odlomke numerira od 1 nadalje. Tako dobivamo stupac <code>paragraph_no</code> koji nije redni broj odlomka u knjizi (to je stupac <code>line</code>), nego unutar poglavlja. Funkcijom <code>ungroup()</code> na kraju uklanjamo grupiranje, kako ne bi utjecalo na kasnije operacije.</p></li>
+<li><p><strong>Odabir i redoslijed stupaca.</strong> Funkcijom <code>select()</code> zadržavamo samo potrebne stupce redom kojim ih želimo imati. Pomoćni stupac <code>is_heading</code> pritom izostavljamo.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uređivanje naziva poglavlja</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df <span class="ot">&lt;-</span> The_Tales_of_Beedle_the_Bard_df <span class="sc">|&gt;</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pretvaranje u mala slova</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">chapter_title =</span> <span class="fu">str_to_lower</span>(chapter_title),</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Uklanjanje apostrofa (warlock's -&gt; warlocks)</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">chapter_title =</span> <span class="fu">str_remove_all</span>(chapter_title, <span class="st">"'"</span>),</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Zamjena svih znakova osim slova, znamenaka i razmaka razmakom</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">chapter_title =</span> <span class="fu">str_replace_all</span>(chapter_title, <span class="st">"[^a-z0-9 ]"</span>, <span class="st">" "</span>),</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Uklanjanje suvišnih razmaka</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">chapter_title =</span> <span class="fu">str_squish</span>(chapter_title),</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Zamjena razmaka podvlakama</span></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">chapter_title =</span> <span class="fu">str_replace_all</span>(chapter_title, <span class="st">" "</span>, <span class="st">"_"</span>)</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje redaka koji su naslovi poglavlja</span></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df <span class="ot">&lt;-</span> The_Tales_of_Beedle_the_Bard_df <span class="sc">|&gt;</span></span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>is_heading)</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Redni broj odlomka unutar poglavlja</span></span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df <span class="ot">&lt;-</span> The_Tales_of_Beedle_the_Bard_df <span class="sc">|&gt;</span></span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(chapter_title) <span class="sc">|&gt;</span></span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">paragraph_no =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Odabir i redoslijed stupaca</span></span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df <span class="ot">&lt;-</span> The_Tales_of_Beedle_the_Bard_df <span class="sc">|&gt;</span></span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(line, section_type, chapter_title, paragraph_no, text)</span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled podatkovnog okvira</span></span>
+<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 260 × 5
+    line section_type    chapter_title                paragraph_no text         
+   &lt;int&gt; &lt;chr&gt;           &lt;chr&gt;                               &lt;int&gt; &lt;chr&gt;        
+ 1     2 additional_text the_tales_of_beedle_the_bard            1 "Translated …
+ 2     3 additional_text the_tales_of_beedle_the_bard            2 "BY"         
+ 3     4 additional_text the_tales_of_beedle_the_bard            3 "J. K. ROWLI…
+ 4     5 additional_text the_tales_of_beedle_the_bard            4 "CONTENTS In…
+ 5     7 additional_text introduction                            1 "The Tales o…
+ 6     8 additional_text introduction                            2 "Beedle's st…
+ 7     9 additional_text introduction                            3 "Another not…
+ 8    10 additional_text introduction                            4 "Beedle the …
+ 9    11 additional_text introduction                            5 "One modern-…
+10    12 additional_text introduction                            6 "It seems on…
+# ℹ 250 more rows</code></pre>
+</div>
+</div>
+<p>Dobiveni podatkovni okvir ima jedan odlomak po retku, a uz svaki odlomak zapisano je iz kojeg je dijela knjige i poglavlja te koji je po redu. U tom je obliku spreman za tokenizaciju i daljnju analizu. Broj odlomaka po poglavlju dobro je provjeriti funkcijom <code>count()</code>. Ako neko poglavlje nedostaje ili ima neobično malo odlomaka, vjerojatno njegov naslov nije ispravno prepoznat.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj odlomaka po dijelu knjige i poglavlju</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>The_Tales_of_Beedle_the_Bard_df <span class="sc">|&gt;</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(section_type, chapter_title)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 14 × 3
+   section_type    chapter_title                                               n
+   &lt;chr&gt;           &lt;chr&gt;                                                   &lt;int&gt;
+ 1 additional_text a_note_on_the_footnotes                                     2
+ 2 additional_text a_personal_message_from_baroness_nicholson_of_winterbo…    13
+ 3 additional_text albus_dumbledore_on_babbitty_rabbitty_and_her_cackling…     7
+ 4 additional_text albus_dumbledore_on_the_fountain_of_fair_fortune            9
+ 5 additional_text albus_dumbledore_on_the_tale_of_the_three_brothers         21
+ 6 additional_text albus_dumbledore_on_the_warlocks_hairy_heart                9
+ 7 additional_text albus_dumbledore_on_the_wizard_and_the_hopping_pot         11
+ 8 additional_text introduction                                                9
+ 9 additional_text the_tales_of_beedle_the_bard                                4
+10 tales           1_the_wizard_and_the_hopping_pot                           28
+11 tales           2_the_fountain_of_fair_fortune                             48
+12 tales           3_the_warlocks_hairy_heart                                 32
+13 tales           4_babbitty_rabbitty_and_her_cackling_stumps                53
+14 tales           5_the_tale_of_the_three_brothers                           14</code></pre>
+</div>
+</div>
+<p>U nastavku ćemo analizirati samo bajke, bez dodatnih tekstova. Zato funkcijom <code>filter()</code> zadržavamo samo odlomke iz bajki. Stupac <code>section_type</code> tada više nije potreban, pa ga uklanjamo funkcijom <code>select()</code> (znak <code>-</code> ispred imena stupca znači „svi stupci osim ovoga”). Stupac <code>chapter_title</code> funkcijom <code>rename()</code> preimenujemo u <code>fairy_tale</code> jer sada sadrži samo nazive bajki. Novom podatkovnom okviru dajemo i kraće ime, <code>tToBtB_df</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podatkovni okvir samo s bajkama</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>tToBtB_df <span class="ot">&lt;-</span> The_Tales_of_Beedle_the_Bard_df <span class="sc">|&gt;</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(section_type <span class="sc">==</span> <span class="st">"tales"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>section_type) <span class="sc">|&gt;</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">fairy_tale =</span> chapter_title)</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled podatkovnog okvira</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>tToBtB_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 175 × 4
+    line fairy_tale                       paragraph_no text                     
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;                    
+ 1    20 1_the_wizard_and_the_hopping_pot            1 "There was once a kindly…
+ 2    21 1_the_wizard_and_the_hopping_pot            2 "This well-beloved wizar…
+ 3    22 1_the_wizard_and_the_hopping_pot            3 "Upon the father's death…
+ 4    23 1_the_wizard_and_the_hopping_pot            4 "The son cursed his fath…
+ 5    24 1_the_wizard_and_the_hopping_pot            5 "That very night a peasa…
+ 6    25 1_the_wizard_and_the_hopping_pot            6 "\"My granddaughter is a…
+ 7    26 1_the_wizard_and_the_hopping_pot            7 "\"Begone!\" cried the s…
+ 8    27 1_the_wizard_and_the_hopping_pot            8 "And he slammed the door…
+ 9    28 1_the_wizard_and_the_hopping_pot            9 "At once there came a lo…
+10    29 1_the_wizard_and_the_hopping_pot           10 "\"Disgusting object!\" …
+# ℹ 165 more rows</code></pre>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -761,8 +1522,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html" class="pagination-link" aria-label="Pretpostavke za analizu teksta u tidytextu">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytextu</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.html" class="pagination-link" aria-label="Pretpostavke za analizu teksta u tidytext-u">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta u tidytext-u</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

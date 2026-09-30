@@ -1,8 +1,177 @@
-# Pretpostavke za analizu teksta u tidytextu
+---
+title: "Pretpostavke za analizu teksta u tidytext-u"
+description: "Tekst u izvornom obliku nije pogodan za kvantitativnu analizu. Da bi se riječi mogle brojati, uspoređivati i povezivati s drugim podacima, tekst je najprije potrebno razložiti na manje jedinice i urediti u strukturu s kojom se može raditi. Tokenizacija, uklanjanje zaustavnih riječi i lematizacija osnovni su postupci takve pripreme, a kojima se iz teksta izdvaja ono što nosi značenje. Iako se čine tehničkima, ti postupci nisu neutralni jer o odlukama donesenima u njima ovise i rezultati svake daljnje analize."
+number-sections: true
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+---
 
-Paket `tidytext` tekst prikazuje u obliku uredne tablice u kojoj je svaka
-riječ jedan red. Takav oblik olakšava povezivanje tekstualnih podataka s
-alatima iz ekosustava `tidyverse`.
+```{r}
+#| include: false
+library(tidyverse)
+library(tidytext)
+library(textstem)
 
-Prije tokenizacije potrebno je odlučiti kako postupati s interpunkcijom,
-velikim i malim slovima, stop-riječima i dijakritičkim znakovima.
+# Učitavanje podataka
+tToBtB_df <- readRDS("data_pictures_and_graphs/tToBtB_df.rds")
+```
+
+Prije same analize teksta potrebno je provesti nekoliko postupaka koji tekst pripremaju za analizu. Prvi je tokenizacija kojom se tekst dijeli na manje jedinice, poput riječi ili nizova riječi, i slaže u strukturu prikladnu za analizu. Drugi je uklanjanje zaustavnih riječi, odnosno vrlo čestih riječi koje malo govore o sadržaju teksta. Zajedno, ti postupci čine predobradu teksta, odnosno **pretpostavke tekstualne analize**. Treći, neobavezan, ali često koristan postupak je lematizacija kojom se različiti oblici iste riječi svode na njezin rječnički oblik, a što je posebno korisno pri brojanju riječi.
+
+## Tokenizacija
+
+**Uredan tekstni format** (eng. *tidy text format*) prikladan za analizu podatkovni je okvir strukturiran kao **jedan token po retku**. **Token** je smislena jedinica teksta koja nas zanima u analizi. Tokenizacija je ključna pretpostavka analize teksta jer se s cjelovitim odlomcima ne mogu provesti smislene kvantitativne analize s obzirom na to da je gotovo svaki odlomak jedinstven pa ih nema smisla brojati ni uspoređivati. Tokeni su najčešće riječi jer su riječi najčešće semantički značajne jedinice teksta, no token može biti i n-gram, rečenica ili odlomak. Uredan format omogućuje obradu i vizualizaciju podataka paketima kao što su `dplyr`, `tidyr`, `ggplot2` i `broom`.
+
+Tokenizacija se u paketu `tidytext` provodi funkcijom `unnest_tokens()`. Funkcija ima tri obavezna argumenta:
+
+- `tbl` - podatkovni okvir u kojem se nalazi tekst,
+
+- `output` - naziv novog stupca u kojem će biti tokeni i
+
+- `input` - naziv stupca u kojem se nalazi tekst.
+
+Neobavezan, ali bitan argument je `token` kojim se određuje vrsta tokena. Ako se ne navede, zadana vrijednost je `"words"` pa se tekst dijeli na riječi. Osnovna i najčešća tokenizacija je tokenizacija na riječi. Tada je svaka riječ u tekstu, kao smislena jedinica teksta, jedan token. Zato ćemo stupac s tokenima nazvati `word`. Tekst se nalazi u podatkovnom okviru `tToBtB_df`, u stupcu `text`.
+
+```{r}
+# Tokenizacija na riječi
+tToBtB_word_tokens <- unnest_tokens(
+  tbl = tToBtB_df,
+  output = word,
+  input = text
+)
+
+# Pregled tokeniziranog podatkovnog okvira
+tToBtB_word_tokens
+```
+
+Nakon tokenizacije svaki redak podatkovnog okvira sadrži jedan token (riječ), a pritom:
+
+- ostali stupci (`line`, `fairy_tale` i `paragraph_no`) se zadržavaju, pa za svaku riječ znamo iz koje bajke i odlomka dolazi;
+
+- izvorni stupac `text` se uklanja;
+
+- interpunkcija se uklanja (osim apostrofa unutar riječi, npr. *didn't* ili *beedle's* koji ostaju jedan token);
+
+- sva se slova pretvaraju u mala.
+
+Ponekad je poželjno da riječi zadrže izvorna velika i mala slova, primjerice, kako bi se imena razlikovala od običnih riječi. Tada se funkciji `unnest_tokens()` dodaje argument `to_lower = FALSE`. Slično tome, interpunkcijski znakovi zadržavaju se argumentom `strip_punct = FALSE`.
+
+Tokenizacija ne mora biti ograničena na riječi, nego se tekst može podijeliti i prema drugim kriterijima, ovisno o tome što želimo analizirati.
+
+Umjesto riječi, osnovna jedinica mogu biti **rečenice**. Za to se argumentu `token` zadaje vrijednost `"sentences"`.
+
+```{r}
+# Tokenizacija na rečenice
+tToBtB_sentence_token <- tToBtB_df |>
+  unnest_tokens(
+    output = sentence,
+    input = text,
+    token = "sentences"
+  )
+
+# Pregled tokeniziranog podatkovnog okvira
+tToBtB_sentence_token
+```
+
+Sada je svaki token, odnosno svaki redak podatkovnog okvira, jedna rečenica. Stupci `line`, `fairy_tale` i `paragraph_no` i dalje se zadržavaju, pa možemo, primjerice, usporediti prosječnu duljinu rečenica u pojedinim bajkama. Slova su i ovdje pretvorena u mala, ali se interpunkcija, za razliku od tokenizacije na riječi, zadržava.
+
+Problem može nastati u postupku tokenizacije na rečenice. Naime, granice rečenica određuju se prema interpunkciji na kraju rečenice, odnosno točki, upitniku i uskličniku. Postupak nije savršen jer se točka iza kratice, npr. *Mr.* ili *Dr.*, prepoznaje kao kraj rečenice pa se takva rečenica dijeli na dva tokena. Budući da se tokenizira svaki odlomak zasebno, rečenica nikad ne prelazi granicu odlomka.
+
+Za neke posebne analize, primjerice stilometriju ili analizu učestalosti slova, tekst se može podijeliti na pojedinačne znakove vrijednošću `"characters"`. Tada svaki redak sadrži jedan znak. Pritom se uklanjaju razmaci i interpunkcija pa ostaju samo slova i znamenke. Ovakva se tokenizacija rjeđe koristi u sociološkoj analizi teksta, ali je korisna za stilsku analizu ili za prikaz razlike između različitih jezičnih razina.
+
+```{r}
+# Tokenizacija na znakove
+tToBtB_character_token <- tToBtB_df |>
+  unnest_tokens(
+    output = char,
+    input = text,
+    token = "characters"
+  )
+
+# Pregled tokeniziranog podatkovnog okvira
+tToBtB_character_token
+```
+
+Funkcijom `unnest_tokens()` tekst se može podijeliti i na nizove uzastopnih riječi koji se nazivaju **n-grami**. Na taj način možemo promatrati koliko često neka riječ slijedi drugu i na temelju toga ispitivati odnose među riječima. N-grami se dobivaju vrijednošću `token = "ngrams"`, a argumentom `n` određuje se koliko riječi čini jedan n-gram. Nizovi od dvije uzastopne riječi nazivaju se **bigrami**, a nizovi od tri riječi **trigrami**. Tekst tada ima strukturu jedan bigram po retku, odnosno jedan trigram po retku. Ako odlomak ima manje riječi nego što iznosi `n` (npr. odlomak od samo jedne riječi kod bigrama), iz njega se ne može stvoriti nijedan n-gram pa funkcija za njega vraća `NA`. Takve retke uklanjamo funkcijom `filter()`.
+
+```{r}
+# Tokenizacija na bigrame
+tToBtB_bigram <- tToBtB_df |>
+  unnest_tokens(
+    output = bigram,
+    input = text,
+    token = "ngrams",
+    n = 2
+  ) |>
+  # Uklanjanje redaka iz kojih se nije mogao stvoriti bigram
+  filter(!is.na(bigram))
+
+# Pregled bigrama
+tToBtB_bigram
+
+# Tokenizacija na trigrame
+tToBtB_trigram <- tToBtB_df |>
+  unnest_tokens(
+    output = trigram,
+    input = text,
+    token = "ngrams",
+    n = 3
+  ) |>
+  # Uklanjanje redaka iz kojih se nije mogao stvoriti trigram
+  filter(!is.na(trigram))
+
+# Pregled trigrama
+tToBtB_trigram
+```
+
+Dobivene tablice izgledaju slično kao tablica s jednim tokenom po retku, osim što su u stupcu `bigram` bigrami (*there was*, *was once*, *once a*, *a kindly* itd.), a u stupcu `trigram` trigrami (*there was once*, *was once a*, *once a kindly*, *a kindly old* itd.). Uzastopni n-grami preklapaju se, a svaka se riječ, osim prve i posljednje, pojavljuje u dva bigrama.
+
+## Uklanjanje zaustavnih riječi
+
+Tekst u obliku jednog tokena po retku može se lako obrađivati i vizualizirati. Ipak, u analizi je često poželjno ukloniti riječi koje su iznimno česte, a malo govore o sadržaju teksta, poput *the*, *of* ili *to*. Takve riječi nazivaju se **zaustavne riječi** (engl. *stop words*). To su uglavnom veznici, prijedlozi, članovi, zamjenice i pomoćni glagoli koji povezuju dijelove rečenice, ali ne nose specifično značenje, a uklanjaju se iz analize kako bi se analiza usmjerila na riječi koje više govore o sadržaju.
+
+Paket `tidytext` sadrži skup podataka `stop_words` s popisom engleskih zaustavnih riječi iz tri rječnika (`onix`, `SMART` i `snowball`). Zaustavne riječi iz tokeniziranog teksta uklanjamo funkcijom `anti_join()` iz paketa `dplyr`. Ona zadržava samo one retke prvog podatkovnog okvira koji nemaju odgovarajući redak u drugom, odnosno samo one riječi koje se ne nalaze na popisu zaustavnih riječi. Argumentom `by = "word"` navodimo da se podatkovni okviri uspoređuju prema stupcu `word`.
+
+```{r}
+# Uklanjanje zaustavnih riječi
+tToBtB_word_tokens_stop_words <- tToBtB_word_tokens |>
+  anti_join(stop_words, by = "word")
+
+# Pregled
+tToBtB_word_tokens_stop_words
+```
+
+## Lematizacija
+
+Posljednji je korak pretpostavke za analizu teksta lematizacija samog teksta. **Lematizacija** je postupak svođenja riječi na njihov rječnički oblik (lemu), primjerice:
+
+- *walking*, *walks*, *walked* → *walk*
+
+- *stories* → *story*
+
+- *children* → *child*
+
+- *better* → *good*.
+
+Lematizacijom se različiti oblici iste riječi broje kao jedna riječ. To je korisno u analizama koje se temelje na učestalosti riječi, poput analize frekvencija, TF-IDF-a ili tematskog modeliranja, jer se inače, primjerice, *story* i *stories* broje kao dvije različite riječi.
+
+Najjednostavnije se lematizacija u R-u provodi funkcijom `lemmatize_words()` iz paketa `textstem`. Ona za svaku riječ u rječniku traži njezin osnovni oblik pa se primjenjuje na tekst tokeniziran na riječi.
+
+```{r}
+# Lematizacija tokena
+tToBtB_word_tokens_stop_words_lemmatize <- tToBtB_word_tokens_stop_words |>
+  mutate(lemma = lemmatize_words(word)) |>
+  select(line, fairy_tale, paragraph_no, word, lemma)
+
+# Pregled lematiziranih riječi
+tToBtB_word_tokens_stop_words_lemmatize
+```
+
+```{r}
+#| include: false
+# Spremanje podatkovnih okvira
+saveRDS(tToBtB_word_tokens, file = "data_pictures_and_graphs/tToBtB_word_tokens.rds")
+saveRDS(tToBtB_bigram, file = "data_pictures_and_graphs/tToBtB_bigram.rds")
+saveRDS(tToBtB_word_tokens_stop_words, file = "data_pictures_and_graphs/tToBtB_word_tokens_without_stop_words.rds")
+saveRDS(tToBtB_word_tokens_stop_words_lemmatize, file = "data_pictures_and_graphs/tToBtB_word_tokens_without_stop_words_lemmatize_word.rds")
+```

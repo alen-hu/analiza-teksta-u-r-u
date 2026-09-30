@@ -1,6 +1,6 @@
 ---
 title: "Regularni izrazi"
-description: "..."
+description: "Regularni izrazi formalni su jezik za opisivanje uzoraka u tekstu i jedan od najmoćnijih alata za rad s tekstualnim nizovima u R-u. Umjesto traženja točno zadanih riječi ili znakova, regularnim izrazom opisujemo oblik onoga što tražimo, primjerice broj od četiri znamenke, riječ s velikim početnim slovom ili adresu e-pošte. Zbog toga su nezaobilazni pri čišćenju teksta, provjeri njegova sadržaja te izdvajanju podataka poput imena, datuma i brojeva iz nestrukturiranog teksta. Stoga je za rad s tekstom ključno poznavati sintaksu regularnih izraza, od metaznakova, klasa znakova, kvantifikatora do sidara, ali i načine sastavljanja složenih uzoraka te izdvajanja podataka iz teksta u podatkovni okvir."
 number-sections: true
 title-block-banner: "#8B475D"
 title-block-banner-color: "white"
@@ -14,19 +14,19 @@ library(stringr)
 library(glue)
 ```
 
-**Regularni izrazi** (*regular expressions*) su jezik za opisivanje uzoraka u nizovima znakova. I sam regularni izraz niz je znakova, ali u njemu pojedini znakovi imaju posebno značenje. Umjesto da tekst ručno provjeravamo znak po znak, uzorkom u regularnom izrazu moguće je precizno opisati što želimo pronaći, primjerice znamenku, slovo, određenu riječ, skupinu znakova ili složeniji obrazac. U praksi se regularni izrazi koriste za:
+**Regularni izrazi** (*regular expressions*) su jezik za opisivanje uzoraka u nizovima znakova. Sam regularni izraz zapravo je niz znakova, ali u njemu pojedini znakovi imaju posebno značenje. Unutar obrade prirodnog jezike, umjesto da ručno provjeravamo znak po znak u tekstu, uzorak u regularnom izrazu omogućuje precizno opisati što želimo pronaći, primjerice znamenku, slovo, određenu riječ, skupinu znakova ili složeniji obrazac. U praksi se regularni izrazi koriste za:
 
 - provjeru podudaranja (npr. počinje li tekst brojem),
 
-- izdvajanje dijelova teksta (npr. adresa e-pošte, brojeva ili datuma),
+- izdvajanje dijelova teksta (npr. adrese e-pošte, brojeva ili datuma),
 
 - čišćenje teksta (npr. uklanjanje višestrukih razmaka ili suvišnih simbola) te
 
-- općenito za pripremu podataka za analizu teksta.
+- općenito za pripremu teksta za njegovu analizu.
 
-Iako je s regularnim izrazima moguće raditi i funkcijama osnovnog R-a (`grepl()`, `sub()` i `gsub()`), paket `stringr` taj posao znatno olakšava jer su njegove funkcije dosljednije i jednostavnije za korištenje. Sve funkcije paketa počinju s prefiksom `str_` i imaju iste nazive argumenata, a pri čemu je niz uvijek prvi, a uzorak drugi argument. Osim toga, funkcije `stringr`-a rezultate vraćaju u predvidljivom obliku pa ih je lako povezivati u lance.
+Iako je s regularnim izrazima moguće raditi i funkcijama osnovnog R-a (`grepl()`, `sub()` i `gsub()`), znatno je jednostavniji način rada s regularnim izrazima kroz paket `stringr` čije su funkcije dosljednije i jednostavnije za korištenje. Sve funkcije paketa počinju s prefiksom `str_` i imaju iste nazive argumenata, a pri čemu je niz uvijek prvi, a uzorak drugi argument. Osim toga, funkcije `stringr`-a rezultate vraćaju u predvidljivom obliku pa ih je lako povezivati u lance.
 
-Najjednostavnija i najpraktičnija funkcija paketa je `str_extract_all()` koja iz niza izdvaja sve dijelove koji odgovaraju zadanom uzorku, a za pronalaženje podudaranja koristi se i funkcija `str_view()` koja služi za vizualizaciju podudaranja između regularnog izraza i elemenata u nizovima, odnosno pomaže jasno vidjeti gdje i kako se uzorak podudara s tekstom.
+Najjednostavnija i najpraktičnija funkcija paketa je `str_extract_all()` koja iz niza izdvaja sve dijelove koji odgovaraju zadanom uzorku, a za pronalaženje podudaranja koristi se i funkcija `str_view_all()` koja se koristi za vizualizaciju podudaranja između regularnog izraza i elemenata u nizovima, odnosno pomaže jasno vidjeti gdje i kako se uzorak podudara s tekstom.
 
 Rad s regularnim izrazima zahtijeva poznavanje posebne sintakse u kojoj pojedini znakovi imaju specifično značenje, a kojima se opisuje uzorak koji tražimo. Pritom posebnu ulogu ima obrnuta kosa crta (`\`) kojom se označavaju klase znakova (npr. `\d` za znamenku) ili se metaznaku oduzima posebno značenje (npr. `\.` označava doslovnu točku, a ne bilo koji znak). Budući da je `\` i u R-ovim nizovima znak za izlaz (*escape*), u kodu ga moramo pisati dvaput. Regularni izraz `\d` u R-u se stoga zapisuje kao `"\\d"`.
 

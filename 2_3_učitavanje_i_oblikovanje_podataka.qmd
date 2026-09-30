@@ -1,13 +1,548 @@
-# Učitavanje i oblikovanje podataka
-
-Tekstualne podatke možemo učitati iz CSV datoteka, tablica ili drugih izvora.
-Nakon učitavanja važno je provjeriti nazive stupaca, nedostajuće vrijednosti i
-jedinicu analize.
+---
+title: "Učitavanje i oblikovanje podataka"
+description: "Između teksta kakav nalazimo u knjigama, dokumentima i na internetu te teksta s kojim se može provesti analiza postoji korak koji se lako podcijeni, njegova priprema. Tekstovi dolaze iz različitih izvora, u različitim formatima i kodiranjima, a uz sadržaj koji nas zanima gotovo uvijek nose i ono što nam smeta, poput naslova, prijeloma redaka, nevidljivih znakova i tipografskih neujednačenosti. Takvi problemi često nisu vidljivi na prvi pogled, a mogu tiho iskriviti svaki kasniji rezultat jer je analiza teksta pouzdana onoliko koliko je pouzdan tekst na kojem se provodi. Zato je uvoz, čišćenje i oblikovanje teksta u strukturu prikladnu za analizu temelj na kojem počiva sav daljnji rad s tekstualnim podacima."
+number-sections: true
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+---
 
 ```{r}
-dokumenti <- data.frame(
-  id = 1:3,
-  tekst = c("Prvi tekst", "Drugi tekst", "Treći tekst")
+#| include: false
+library(tidyverse)
+library(rvest)
+```
+
+## Preuzimanje, unos i učitavanje podataka u R
+
+Rad s tekstom počinje uvozom podataka u R. Ako je tekst spremljen u formatu .txt, u kojem se tekstualni podaci najčešće i čuvaju, u R se može učitati funkcijom `readLines()`, kojoj se kao argument zadaje putanja do datoteke.
+
+::: {.callout-note title="Napomena"}
+Putanju do vanjske datoteke u R-u možete zapisati na nekoliko načina, ovisno o operacijskom sustavu (Windows, macOS ili Linux) i organizaciji projekta. Najjednostavnije je zapisati je kao tekstualni niz. U Windowsu se mape odvajaju obrnutom kosom crtom (`\`), no ona u R-u ima posebno značenje, pa je treba udvostručiti (`\\`) ili umjesto nje koristiti kosu crtu (`/`) koja radi na svim operacijskim sustavima. Primjerice:
+
+`"C:\\Users\\Ime\\Dokumenti\\datoteka.csv"` ili `"C:/Users/Ime/Dokumenti/datoteka.csv"`.
+
+Osim apsolutnih, mogu se koristiti i relativne putanje, koje R tumači u odnosu na radni direktorij (provjerava se funkcijom `getwd()`). Ako se datoteka nalazi u mapi `podaci` unutar radnog direktorija, dovoljno je napisati `"podaci/datoteka.csv"`.
+
+Znak `~` označava korisnikovu početnu (kućnu) mapu, pa putanja poput `"~/podaci/datoteka.csv"` nije relativna u odnosu na projekt i na tuđem računalu najčešće neće raditi.
+:::
+
+```{r}
+# Učitavanje teksta (uz preskakanje NUL znakova)
+The_Tales_of_Beedle_the_Bard_txt <- readLines(
+  "data_pictures_and_graphs/The Tales of Beedle the Bard.txt",
+  skipNul = TRUE
 )
-dokumenti
+
+# Pregled prvih 30 redaka
+head(The_Tales_of_Beedle_the_Bard_txt, 30)
+```
+
+Argumentom `skipNul = TRUE` pri učitavanju se preskaču znakovi NUL (`\x00`). To je nevidljiv kontrolni znak koji ima smisla u binarnim datotekama, ali se u tekstnim datotekama ne bi smio pojavljivati. Najčešće nastaje pri pogrešnoj pretvorbi kodiranja, pri optičkom prepoznavanju znakova (OCR), starijim alatima ili kad je datoteka preuzeta ili raspakirana nestandardnim alatima. Znakovni nizovi u R-u ne mogu sadržavati znak NUL pa ga nakon učitavanja nije moguće pronaći ni ukloniti. Bez tog argumenta `readLines()` pri nailasku na NUL javlja upozorenje i odbacuje ostatak retka. Zato ga je najbolje ukloniti već pri učitavanju. Ako datoteka ne sadrži taj znak, argument ne mijenja ništa.
+
+Pri učitavanju i kasnijoj obradi teksta može se pojaviti problem s neprepoznatim znakovima koji se u tekstu prikazuju kao �. Uzrok je u tome što sadržaj .txt datoteke nisu „čista slova”, nego niz bajtova. Koji bajt odgovara kojem znaku, određuje kodiranje znakova. Starije Windows datoteke i mnoge e-knjige često su kodirane u obliku Windows-1252 (za zapadnoeuropske jezike) ili Windows-1250 (za srednjoeuropske jezike, uključujući hrvatski). UTF-8 danas je standard za internetske stranice, a koriste ga i novije verzije R-a, RStudio te paket `stringr`. Ako R datoteku pročita pod pogrešnim kodiranjem, pojedine bajtove ne može ispravno protumačiti i u tekstu se pojavljuju znakovi �.
+
+Zato je dobro prije daljnje obrade provjeriti kodiranje datoteke. Funkcija `guess_encoding()` iz paketa `readr` procjenjuje najvjerojatnija kodiranja i uz svako navodi stupanj pouzdanosti. Riječ je o procjeni, a ne o jamstvu pa rezultat valja provjeriti pregledom teksta.
+
+```{r}
+# Procjena kodiranja datoteke
+guess_encoding("data_pictures_and_graphs/The Tales of Beedle the Bard.txt")
+```
+
+Kada je kodiranje poznato, tekst se u UTF-8 pretvara funkcijom `iconv()`. Njezin je prvi argument, `x`, znakovni vektor koji se pretvara. U argument `from` upisuje se trenutačno kodiranje, a u argument `to` željeno. Ako se neki znak ne može pretvoriti, cijeli element vektora u kojem se nalazi postaje `NA`. To se ponašanje može promijeniti argumentom `sub`, primjerice `sub = "?"`.
+
+```{r}
+# Pretvaranje kodiranja iz Windows-1252 u UTF-8
+The_Tales_of_Beedle_the_Bard_txt <- iconv(
+  x = The_Tales_of_Beedle_the_Bard_txt,
+  from = "Windows-1252",
+  to = "UTF-8"
+)
+```
+
+Tekst se u R može unijeti i drugim funkcijama i paketima, ovisno o vrsti datoteke u kojoj su podaci spremljeni i obliku u kojem ih želimo pohraniti u R-u.
+
+::: {style="width: 100%"}
+| Vrsta datoteke                            | Funkcija       | Paket      | Primjer                                               |
+|-------------------------------------------|----------------|------------|-------------------------------------------------------|
+| Običan tekst (redak po redak)             | `readLines()`  | base R     | `readLines("clanak.txt")`                             |
+| Običan tekst (kao jedan niz)              | `read_file()`  | `readr`    | `read_file("clanak.txt")`                             |
+| Tablični tekst (npr. odvojen tabulatorom) | `read.table()` | base R     | `read.table("podaci.txt", header = TRUE, sep = "\t")` |
+| Tablični tekst (npr. odvojen tabulatorom) | `read_delim()` | `readr`    | `read_delim("podaci.txt", delim = "\t")`              |
+| CSV                                       | `read.csv()`   | base R     | `read.csv("podaci.csv")`                              |
+| CSV                                       | `read_csv()`   | `readr`    | `read_csv("podaci.csv")`                              |
+| Excel (.xls, .xlsx)                       | `read_excel()` | `readxl`   | `read_excel("podaci.xlsx", sheet = 1)`                |
+| OpenDocument proračunska tablica (.ods)   | `read_ods()`   | `readODS`  | `read_ods("podaci.ods")`                              |
+| SPSS (.sav)                               | `read_sav()`   | `haven`    | `read_sav("anketa.sav")`                              |
+| Stata (.dta)                              | `read_dta()`   | `haven`    | `read_dta("analiza.dta")`                             |
+| SAS (.sas7bdat)                           | `read_sas()`   | `haven`    | `read_sas("podaci.sas7bdat")`                         |
+| JSON                                      | `fromJSON()`   | `jsonlite` | `fromJSON("podaci.json")`                             |
+| XML                                       | `read_xml()`   | `xml2`     | `read_xml("podaci.xml")`                              |
+| R-ova binarna datoteka (.RData)           | `load()`       | base R     | `load("moji_podaci.RData")`                           |
+| R-ova binarna datoteka (.rds)             | `readRDS()`    | base R     | `objekt <- readRDS("objekt.rds")`                     |
+| ZIP arhiva                                | `unzip()`      | base R     | `unzip("arhiva.zip", exdir = "podaci/")`              |
+:::
+
+### Preuzimanje sadržaja s interneta
+
+Mnogi tekstovi koje želimo analizirati nisu spremljeni u urednim datotekama na računalu, nego se nalaze na internetu. Primjeri takvih datoteka su novinski članci, objave na forumima, saborske rasprave, recenzije proizvoda, enciklopedijski članci i slično. Takvi tekstualni podaci, umjesto da ručno kopiraju sa stranice u datoteku, mogu se **automatizirano preuzimati s web stranica** (eng. *web scraping*). Riječ je o postupku u kojem se u R-u piše kod koji stranicu preuzme, u njoj pronađe dijelove koji nas zanimaju i spremi ih u R kao objekt spreman za daljnju obradu. Takav je pristup bolji od ručnog preuzimanja zbog brzine i opsega pisanja koda, ponovljivost postupka i manje pogrešaka koje mogu nastati ručnim kopiranjem.
+
+Kad u pregledniku otvorimo web stranicu, preglednik s poslužitelja preuzima tekstnu datoteku napisanu u jeziku **HTML** (engl. *HyperText Markup Language*) i prikazuje je u obliku koji vidimo na zaslonu. HTML nije programski jezik, nego jezik za označavanje kojim se opisuje što je koji dio sadržaja (naslov, odlomak, poveznica, tablica).
+
+HTML dokument sastoji se od **elemenata**. Element obično počinje početnom oznakom, primjerice `<p>`, a završava završnom oznakom s kosom crtom, primjerice `</p>`. Između njih nalazi se sadržaj elementa. Pojednostavljena web stranica mogla bi izgledati ovako:
+
+```html
+<html>
+  <head>
+    <title>Naslov u kartici preglednika</title>
+  </head>
+  <body>
+    <h1>Glavni naslov stranice</h1>
+    <p class="uvod">Prvi <b>odlomak</b> teksta.</p>
+    <p>Drugi odlomak s <a href="https://www.r-project.org">poveznicom</a>.</p>
+  </body>
+</html>
+```
+
+Iz ovog primjera vidljive su tri važne osobine HTML-a:
+
+1. **Elementi imaju značenje.** Oznaka `<h1>` označava naslov prve razine (postoje i `<h2>` do `<h6>`), `<p>` odlomak, `<a>` poveznicu, `<b>` podebljani tekst, `<table>` tablicu, a `<div>` i `<section>` općenite odjeljke kojima se sadržaj grupira.
+
+2. **Elementi su ugniježđeni.** Element `<b>` nalazi se unutar elementa `<p>` koji se nalazi unutar `<body>`, a on unutar `<html>`. HTML dokument zato ima strukturu stabla u kojoj svaki element ima svog „roditelja” i može imati „djecu”.
+
+3. **Elementi mogu imati atribute.** Atributi se pišu u početnoj oznaci, u obliku `ime="vrijednost"`. Atribut `href` elementa `<a>` sadrži adresu na koju poveznica vodi. Za preuzimanje su posebno važni atributi `class` i `id`. `class` označava skupinu elemenata iste vrste (više elemenata može imati istu klasu), a `id` jedinstveno označava jedan element na stranici.
+
+Upravo nam te tri osobine omogućuju da u kodu točno opišemo koji dio stranice želimo. Za to se koriste **CSS selektori**, odnosno kratki izrazi koji opisuju elemente prema oznaci, klasi, identifikatoru ili položaju u stablu.
+
+| Selektor  | Što odabire                                                    | Primjer iz gornjeg HTML-a |
+|-----------|----------------------------------------------------------------|---------------------------|
+| `p`       | sve elemente s tom oznakom                                     | oba odlomka               |
+| `.uvod`   | sve elemente s klasom `uvod` (točka označava klasu)            | prvi odlomak              |
+| `#glavni` | element s identifikatorom `glavni` (ljestve označavaju `id`)   | -                         |
+| `body p`  | elemente `p` bilo gdje unutar elementa `body` (razmak)         | oba odlomka               |
+| `p > b`   | elemente `b` koji su izravna djeca elementa `p` (znak `>`)     | riječ „odlomak”           |
+| `p, h1`   | elemente `p` i elemente `h1` (zarez)                           | oba odlomka i naslov      |
+
+Na stvarnim web stranicama HTML je puno složeniji nego u gornjem primjeru pa ručno traženje pravog selektora može biti zamorno. Tu pomaže **SelectorGadget**, besplatan alat otvorenog koda koji nam klikanjem po stranici predlaže CSS selektor za odabrane elemente. U pregledniku Google Chrome (i drugim preglednicima temeljenima na Chromiumu, poput Microsoft Edgea ili Bravea) SelectorGadget se instalira kao proširenje iz trgovine [Chrome Web Store](https://chromewebstore.google.com/).
+
+SelectorGadget se koristi na način da se, nakon što otvorimo stranicu i pokrenemo SelectorGadget, u donjem desnom kutu pojavljuje se traka alata koja pokazuje elemente. Pritom, prelaskom miša preko stranice pojedini se elementi uokviruju, a klikom na element odabiremo ga i on postaje zelen, a SelectorGadget na temelju odabira predlaže selektor i ispisuje ga u traci. Svi ostali elementi koje taj selektor obuhvaća označe se žuto. Ako je među žutima neki element koji ne želimo, klikom na njega isključujemo ga i on postaje crven, a Selektor se tada prilagođava. Klikanje se tako ponavlja dok selektor ne obuhvati točno ono što želimo, a zatim ga kopiramo iz trake u kod. U traci se nalaze i gumbi *Clear* koji poništava odabir (broj u zagradi pokazuje koliko je elemenata trenutačno obuhvaćeno), *Toggle Position* koji traku premješta u drugi kut zaslona te *XPath* koji umjesto CSS selektora prikazuje isti izraz u jeziku XPath.
+
+Za preuzimanje sadržaja s web stranica u R-u najčešće se koristi paket `rvest`.
+
+Prvi je korak uvijek učitavanje internetske stranice funkcijom `read_html()` u koju se kao argument zadaje adresa stranice. R pritom preuzima njezin HTML i sprema ga kao objekt klase `xml_document` u kojem je sačuvana cijela struktura stabla.
+
+Kao primjer koristit ćemo članak s Wikipedije o knjizi [The Tales of Beedle the Bard](<https://en.wikipedia.org/wiki/The_Tales_of_Beedle_the_Bard>). Članak je razmjerno kratak i jasno strukturiran pa je prikladan za prvi primjer, a, osim uvoda, sadrži odjeljke o knjizi u serijalu o Harryju Potteru, o povijesti objavljivanja te o sadržaju pet bajki. Slijede odjeljci o prijemu knjige i njezinim adaptacijama te popis izvora.
+
+```{r}
+#| eval: false
+
+url <- "https://en.wikipedia.org/wiki/The_Tales_of_Beedle_the_Bard"
+
+stranica <- read_html(url)
+```
+
+```{r}
+#| include: false
+
+stranica <- read_html("data_pictures_and_graphs/beedle_wikipedia.html")
+```
+
+```{r}
+stranica
+```
+
+Idući je korak odabir elemenata i izvlačenje teksta iz stranice spremljene u R-u. Takav se postupak izvodi funkcijama `html_element()` i `html_elements()`. Pritom, `html_elements()` vraća sve elemente koji odgovaraju selektoru, a `html_element()` vraća prvi element koji odgovara selektoru. Primjerice, možemo preuzeti naslov članka koji se nalazi u elementu `<h1>`, a kako na stranici postoji samo jedan takav element, dovoljna je funkcija `html_element()`. Nakon toga je potrebno koristiti funkciju `html_text2()` koja izvlači tekst iz elemenata onako kako bi ga preglednik prikazao. Ovaj se cijeli postupak može izvesti u istom kodu.
+
+```{r}
+stranica |>
+  html_element("h1") |>
+  html_text2()
+```
+
+Kako bismo preuzeli prvi odlomak, u funkciju stavljamo selektor `#mwCg`.
+
+```{r}
+stranica |>
+  html_element("#mwCg") |>
+  html_text2()
+```
+
+Obično nas, međutim, zanima cijeli tekst članka, a ne samo jedan odlomak. Svi odlomci članka elementi su `<p>`, a sam sadržaj članka na Wikipediji nalazi se unutar elementa s identifikatorom `mw-content-text`. Ograničavanjem na taj element (`#mw-content-text p`) izbjegavamo odlomke u izbornicima i podnožju stranice. Budući da sada želimo sve odlomke, koristimo funkciju `html_elements()`.
+
+```{r}
+odlomci <- stranica |>
+  html_elements("#mw-content-text p") |>
+  html_text2()
+
+# Broj preuzetih odlomaka i prva tri odlomka
+length(odlomci)
+head(odlomci, 3)
+```
+
+Rezultat je znakovni vektor u kojem je svaki element jedan odlomak članka.
+
+Opisani postupak radi na stranicama čiji se sadržaj nalazi izravno u HTML-u koji poslužitelj šalje pregledniku, kao što je slučaj s Wikipedijom i većinom novinskih portala. Neke stranice, međutim, sadržaj učitavaju naknadno s pomoću JavaScripta, pa funkcija `read_html()` dobiva gotovo praznu stranicu. Takve stranice zahtijevaju drugačije alate, poput funkcije `read_html_live()` iz novijih verzija paketa `rvest` koja stranicu otvara u pravom pregledniku. Prije toga uvijek je dobro provjeriti nudi li stranica API jer je preuzimanje podataka preko njega jednostavnije i pouzdanije.
+
+## Čišćenje teksta
+
+Nakon učitavanja tekst je potrebno očistiti. Ovdje je čišćenje podijeljeno u dva dijela. Prvi se provodi odmah nakon učitavanja teksta u R, a drugi nakon tokenizacije, odnosno nakon što se tekst podijeli na manje jedinice. Takva je podjela praktičnija jer neki elementi teksta trebaju ostati „nečisti” sve do tokenizacije. Interpunkcija, primjerice, označava granice rečenica, a velika slova pomažu prepoznati imena. Zato se u prvom dijelu bavimo strukturom teksta kao cjeline, a pojedinim riječima tek kasnije.
+
+### Provjera i ujednačavanje posebnih znakova
+
+Prvi je korak provjeriti koji se neobični ili posebni znakovi nalaze u tekstu. Prvom provjerom brojimo retke koji su pri pretvorbi funkcijom `iconv()` postali `NA`. Takvih redaka ne smije biti jer jedan `NA` u sljedećim bi koracima cijeli tekst pretvorio u `NA`. Drugom provjerom brojimo retke u kojima se pojavljuje zamjenski znak (`\uFFFD`) koji se prikazuje kao romb s upitnikom i označava znak koji nije bilo moguće protumačiti. Trećom provjerom ispisujemo sve znakove izvan osnovnog skupa ASCII koji sadrži engleska slova, znamenke i osnovnu interpunkciju, zajedno s time koliko se puta pojavljuju.
+
+```{r}
+# Broj redaka koji su pri pretvorbi kodiranja postali NA (treba biti 0)
+sum(is.na(The_Tales_of_Beedle_the_Bard_txt))
+
+# Broj redaka sa zamjenskim znakom (treba biti 0)
+sum(str_detect(The_Tales_of_Beedle_the_Bard_txt, "\uFFFD"), na.rm = TRUE)
+
+# Popis svih znakova izvan osnovnog skupa ASCII i njihova učestalost
+The_Tales_of_Beedle_the_Bard_txt |>
+  str_extract_all("[^\\x00-\\x7F]") |>
+  unlist() |>
+  table()
+```
+
+Pretvorba kodiranja je uspjela s obzirom da nema redaka s vrijednošću `NA` ni zamjenskih znakova. U tekstu se ipak nalaze tipografski znakovi: zaobljeni apostrof, otvoreni i zatvoreni navodnici te crtica. Osim njih pojavljuju se i dva znaka koji se javljaju samo jednom (« i é). Kod takvih je rijetkih znakova dobro pogledati u kojem se kontekstu nalaze. To se radi funkcijom `str_subset()` koja vraća samo one elemente vektora u kojima je uzorak pronađen.
+
+```{r}
+# Retci u kojima se nalaze rijetki znakovi
+str_subset(The_Tales_of_Beedle_the_Bard_txt, "[«é]")
+```
+
+Znak « pogreška je u izvornoj datoteci jer su navodnici otvoreni znakom «, a zatvoreni ravnim navodnikom ("). Zato ćemo ga zamijeniti ravnim navodnikom, zajedno s ostalim navodnicima. Znak é dio je imena *Pensées-Profondes* i ispravno je zapisan pa ga ne mijenjamo.
+
+Tipografski znakovi nisu pogreška, ali mogu stvarati probleme u daljnjoj obradi. Zaobljeni apostrof (’) i ravni apostrof (') za računalo su dva različita znaka. Riječ *don’t* zato se ne bi podudarala s riječju *don't* iz popisa zaustavnih riječi koji se koriste u kasnijoj obradi i pišu se s ravnim apostrofom. Zato zaobljene apostrofe i navodnike zamjenjujemo njihovim jednostavnim inačicama.
+
+Za to koristimo funkciju `str_replace_all()`. Njezin je prvi argument (`string`) znakovni vektor koji se čisti, drugi (`pattern`) uzorak koji se traži, a treći (`replacement`) tekst kojim se pronađeni uzorak zamjenjuje. Kad treba napraviti više zamjena, umjesto jednog uzorka i jedne zamjene može se zadati imenovani vektor. Imena njegovih elemenata su uzorci koje tražimo, a vrijednosti su zamjene. Znakove u uzorcima zapisujemo njihovim Unicode oznakama (npr. `\u2019` za ’) jer se tako ne mogu zamijeniti sa sličnim znakovima niti pokvariti pri spremanju datoteke.
+
+```{r}
+# Zamjena zaobljenih apostrofa i navodnika ravnima
+The_Tales_of_Beedle_the_Bard_txt <- str_replace_all(
+  string = The_Tales_of_Beedle_the_Bard_txt,
+  pattern = c(
+    "\u2018" = "'",
+    "\u2019" = "'",
+    "\u201C" = '"',
+    "\u201D" = '"',
+    "\u00AB" = '"'
+  )
+)
+```
+
+Ponovnom provjerom znakova izvan skupa ASCII potvrđujemo da su apostrofi i navodnici zamijenjeni. U tekstu su ostali samo crtica i slovo é.
+
+```{r}
+# Ponovna provjera znakova izvan osnovnog skupa ASCII
+The_Tales_of_Beedle_the_Bard_txt |>
+  str_extract_all("[^\\x00-\\x7F]") |>
+  unlist() |>
+  table()
+```
+
+Crticu (–) ne mijenjamo jer je ona interpunkcijski znak, a ne dio riječi pa će se ukloniti zajedno s ostalom interpunkcijom pri tokenizaciji. Kad bismo je zamijenili spojnicom (-), više je ne bismo mogli razlikovati od spojnice kojom su riječi prelomljene na kraju retka, a upravo tu razliku koristimo u jednom od sljedećih koraka.
+
+### Uklanjanje kontrolnih znakova
+
+Sljedeći je korak uklanjanje **kontrolnih znakova**. To su znakovi koji ne predstavljaju slova, brojeve ni interpunkciju, nego su izvorno služili za upravljanje uređajima poput pisača ili terminala. Većina ih se u R konzoli ne vidi ili se prikazuje kao neobične oznake poput `\a` ili `\f`. Takvi znakovi mogu izazvati pogreške u funkcijama ili neočekivane rezultate u daljnjoj obradi pa ih je dobro ukloniti.
+
+Najproblematičniji kontrolni znak, NUL (`\x00`), uklonili smo već pri učitavanju teksta argumentom `skipNul = TRUE`. Ostale kontrolne znakove uklanjamo istom funkcijom `str_replace_all()`. Uzorak `"\\p{Cc}"` obuhvaća sve kontrolne znakove pa ih ne moramo navoditi jednog po jednog. Budući da smo u prethodnom koraku provjerili da u tekstu nema pogrešno protumačenih tipografskih znakova, ovim uzorkom uklanjamo samo stvarne kontrolne znakove. Kontrolne znakove zamjenjujemo razmakom. Među njima se nalazi i tabulator (`\t`) koji često odvaja riječi pa bi se njegovim uklanjanjem one spojile.
+
+Nakon toga funkcijom `str_trim()` uklanjamo razmake na početku i kraju svakog retka. Tako retci koji su sadržavali samo razmake ili tabulatore postaju potpuno prazni, a što je važno za prepoznavanje odlomaka u jednom od sljedećih koraka.
+
+```{r}
+# Zamjena svih kontrolnih znakova razmakom
+The_Tales_of_Beedle_the_Bard_txt <- str_replace_all(
+  string = The_Tales_of_Beedle_the_Bard_txt,
+  pattern = "\\p{Cc}",
+  replacement = " "
+)
+
+# Uklanjanje razmaka na početku i kraju svakog retka
+The_Tales_of_Beedle_the_Bard_txt <- str_trim(The_Tales_of_Beedle_the_Bard_txt)
+```
+
+Znak za povratak na početak retka (`\r`), koji Windows zajedno sa znakom `\n` koristi za kraj retka, nije potrebno posebno uklanjati. Funkcija `readLines()` prepoznaje sve uobičajene oznake kraja retka i uklanja ih pri učitavanju. Ako bi `\r` ipak ostao u tekstu, npr. kod teksta učitanog kao jedan niz funkcijom `read_file()`, obuhvaća ga uzorak `"\\p{Cc}"`. Ako znak treba samo ukloniti, bez zamjene, umjesto `str_replace_all(x, uzorak, "")` može se koristiti kraća funkcija `str_remove_all(x, uzorak)`.
+
+### Spajanje redaka u jedan tekst
+
+Funkcija `readLines()` vratila je znakovni vektor u kojem je svaki element jedan redak datoteke: prvi element je prvi redak, drugi element drugi redak i tako dalje. Retci pritom odgovaraju prijelomu teksta u izvornoj datoteci, a ne rečenicama ni odlomcima. Dio rečenice, pa čak i dio riječi, zato može biti u jednom elementu vektora, a ostatak u sljedećem. Takav je prijelom ponekad koristan (npr. kad nas zanima na kojem se retku nešto nalazi), no za analizu teksta obično je bolje da tekst bude podijeljen na smislene cjeline, odnosno na odlomke.
+
+Da bismo do toga došli, sve retke najprije spajamo u jedan znakovni niz funkcijom `str_c()`. Argumentom `collapse = "\n"` određujemo da se između spojenih redaka umetne znak za novi redak (`\n`). Tako podatak o tome gdje je izvorni tekst imao prijelome ostaje sačuvan i možemo ga iskoristiti u sljedećim koracima.
+
+```{r}
+# Spajanje svih redaka u jedan znakovni niz, sa znakom \n između redaka
+text_raw <- str_c(The_Tales_of_Beedle_the_Bard_txt, collapse = "\n")
+```
+
+### Spajanje riječi prelomljenih spojnicom
+
+Sljedeći su problem riječi prelomljene na kraju retka. Takva riječ počinje u jednom retku, a završava u sljedećem, a pri čemu prvi dio završava spojnicom (`-`), npr. `neigh-\nbours`. Takve riječi spajamo funkcijom `str_replace_all()` i regularnim izrazom `"(\\p{L})-\\n(\\p{L})"` koji se sastoji od sljedećih dijelova:
+
+- `(\\p{L})` - slovo ispred spojnice (zagrade ga spremaju kao prvu skupinu),
+
+- `-` - spojnica na kraju retka,
+
+- `\\n` - prijelom retka
+
+- `(\\p{L})` - prvo slovo nastavka riječi spremljeno kao druga skupina.
+
+Zamjena `"\\1\\2"` znači „vrati samo prvu i drugu skupinu”, odnosno oba slova bez spojnice i prijeloma između njih. Uzorak `\\p{L}` obuhvaća slova bilo kojeg pisma pa ispravno radi i sa slovima poput č, ć ili đ. Budući da zahtijevamo slovo neposredno ispred spojnice, izraz ne spaja retke koji završavaju spojnicom odvojenom razmakom (npr. `the Hopping Pot -`). Crticu (–) ionako ne obuhvaća jer je to drugi znak.
+
+```{r}
+# Spajanje riječi prelomljenih spojnicom na kraju retka
+text_no_hyphens <- str_replace_all(
+  string = text_raw,
+  pattern = "(\\p{L})-\\n(\\p{L})",
+  replacement = "\\1\\2"
+)
+```
+
+Iz samog teksta nije moguće razlikovati spojnicu koja je dodana samo zbog prijeloma retka od spojnice koja je dio polusloženice. Riječ `fairy-\ntale` ovim će se postupkom pretvoriti u `fairytale`, iako je možda izvorno bila `fairy-tale`. Kod većine analiza to nije velik problem, no dobro je znati da se događa.
+
+Cijeli je tekst sada jedan dugačak znakovni niz u kojem su izvorni prijelomi redaka označeni znakom `\n`.
+
+```{r}
+# Pregled prvih 600 znakova teksta
+str_sub(text_no_hyphens, start = 1, end = 600)
+```
+
+### Podjela teksta na odlomke
+
+Jedan dugačak znakovni niz teško je analizirati pa ga dijelimo na odlomke. Odlomci su u tekstu odvojeni praznim retkom, odnosno s dva ili više uzastopna znaka `\n`, dok jedan znak `\n` označava samo prijelom retka unutar odlomka. Postupak je sljedeći:
+
+1. Funkcijom `str_split()` tekst dijelimo na mjestima s dva ili više uzastopnih znakova `\n` (uzorak `"\n{2,}"`). Funkcija vraća listu s jednim elementom za svaki niz koji je dijelila, a kako dijelimo samo jedan niz, s `[[1]]` uzimamo prvi element liste i dobivamo znakovni vektor.
+
+2. Preostale znakove `\n`, koji označavaju prijelome redaka unutar odlomka, zamjenjujemo razmakom.
+
+3. Funkcijom `str_squish()` uklanjamo razmake na početku i kraju svakog odlomka te višestruke razmake unutar njega zamjenjujemo jednim.
+
+4. Izbacujemo prazne odlomke.
+
+```{r}
+# Podjela teksta na odlomke
+The_Tales_of_Beedle_the_Bard_clean <- str_split(text_no_hyphens, "\n{2,}")[[1]]
+
+# Zamjena prijeloma redaka unutar odlomka razmakom
+The_Tales_of_Beedle_the_Bard_clean <- str_replace_all(The_Tales_of_Beedle_the_Bard_clean, "\n", " ")
+
+# Uklanjanje suvišnih razmaka
+The_Tales_of_Beedle_the_Bard_clean <- str_squish(The_Tales_of_Beedle_the_Bard_clean)
+
+# Izbacivanje praznih odlomaka
+The_Tales_of_Beedle_the_Bard <- The_Tales_of_Beedle_the_Bard_clean[The_Tales_of_Beedle_the_Bard_clean != ""]
+```
+
+Nakon ovih koraka tekst je znakovni vektor u kojem je:
+
+- svaki element jedan odlomak,
+
+- tekst unutar odlomka u jednom retku bez oznaka `\n` i suvišnih razmaka,
+
+- riječi prelomljene na kraju retka ponovno spojene,
+
+- sačuvana podjela na odlomke iz izvorne knjige.
+
+```{r}
+# Pregled prvih devet odlomaka
+head(The_Tales_of_Beedle_the_Bard, 9)
+```
+
+## Podatkovni okvir i tibble
+
+Tekstualni podaci u R-u mogu biti organizirani u nekoliko različitih oblika, a svaki od njih ima svoje prednosti, ovisno o vrsti analize. Najčešće se koriste znakovni vektori, podatkovni okviri (i njihova inačica *tibble*), korpusi, matrice dokumenata i pojmova te tokenizirani objekti.
+
+Podatkovni okvir (engl. *data frame*) i njegova modernija inačica *tibble* tablični su oblici podataka. U njima svaki redak obično predstavlja jednu jedinicu analize (dokument, odlomak, rečenicu ili riječ), a stupci sadrže tekst i pripadajuće metapodatke, poput naslova poglavlja ili rednog broja odlomka. Takav oblik omogućuje korištenje alata iz skupa paketa `tidyverse`.
+
+Nakon učitavanja i čišćenja tekst je znakovni vektor u kojem je svaki element jedan odlomak. U podatkovni okvir pretvaramo ga funkcijom `tibble()`. Svaki argument te funkcije postaje jedan stupac: ime argumenta ime je stupca, a vrijednost argumenta njegov sadržaj. Ovdje stvaramo dva stupca:
+
+- `line` - redni broj odlomka u cijeloj knjizi (funkcija `seq_along()` stvara niz brojeva od 1 do broja elemenata vektora) i
+
+- `text` - sam tekst odlomka.
+
+```{r}
+# Stvaranje podatkovnog okvira od vektora odlomaka
+The_Tales_of_Beedle_the_Bard_df <- tibble(
+  line = seq_along(The_Tales_of_Beedle_the_Bard),
+  text = The_Tales_of_Beedle_the_Bard
+)
+
+# Pregled podatkovnog okvira
+The_Tales_of_Beedle_the_Bard_df
+```
+
+*Tibble* je modernija inačica podatkovnog okvira razvijena u sklopu skupa paketa `tidyverse`. Od klasičnog podatkovnog okvira (`data.frame()`) razlikuje se ponajprije u ponašanju:
+
+- pri ispisu prikazuje samo prvih nekoliko redaka i onoliko stupaca koliko stane na zaslon uz vrstu podataka u svakom stupcu (npr. `<int>` za cijele brojeve, `<chr>` za tekst),
+
+- nikad sam ne mijenja vrstu podataka ni imena stupaca te
+
+- upozorava kad se pozove stupac koji ne postoji, umjesto da tiho vrati `NULL`.
+
+Zbog toga se s njim lakše radi, osobito kod velikih tablica, a on je i uobičajen oblik za rad s paketom `tidytext`.
+
+Podatkovni okvir može osim samog teksta sadržavati i podatke o tome odakle koji odlomak dolazi: iz koje bajke ili dodatnog teksta te koji je po redu u tom poglavlju. Takvi podaci omogućuju da kasnije uspoređujemo bajke međusobno ili pratimo kako se nešto mijenja kroz pojedinu bajku. Na kraju ovog potpoglavlja podatkovni okvir imat će sljedeće stupce:
+
+- `line` - redni broj odlomka u cijeloj knjizi,
+
+- `section_type` - vrsta dijela knjige (`tales` za bajke i `additional_text` za dodatne tekstove poput uvoda i komentara),
+
+- `chapter_title` - naziv poglavlja (bajke ili dodatnog teksta),
+
+- `paragraph_no` - redni broj odlomka unutar poglavlja i
+
+- `text` - tekst odlomka.
+
+Prvi je korak zapisati naslove poglavlja. Knjiga se sastoji od pet bajki, ali i od dodatnih dijelova, odnosno uvoda, napomena o bilješkama, komentara Albusa Dumbledorea uz svaku bajku i poruke barunice Nicholson. Sve naslove spremamo u vektor `titles_all`, a naslove samih bajki još i u zaseban vektor `story_titles`.
+
+Naslovi moraju biti zapisani točno onako kako se pojavljuju u očišćenom tekstu. Budući da smo pri čišćenju zaobljene apostrofe i navodnike zamijenili ravnima, i u naslovima moramo koristiti ravne (`'` i `"`). Naslove koji sadrže dvostruke navodnike zato pišemo unutar jednostrukih navodnika.
+
+```{r}
+# Naslovi svih poglavlja
+titles_all <- c(
+  "THE TALES OF BEEDLE THE BARD",
+  "Introduction",
+  "A Note on the Footnotes",
+  "1 THE WIZARD AND THE HOPPING POT",
+  'Albus Dumbledore on "The Wizard and the Hopping Pot"',
+  "2 THE FOUNTAIN OF FAIR FORTUNE",
+  'Albus Dumbledore on "The Fountain of Fair Fortune"',
+  "3 THE WARLOCK'S HAIRY HEART",
+  'Albus Dumbledore on "The Warlock\'s Hairy Heart"',
+  "4 BABBITTY RABBITTY AND HER CACKLING STUMPS",
+  'Albus Dumbledore on "Babbitty Rabbitty and her Cackling Stump"',
+  "5 THE TALE OF THE THREE BROTHERS",
+  'Albus Dumbledore on "The Tale of the Three Brothers"',
+  "A Personal Message from Baroness Nicholson of Winterbourne MEP"
+)
+
+# Naslovi bajki
+story_titles <- c(
+  "1 THE WIZARD AND THE HOPPING POT",
+  "2 THE FOUNTAIN OF FAIR FORTUNE",
+  "3 THE WARLOCK'S HAIRY HEART",
+  "4 BABBITTY RABBITTY AND HER CACKLING STUMPS",
+  "5 THE TALE OF THE THREE BROTHERS"
+)
+```
+
+Prije nastavka dobro je provjeriti pojavljuje li se svaki naslov u tekstu kao zaseban odlomak. Funkcija `setdiff()` vraća elemente prvog vektora kojih nema u drugome. Ako su svi naslovi pronađeni, rezultat je prazan vektor (`character(0)`). Ako nisu, ispisuju se naslovi koje treba ispraviti, npr. zbog drugačijeg apostrofa, navodnika ili razmaka.
+
+```{r}
+# Naslovi koji se ne pojavljuju u tekstu
+setdiff(titles_all, The_Tales_of_Beedle_the_Bard_df$text)
+```
+
+Sada svakom odlomku pridružujemo naslov poglavlja kojem pripada. To radimo u tri koraka:
+
+1. Funkcijom `mutate()` stvaramo stupac `is_heading`. Operator `%in%` za svaki odlomak provjerava podudara li se njegov tekst točno s nekim od naslova iz vektora `titles_all`. Rezultat je `TRUE` za odlomke koji su naslovi, a `FALSE` za sve ostale.
+
+2. U istom pozivu funkcije `mutate()` stvaramo stupac `chapter_title`. Funkcija `if_else()` u njega upisuje tekst odlomka ako je odlomak naslov (`is_heading` je `TRUE`), a vrijednost `NA` ako nije. Nakon ovog koraka naziv poglavlja zapisan je samo u retcima s naslovima.
+
+3. Funkcija `fill()` iz paketa `tidyr` popunjava prazne (`NA`) vrijednosti u stupcu `chapter_title`. Uz argument `.direction = "down"` ide od vrha tablice prema dnu i svaku praznu vrijednost zamjenjuje posljednjim naslovom koji je vidjela. Tako svaki naslov „spušta” niz tablicu sve dok ne naiđe na sljedeći.
+
+```{r}
+The_Tales_of_Beedle_the_Bard_df <- The_Tales_of_Beedle_the_Bard_df |>
+  mutate(
+    # Je li odlomak jedan od naslova?
+    is_heading = text %in% titles_all,
+    # Ako je odlomak naslov, chapter_title je njegov tekst, a inače NA
+    chapter_title = if_else(is_heading, text, NA_character_)
+  ) |>
+  # Spuštanje posljednjeg viđenog naslova na sve sljedeće odlomke
+  fill(chapter_title, .direction = "down")
+```
+
+Zatim stvaramo stupac `section_type` koji razlikuje bajke od dodatnih tekstova. Funkcija `if_else()` za svaki odlomak provjerava nalazi li se njegov naziv poglavlja (`chapter_title`) u vektoru `story_titles`. Ako se nalazi, odlomak pripada bajci i dobiva vrijednost `tales`. Ako se ne nalazi, odlomak pripada nekom od dodatnih tekstova i dobiva vrijednost `additional_text`.
+
+```{r}
+The_Tales_of_Beedle_the_Bard_df <- The_Tales_of_Beedle_the_Bard_df |>
+  mutate(
+    section_type = if_else(
+      chapter_title %in% story_titles,
+      "tales",
+      "additional_text"
+    )
+  )
+```
+
+U posljednjem koraku podatkovni okvir uređujemo za daljnju analizu. Postupak ima četiri dijela:
+
+- **Uređivanje naziva poglavlja.** Nazivi u stupcu `chapter_title` zapisani su onako kako se pojavljuju u knjizi, odnosno s velikim slovima, razmacima, apostrofima i navodnicima. Takav je zapis čitljiv, ali nezgodan za rad u kodu (npr. pri filtriranju ili kao naziv datoteke). Zato ga pretvaramo u kratak tehnički oblik. Najprije funkcijom `str_to_lower()` sva slova pretvaramo u mala. Zatim uklanjamo apostrofe, kako bi *warlock's* postao *warlocks*, a ne *warlock s*. Nakon toga sve znakove koji nisu slova, znamenke ili razmaci (uzorak `"[^a-z0-9 ]"`) zamjenjujemo razmakom. Višestruke razmake koji pritom nastanu uklanjamo funkcijom `str_squish()`. Na kraju razmake zamjenjujemo podvlakama (`_`). Tako naslov `3 THE WARLOCK'S HAIRY HEART` postaje `3_the_warlocks_hairy_heart`.
+
+- **Uklanjanje naslova iz teksta.** Naslovi poglavlja nisu dio teksta koji želimo analizirati, a sada su sačuvani u stupcu `chapter_title`. Zato funkcijom `filter()` uklanjamo retke u kojima je stupac `is_heading` jednak `TRUE`. Operator `!` pritom obrće logičku vrijednost pa zadržavamo samo retke koji nisu naslovi.
+
+- **Redni broj odlomka unutar poglavlja.** Funkcijom `group_by()` podatke grupiramo prema poglavlju, a funkcija `row_number()` unutar svake grupe odlomke numerira od 1 nadalje. Tako dobivamo stupac `paragraph_no` koji nije redni broj odlomka u knjizi (to je stupac `line`), nego unutar poglavlja. Funkcijom `ungroup()` na kraju uklanjamo grupiranje, kako ne bi utjecalo na kasnije operacije.
+
+- **Odabir i redoslijed stupaca.** Funkcijom `select()` zadržavamo samo potrebne stupce redom kojim ih želimo imati. Pomoćni stupac `is_heading` pritom izostavljamo.
+
+```{r}
+# Uređivanje naziva poglavlja
+The_Tales_of_Beedle_the_Bard_df <- The_Tales_of_Beedle_the_Bard_df |>
+  mutate(
+    # Pretvaranje u mala slova
+    chapter_title = str_to_lower(chapter_title),
+    # Uklanjanje apostrofa (warlock's -> warlocks)
+    chapter_title = str_remove_all(chapter_title, "'"),
+    # Zamjena svih znakova osim slova, znamenaka i razmaka razmakom
+    chapter_title = str_replace_all(chapter_title, "[^a-z0-9 ]", " "),
+    # Uklanjanje suvišnih razmaka
+    chapter_title = str_squish(chapter_title),
+    # Zamjena razmaka podvlakama
+    chapter_title = str_replace_all(chapter_title, " ", "_")
+  )
+
+# Uklanjanje redaka koji su naslovi poglavlja
+The_Tales_of_Beedle_the_Bard_df <- The_Tales_of_Beedle_the_Bard_df |>
+  filter(!is_heading)
+
+# Redni broj odlomka unutar poglavlja
+The_Tales_of_Beedle_the_Bard_df <- The_Tales_of_Beedle_the_Bard_df |>
+  group_by(chapter_title) |>
+  mutate(paragraph_no = row_number()) |>
+  ungroup()
+
+# Odabir i redoslijed stupaca
+The_Tales_of_Beedle_the_Bard_df <- The_Tales_of_Beedle_the_Bard_df |>
+  select(line, section_type, chapter_title, paragraph_no, text)
+
+# Pregled podatkovnog okvira
+The_Tales_of_Beedle_the_Bard_df
+```
+
+Dobiveni podatkovni okvir ima jedan odlomak po retku, a uz svaki odlomak zapisano je iz kojeg je dijela knjige i poglavlja te koji je po redu. U tom je obliku spreman za tokenizaciju i daljnju analizu. Broj odlomaka po poglavlju dobro je provjeriti funkcijom `count()`. Ako neko poglavlje nedostaje ili ima neobično malo odlomaka, vjerojatno njegov naslov nije ispravno prepoznat.
+
+```{r}
+# Broj odlomaka po dijelu knjige i poglavlju
+The_Tales_of_Beedle_the_Bard_df |>
+  count(section_type, chapter_title)
+```
+
+U nastavku ćemo analizirati samo bajke, bez dodatnih tekstova. Zato funkcijom `filter()` zadržavamo samo odlomke iz bajki. Stupac `section_type` tada više nije potreban, pa ga uklanjamo funkcijom `select()` (znak `-` ispred imena stupca znači „svi stupci osim ovoga”). Stupac `chapter_title` funkcijom `rename()` preimenujemo u `fairy_tale` jer sada sadrži samo nazive bajki. Novom podatkovnom okviru dajemo i kraće ime, `tToBtB_df`.
+
+```{r}
+# Podatkovni okvir samo s bajkama
+tToBtB_df <- The_Tales_of_Beedle_the_Bard_df |>
+  filter(section_type == "tales") |>
+  select(-section_type) |>
+  rename(fairy_tale = chapter_title)
+
+# Pregled podatkovnog okvira
+tToBtB_df
+```
+
+```{r}
+#| include: false
+# Spremanje podatkovnog okvira s cijelom knjigom
+saveRDS(
+  The_Tales_of_Beedle_the_Bard_df,
+  file = "data_pictures_and_graphs/The_Tales_of_Beedle_the_Bard_df.rds"
+)
+
+# Spremanje podatkovnog okvira s bajkama
+saveRDS(
+  tToBtB_df,
+  file = "data_pictures_and_graphs/tToBtB_df.rds"
+)
 ```

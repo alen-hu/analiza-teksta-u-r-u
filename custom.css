@@ -44,3 +44,15 @@ div.quarto-title-breadcrumbs .breadcrumb-item.active {
   color: #ffeef5 !important;
   font-weight: 600;
 }
+
+/* Rub: vaša originalna boja */
+.callout.callout-note {
+  border-color: #8B475D !important;
+  border-left-color: #8B475D !important;
+}
+
+/* Zaglavlje: svijetla nijansa iste boje, tamni tekst */
+.callout.callout-note > .callout-header {
+  background-color: #E8DADF !important;
+  color: #683546 !important;
+}
