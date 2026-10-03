@@ -16,9 +16,9 @@ library(stringdist)
 
 **Tekstualni niz** (engl. *string*) je slijed znakova koji služi za pohranu tekstualnih podataka i rad s njima. Takav niz može sadržavati slova, brojke, razmake, interpunkciju i druge znakove. U R-u se tekstualni nizovi pohranjuju kao podaci tipa `character`, a zapisuju se unutar dvostrukih ili jednostrukih navodnika.
 
-Iako osnovni R sadrži vlastite funkcije za rad s tekstom (npr. `paste()`, `grepl()` ili `gsub()`), u praksi se najčešće koristi paket `stringr` koji je dio `tidyverse` skupa paketa. `stringr` je izgrađen na paketu `stringi` koji nudi opsežan skup alata za gotovo sve što bismo ikada mogli raditi s nizovima. Za razliku od njega, `stringr` obuhvaća samo najbitnije i najčešće operacije potrebne u radu s tekstom, a zbog čega je jednostavniji i intuitivniji za korištenje. Prednost `stringr`-a je dosljedna sintaksa, odnosno to da sve njegove funkcije počinju prefiksom `str_` (npr. `str_detect()`, `str_replace()`, `str_length()`), a tekstualni niz uvijek je prvi argument što olakšava njihovo povezivanje operatorom `|>`. Paket podržava i regularne izraze za pretraživanje i obradu teksta.
+Iako osnovni R sadrži vlastite funkcije za rad s tekstom (npr. `paste()`, `grepl()` ili `gsub()`), u praksi se najčešće koristi paket `stringr` koji je dio `tidyverse` skupa paketa. `stringr` je izgrađen na paketu `stringi` koji nudi opsežan skup alata za gotovo sve što bismo ikada mogli raditi s nizovima. Za razliku od njega, `stringr` obuhvaća samo najbitnije i najčešće operacije potrebne u radu s tekstom, a zbog čega je jednostavniji i intuitivniji za korištenje. Prednost `stringr`-a je dosljedna sintaksa, odnosno to da sve njegove funkcije počinju prefiksom `str_` (npr. `str_detect()`, `str_replace()`, `str_length()`), a tekstualni niz uvijek je prvi argument što olakšava njihovo povezivanje operatorom `|>`.
 
-U R-u se tekstualni nizovi stvaraju tako da se tekst stavi unutar dvostrukih (`"..."`) ili jednostrukih (`'...'`) navodnika. Dobiveni niz najčešće se operatorom `<-` pridružuje nekoj varijabli kako bismo ga poslije mogli koristiti. Obje vrste navodnika funkcioniraju jednako, no preporučuje se koristiti dvostruke navodnike, dok su jednostruki navodnici korisni kada sam tekst sadrži dvostruke navodnike.
+U R-u se tekstualni nizovi stvaraju tako da se tekst stavi unutar dvostrukih (`"..."`) ili jednostrukih (`'...'`) navodnika. Dobiveni niz najčešće se operatorom `<-` pridružuje nekoj varijabli kako bismo ga poslije mogli koristiti. Obje vrste navodnika funkcioniraju jednako, no preporučuje se korištenje dvostrukih navodnika, dok su jednostruki navodnici korisni kada sam tekst sadrži dvostruke navodnike.
 
 Definirajmo za početak jednu rečenicu kao tekstualni niz:
 
@@ -30,7 +30,7 @@ sentence_one <- "To Miss Hermione Jean Granger, I leave my copy of The Tales of 
 sentence_one
 ```
 
-Ipak, ako sam tekst sadrži dvostruke navodnike, R će navodnik iz teksta protumačiti kao početak ili kraj niza, a ne kao dio teksta. Taj se problem može izbjeći tako da se niz omeđi jednostrukim navodnicima, pa se dvostruki navodnici unutar njega čitaju kao obični znakovi.
+Ipak, ako sam tekst sadrži dvostruke navodnike, R će navodnik iz teksta protumačiti kao početak ili kraj niza, a ne kao dio teksta. Taj se problem može izbjeći tako da se niz omeđi jednostrukim navodnicima, a čime se dvostruki navodnici unutar njega čitaju kao obični znakovi.
 
 ```{r}
 # Definiranje rečenice s navodnicima kao tekstualni niz
@@ -40,9 +40,9 @@ sentence_two <- '"And as for this book" said Hermione, "The Tales of Beedle the 
 sentence_two
 ```
 
-Vidljivo je pritom da R nizove ispisuje na različite načine. U slučaju vektora `sentence_one` R ispisuje niz samo s dvostrukim navodnicima koji simboliziraju početak i kraj niza. U slučaju korištenja jednostrukih navodnika za označavanje početka i kraja niza, kao kod varijable `sentence_two`, R i dalje ispisuje niz s dvostrukim navodnicima koji označavaju početak i kraj niza, a tekst koji je originalno označen navodnicima ispisan je znakom `\` ispred navodnika koji je dio teksta.
+Vidljivo je pritom da R nizove ispisuje na različite načine. U slučaju vektora `sentence_one` R ispisuje niz samo s dvostrukim navodnicima koji simboliziraju početak i kraj niza. U slučaju korištenja jednostrukih navodnika R i dalje ispisuje niz s dvostrukim navodnicima koji označavaju početak i kraj niza, a tekst koji je originalno označen navodnicima ispisan je znakom `\` ispred navodnika koji je dio teksta.
 
-Isto tako, ako želimo tekst koji sadrži oba oblika navodnika, i jednostruke i dvostruke, pretvoriti u niz, dvostruke navodnike iz teksta moramo pretvoriti u `\"` kako oni ne bi bili prepoznati kao početak i kraj niza.
+Isto tako, ako želimo tekst koji sadrži oba oblika navodnika pretvoriti u niz, dvostruke navodnike iz teksta moramo pretvoriti u `\"` kako oni ne bi bili prepoznati kao početak i kraj niza.
 
 ```{r}
 # Definiranje četvrtog paragrafa kao tekstualni niz
@@ -91,7 +91,6 @@ writeLines(hp_paragraph)
 
 # Ispis nizova s drugim separatorom
 writeLines(hp_sentences, sep = " @@@@@ ")
-writeLines(hp_paragraph, sep = " @@@@@ ")
 ```
 
 Prednost funkcije `writeLines()` je u tome da ispisuje tekst u originalnom obliku bez navodnika koji su dodani u prvotnom načinu formiranja tekstualnih nizova.
@@ -106,18 +105,18 @@ Slijed u nizu koji počinje obrnutom kosom crtom (`\`) naziva se **escape sekven
 
 3. Unicode znakova (npr. simbola, slova iz različitih pisama, matematičkih oznaka i emojija).
 
-| Escape sekvenca | Značenje                         | Primjer                                      |
-|-----------------|----------------------------------|----------------------------------------------|
+| Escape sekvenca | Značenje                         | Primjer                                       |
+|-----------------|----------------------------------|-----------------------------------------------|
 | `\n`            | novi redak                       | `"Hello\nWorld"` ⟶ Hello *(novi redak)* World |
-| `\t`            | tabulator                        | `"Hello\tWorld"` ⟶ Hello *(tabulator)* World |
-| `\"`            | dvostruki navodnik unutar niza   | `"He said \"Hello\""` ⟶ He said "Hello"     |
+| `\t`            | tabulator                        | `"Hello\tWorld"` ⟶ Hello *(tabulator)* World  |
+| `\"`            | dvostruki navodnik               | `"He said \"Hello\""` ⟶ He said "Hello"       |
 | `\\`            | obrnuta kosa crta                | `"C:\\Users\\Documents"` ⟶ C:\Users\Documents |
-| `\uxxxx`        | Unicode znak (do 4 heksadecimalne znamenke) | `"\u03B1"` ⟶ α (grčko slovo alfa) |
-| `\Uxxxxxxxx`    | Unicode znak (do 8 heksadecimalnih znamenki) | `"\U1F30D"` ⟶ 🌍 (emoji globusa) |
+| `\uxxxx`        | Unicode znak (do 4 znamenke)     | `"\u03B1"` ⟶ α (grčko slovo alfa)             |
+| `\Uxxxxxxxx`    | Unicode znak (do 8 znamenki)     | `"\U1F30D"` ⟶ 🌍 (emoji globusa)              |
 
 R escape sekvence pretvara u odgovarajuće znakove već pri stvaranju niza, no pri običnom ispisu niza prikazuje ih u izvornom obliku (npr. `\n`). Da bismo vidjeli kako tekst zaista izgleda, koristimo funkciju `writeLines()` ili `cat()`.
 
-Unicode je standard koji svakom znaku iz gotovo svih svjetskih pisama, kao i brojnim simbolima i emojijima, dodjeljuje jedinstveni kod. U R-u se Unicode znak zapisuje s `\u` iza kojeg slijede do 4 heksadecimalne znamenke ili s `\U` iza kojeg slijedi do 8 heksadecimalnih znamenki. Ako iza koda u nizu slijedi slovo ili broj koji bi se mogao pročitati kao dio kôda, kod treba staviti u vitičaste zagrade (npr. `\U{1F30D}`). U popisima Unicode znakova kodovi se često navode u obliku `U+1F30D` koji R ne prepoznaje pa oznaku `U+` treba zamijeniti s `\U`. Popisi Unicode znakova mogu se pronaći na stranicama [Unicode Emoji List](https://unicode.org/emoji/charts/full-emoji-list.html) i [Unicode Table](https://unicode-table.com/).
+Unicode je standard koji svakom znaku i brojnim simbolima i emojijima dodjeljuje jedinstveni kod. U R-u se Unicode znak zapisuje s `\u` iza kojeg slijede do 4 heksadecimalne znamenke ili s `\U` iza kojeg slijedi do 8 heksadecimalnih znamenki. Ako iza koda u nizu slijedi slovo ili broj koji bi se mogao pročitati kao dio koda, kod treba staviti u vitičaste zagrade (npr. `\U{1F30D}`). U popisima Unicode znakova kodovi se često navode u obliku `U+1F30D` koji R ne prepoznaje pa oznaku `U+` treba zamijeniti s `\U`. Popisi Unicode znakova mogu se pronaći na stranicama [Unicode Emoji List](https://unicode.org/emoji/charts/full-emoji-list.html) i [Unicode Table](https://unicode-table.com/).
 
 ```{r}
 # Ispis niza s Unicode znakom
@@ -136,7 +135,7 @@ number <- 13.652378540037642375
 number
 ```
 
-U R-u postoji nekoliko funkcija za pretvaranje i formatiranje numeričkih vrijednosti u tekstualne nizove. Prva je `as.character()` koja broj pretvara u niz bez mogućnosti formatiranja. Broj se pritom zapisuje s najviše 15 značajnih znamenki pa se vrijednosti s više znamenki ipak zaokružuju. Druga je `format()` kojom argumentom `digits` određujemo broj značajnih znamenki, a ne broj decimalnih mjesta. Treća je `formatC()` koja daje najveću kontrolu nad zapisom jer uz odgovarajući format ispisuje točno zadani broj decimalnih mjesta.
+U R-u postoji nekoliko funkcija za pretvaranje i formatiranje numeričkih vrijednosti u tekstualne nizove. Prva je `as.character()` koja broj pretvara u niz bez mogućnosti formatiranja. Broj se pritom zapisuje s najviše 15 značajnih znamenki pa se vrijednosti s više znamenki ipak zaokružuju. Druga je `format()` kojom argumentom `digits` određujemo broj znamenki. Treća je `formatC()` koja daje najveću kontrolu nad zapisom jer uz odgovarajući format ispisuje točno zadani broj decimalnih mjesta.
 
 ```{r}
 # Pretvaranje broja u niz
@@ -149,7 +148,7 @@ format(number, digits = 3)
 formatC(number, digits = 5)
 ```
 
-Funkcije `format()` i `formatC()` mogu broj zapisati u fiksnom ili znanstvenom formatu. U fiksnom formatu broj se zapisuje uobičajeno, s određenim brojem znamenki iza decimalne točke (npr. `13.65238`). U znanstvenom formatu broj se zapisuje kao umnožak broja s jednom znamenkom ispred decimalne točke i potencije broja 10. Pritom se znak množenja izostavlja, a slovo *e* znači „puta deset na potenciju” (npr. `1.365238e+01` znači 1,365238 × 10¹). U funkciji `format()` format se određuje argumentom `scientific` kojemu se zadaje vrijednost `TRUE` ili `FALSE`. U funkciji `formatC()` koristi se argument `format`, kojemu se zadaje `"f"` za fiksni format, `"e"` za znanstveni format ili `"g"`, pri čemu R sam bira kraći od ta dva zapisa. Kod `"f"` i `"e"` argument `digits` označava broj decimalnih mjesta, a kod `"g"` broj značajnih znamenki.
+Funkcije `format()` i `formatC()` mogu broj zapisati u fiksnom ili znanstvenom formatu. U fiksnom formatu broj se zapisuje uobičajeno, s određenim brojem znamenki iza decimalne točke (npr. `13.65238`). U znanstvenom formatu broj se zapisuje kao umnožak broja s jednom znamenkom ispred decimalne točke i potencije broja 10. Pritom se znak množenja izostavlja, a slovo *e* znači „puta deset na potenciju” (npr. `1.365238e+01` znači 1,365238 × 10¹). U funkciji `format()` format se određuje argumentom `scientific` kojemu se zadaje vrijednost `TRUE` ili `FALSE`. U funkciji `formatC()` koristi se argument `format` kojemu se zadaje `"f"` za fiksni format, `"e"` za znanstveni format ili `"g"`, a pri čemu R sam bira kraći od ta dva zapisa. Kod `"f"` i `"e"` argument `digits` označava broj decimalnih mjesta, a kod `"g"` broj znamenki.
 
 ```{r}
 # Znanstveni i fiksni format funkcijom format()
@@ -177,13 +176,10 @@ Ovdje je dobro istaknuti da je razmak u R-u znak kao i svaki drugi i da se ne do
 
 ```{r}
 # Spajanje nizova u jedan niz s razmakom kao separatorom
-str_c(
-  first_part, second_part, third_part, fourth_part,
-  sep = " "
-)
+str_c(first_part, second_part, third_part, fourth_part, sep = " ")
 ```
 
-Sljedeća je funkcija `str_length()` koja vraća broj znakova u svakom nizu vektora, uključujući razmake i interpunkciju. Vrlo je slična osnovnoj funkciji `nchar()`, ali za razliku od nje radi i s faktorima, dok `nchar()` u tom slučaju javlja pogrešku.
+Sljedeća je funkcija `str_length()` koja vraća broj znakova u svakom nizu vektora, uključujući razmake i interpunkciju. Vrlo je slična osnovnoj funkciji `nchar()`, ali za razliku od nje radi i s faktorima.
 
 ```{r}
 # Broj znakova u svakom nizu
@@ -216,7 +212,7 @@ str_count(hp_sentences, pattern = fixed("Voldemort"))
 
 ### Odvajanje nizova
 
-Sljedeća funkcija paketa `stringr`, `str_split()`, dijeli niz na dijelove prema zadanom uzorku. Uzorak se zadaje argumentom `pattern` i može biti znak, riječ ili bilo koji drugi niz znakova na mjestu kojeg funkcija dijeli niz.
+Sljedeća funkcija, `str_split()`, dijeli niz na dijelove prema zadanom uzorku. Uzorak se zadaje argumentom `pattern` i može biti znak, riječ ili bilo koji drugi niz znakova na mjestu kojeg funkcija dijeli niz.
 
 Recimo da imamo sljedeći niz:
 
@@ -228,7 +224,7 @@ hp_text <- "Outside in the garden, over the dinner tables, the three objects Scr
 hp_text
 ```
 
-Iz ispisa je vidljivo da je riječ o odlomku od nekoliko rečenica unutar kojih su pojedini dijelovi odijeljeni zarezima. Rečenice završavaju točkom iza koje slijedi razmak, a zarezima također slijedi razmak. Funkcijom `str_split()` niz možemo podijeliti prema bilo kojem od tih separatora. Budući da točka u regularnim izrazima ima posebno značenje (označava bilo koji znak), uzorak s točkom zadajemo unutar funkcije `fixed()`.
+Iz ispisa je vidljivo da je riječ o odlomku od nekoliko rečenica unutar kojih su pojedini dijelovi odijeljeni zarezima. Rečenice završavaju točkom iza koje slijedi razmak, a zarezima također slijedi razmak. Funkcijom `str_split()` niz možemo podijeliti prema bilo kojem od tih separatora. Budući da točka u regularnim izrazima ima posebno značenje, uzorak s točkom zadajemo unutar funkcije `fixed()`.
 
 ```{r}
 # Podjela niza prema uzorku ". "
@@ -244,7 +240,7 @@ str_split(
 )
 ```
 
-Niz je moguće podijeliti i prema više uzoraka odjednom. Uzorci se tada odvajaju znakom `|`, koji u regularnim izrazima znači *ili*. Budući da funkcija `fixed()` ne podržava taj znak, uzorak zadajemo kao regularni izraz, a posebno značenje točke uklanjamo tako da ispred nje stavimo dvije obrnute kose crte (`\\.`).
+Niz je moguće podijeliti i prema više uzoraka odjednom. Uzorci se tada odvajaju znakom `|` koji znači *ili*. Budući da funkcija `fixed()` ne podržava taj znak, uzorak zadajemo kao regularni izraz, a posebno značenje točke uklanjamo tako da ispred nje stavimo dvije obrnute kose crte (`\\.`).
 
 ```{r}
 # Podjela niza prema više uzoraka
@@ -254,7 +250,7 @@ str_split(
 )
 ```
 
-U svakom od ovih slučajeva funkcija je niz podijelila na više manjih nizova. Sa separatorom `". "` dobili smo šest nizova. Pritom se vidi da podjela prema točki nije isto što i podjela na rečenice jer je funkcija niz podijelila i iza kratica *Mr.* i *Mrs.* pa su one završile u zasebnim dijelovima odvojene od prezimena *Weasley*. Sa separatorom `", "` dobili smo 9 nizova, a kad smo uključili oba separatora, čak 14.
+U svakom od ovih slučajeva funkcija je niz podijelila na više manjih nizova. Sa separatorom `". "` dobili smo šest nizova. Pritom se vidi da podjela prema točki nije isto što i podjela na rečenice jer je funkcija niz podijelila i iza kratica *Mr.* i *Mrs.* pa su one završile u zasebnim dijelovima odvojene od prezimena *Weasley*. Sa separatorom `", "` dobili smo 9 nizova, a kad smo uključili oba separatora čak 14.
 
 Broj dijelova možemo ograničiti argumentom `n`. Ako zadamo `n = 2`, niz će se podijeliti na dva dijela pri prvom pojavljivanju uzorka, a ostatak niza ostat će netaknut u drugom dijelu. U našem primjeru prvi dio bit će prva rečenica, a drugi ostatak odlomka.
 
@@ -282,7 +278,7 @@ Za obradu rezultata u obliku liste koriste se funkcije `lapply()` i `sapply()`. 
 
 ### Zamjena dijelova niza
 
-Sljedeće su važne funkcije `str_replace()` i `str_replace_all()` koje dijelove niza koji odgovaraju zadanom uzorku zamjenjuju drugim nizom. Razlika je u tome što `str_replace()` zamjenjuje samo prvo pojavljivanje uzorka, a `str_replace_all()` svako pojavljivanje. Dva su najvažnija argumenta tih funkcija `pattern`, koji određuje uzorak koji želimo zamijeniti, i `replacement`, koji određuje niz kojim ga zamjenjujemo.
+Sljedeće su važne funkcije `str_replace()` i `str_replace_all()` koje dijelove niza koji odgovaraju zadanom uzorku zamjenjuju drugim nizom. Razlika je u tome što `str_replace()` zamjenjuje samo prvo pojavljivanje uzorka, a `str_replace_all()` svako pojavljivanje. Dva su najvažnija argumenta tih funkcija, `pattern`, koji određuje uzorak koji želimo zamijeniti, i `replacement`, koji određuje niz kojim ga zamjenjujemo.
 
 ```{r}
 # Zamjena prvog pojavljivanja uzorka
@@ -302,9 +298,9 @@ str_replace_all(
 
 ### Stvaranje nizova s podacima
 
-Još je jedna važna operacija u radu s tekstualnim nizovima stvaranje novih nizova od podataka u R-u. Jedna od funkcija za to je `paste()` iz osnovnog R-a koja spaja dva ili više niza. Ipak, za složenija spajanja praktičnije je koristiti funkciju `glue()` iz paketa `glue`. Taj se paket instalira zajedno s `tidyverse`-om, ali se ne učitava automatski naredbom `library(tidyverse)` pa ga treba zasebno učitati naredbom `library(glue)`.
+Još je jedna važna operacija u radu s tekstualnim nizovima stvaranje novih nizova od podataka u R-u. Jedna od funkcija za to je `paste()` iz osnovnog R-a koja spaja dva ili više niza. Ipak, za složenija spajanja praktičnije je koristiti funkciju `glue()` iz paketa `glue`. Taj se paket instalira zajedno s `tidyverse`-om, ali se ne učitava automatski naredbom `library(tidyverse)` pa ga treba zasebno učitati.
 
-Funkcija `glue()` praktičnija je jer se njome lakše stvaraju nizovi kada treba spojiti mnogo varijabli i teksta. Niz se zapisuje unutar navodnika, a sve što stavimo unutar vitičastih zagrada (`{}`) funkcija tumači kao R kod, izvršava ga i rezultat umeće u niz. Unutar vitičastih zagrada možemo, dakle, navesti gotovo sve što se može pretvoriti u niz, varijablu, niz ili izraz, primjerice računsku operaciju, čiji će se rezultat izračunati i pretvoriti u niz.
+Funkcija `glue()` je praktičnija jer se njome lakše stvaraju nizovi kada treba spojiti mnogo varijabli i teksta. Niz se zapisuje unutar navodnika, a sve što stavimo unutar vitičastih zagrada (`{}`) funkcija tumači kao R kod, izvršava ga i rezultat umeće u niz. Unutar vitičastih zagrada možemo, dakle, navesti gotovo sve što se može pretvoriti u niz, varijablu, niz ili izraz, primjerice računsku operaciju čiji će se rezultat izračunati i pretvoriti u niz.
 
 ```{r}
 # Stvaranje niza od varijabli i izraza

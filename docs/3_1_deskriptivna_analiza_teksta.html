@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Tokenizacijom teksta, uklanjanjem zaustavnih riječi i lematizacijom ispunjene su temeljne pretpostavke za analizu teksta, koja se sada može provesti na dobivenom podatkovnom okviru. Sljedeći korak je jednostavna deskriptivna analiza teksta. Riječ je o najjednostavnijem obliku analize teksta, koji se svodi na brojanje riječi, izračun njihove relativne učestalosti i korelaciju učestalosti riječi među različitim tekstovima. Iako su informacije koje takva analiza daje razmjerno jednostavne, ona je važan početni korak u upoznavanju s tekstom i radu s njim.">
 
 <title>8&nbsp; Deskriptivna analiza teksta – Analiza teksta u R-u</title>
 <style>
@@ -22,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -73,6 +109,23 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
 
 
 <link rel="stylesheet" href="custom.css">
@@ -81,7 +134,7 @@ ul.task-list li input[type="checkbox"] {
 <body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -97,7 +150,28 @@ ul.task-list li input[type="checkbox"] {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_0_POČETAK U RADU S TEKSTOM.html">DESKRIPCIJSKA ANALIZA TEKSTA</a></li><li class="breadcrumb-item"><a href="./3_1_deskriptivna_analiza_teksta.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></h1>
+                  <div>
+        <div class="description">
+          Tokenizacijom teksta, uklanjanjem zaustavnih riječi i lematizacijom ispunjene su temeljne pretpostavke za analizu teksta, koja se sada može provesti na dobivenom podatkovnom okviru. Sljedeći korak je jednostavna deskriptivna analiza teksta. Riječ je o najjednostavnijem obliku analize teksta, koji se svodi na brojanje riječi, izračun njihove relativne učestalosti i korelaciju učestalosti riječi među različitim tekstovima. Iako su informacije koje takva analiza daje razmjerno jednostavne, ona je važan početni korak u upoznavanju s tekstom i radu s njim.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -277,33 +351,358 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#brojanje-riječi" id="toc-brojanje-riječi" class="nav-link active" data-scroll-target="#brojanje-riječi"><span class="header-section-number">8.1</span> Brojanje riječi</a></li>
+  <li><a href="#relativna-učestalost-riječi" id="toc-relativna-učestalost-riječi" class="nav-link" data-scroll-target="#relativna-učestalost-riječi"><span class="header-section-number">8.2</span> Relativna učestalost riječi</a>
+  <ul class="collapse">
+  <li><a href="#korelacija-relativnih-učestalosti" id="toc-korelacija-relativnih-učestalosti" class="nav-link" data-scroll-target="#korelacija-relativnih-učestalosti"><span class="header-section-number">8.2.1</span> Korelacija relativnih učestalosti</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_0_POČETAK U RADU S TEKSTOM.html">DESKRIPCIJSKA ANALIZA TEKSTA</a></li><li class="breadcrumb-item"><a href="./3_1_deskriptivna_analiza_teksta.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></h1>
+
+
+
+
+<section id="brojanje-riječi" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="brojanje-riječi"><span class="header-section-number">8.1</span> Brojanje riječi</h2>
+<p>Najjednostavnija analiza teksta je brojanje koliko se puta pojedina riječ pojavljuje u tekstu. Takva se analiza provodi na tokenima, odnosno na riječima ili drugim jedinicama na koje je tekst podijeljen.</p>
+<p>Pritom možemo brojati riječi u obliku u kojem se pojavljuju u tekstu ili njihove lematizirane oblike, odnosno rječničke oblike. Riječi u izvornom obliku bolje je brojati kad nas zanima kako je tekst napisan jer one čuvaju gramatičke oblike poput broja (jednina ili množina) ili glagolskog vremena. Tada su, primjerice, <em>brother</em> i <em>brothers</em> dvije različite riječi pa možemo vidjeti govori li tekst češće o jednom bratu ili o braći. Lematizirane je oblike bolje brojati kad nas zanima o čemu tekst govori jer se tada svi oblici iste riječi broje zajedno, odnosno, <em>brother</em> i <em>brothers</em> ubrajaju se u istu riječ, <em>brother</em>.</p>
+<p>Brojanje se provodi funkcijom <code>count()</code> iz paketa <code>dplyr</code>. Argument <code>sort = TRUE</code> slaže rezultat od najčešće prema najrjeđoj riječi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Brojanje riječi u izvornom obliku</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,247 × 2
+   word          n
+   &lt;chr&gt;     &lt;int&gt;
+ 1 king         33
+ 2 charlatan    27
+ 3 pot          23
+ 4 wizard       22
+ 5 death        20
+ 6 wand         20
+ 7 witch        20
+ 8 babbitty     17
+ 9 heart        17
+10 magic        17
+# ℹ 1,237 more rows</code></pre>
 </div>
+</div>
+<p>Ispis prikazuje sve riječi koje se pojavljuju u bajkama, ukupno njih 1247 različitih, i koliko se puta svaka od njih pojavljuje. Najčešća je riječ <em>king</em> (33 pojavljivanja), a slijede <em>charlatan</em> (27), <em>pot</em> (23) i <em>wizard</em> (22). Riječi <em>death</em>, <em>wand</em> i <em>witch</em> pojavljuju se jednako često, po 20 puta. Već i ovakav jednostavan popis dobro odražava sadržaj knjige. Među najčešćim riječima nalaze se likovi i predmeti oko kojih se vrte pojedine bajke, poput lonca (<em>pot</em>) iz bajke <em>The Wizard and the Hopping Pot</em> ili imena <em>Babbitty</em> (17) iz bajke <em>Babbitty Rabbitty and Her Cackling Stumps</em>, te riječi poput <em>magic</em>, <em>wizard</em> i <em>witch</em>, koje upućuju na čarobni svijet u kojem se bajke odvijaju.</p>
+<p>Ako brojimo lematizirane oblike, rezultat se mijenja.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Brojanje lematiziranih riječi</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,076 × 2
+   lemma         n
+   &lt;chr&gt;     &lt;int&gt;
+ 1 king         33
+ 2 witch        32
+ 3 charlatan    27
+ 4 wand         25
+ 5 wizard       24
+ 6 pot          23
+ 7 brother      22
+ 8 death        20
+ 9 heart        18
+10 babbitty     17
+# ℹ 1,066 more rows</code></pre>
+</div>
+</div>
+<p>Brojanjem lema broj različitih riječi smanjio se s 1247 na 1076 jer su se različiti oblici iste riječi spojili u jednu lematiziranu. Promijenio se i redoslijed najčešćih riječi. Najviše se ističe riječ <em>witch</em> koja se kao lema pojavljuje 32 puta, dok se u izvornom obliku pojavljivala 20 puta. Slično tome, lema <em>brother</em> pojavljuje se 22 puta i nalazi se među deset najčešćih, iako riječ <em>brother</em> u izvornom obliku među njima nije bila. To znači da se znatan dio pojavljivanja tih riječi odnosi na njihove druge oblike, najčešće na množinu. Koji su to oblici, možemo provjeriti tako da funkcijom <code>filter()</code> iz paketa <code>dplyr</code> zadržimo samo retke s određenom lematiziranom riječju i zatim prebrojimo riječi u izvornom obliku.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Oblici u kojima se pojavljuje lematizirana riječ "brother"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(lemma <span class="sc">==</span> <span class="st">"brother"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  word         n
+  &lt;chr&gt;    &lt;int&gt;
+1 brother     15
+2 brothers     7</code></pre>
+</div>
+</div>
+<p>Ovakvi su ispisi korisni za rad, ali nisu pregledni za predstavljanje rezultata. Zato je rezultate bolje prikazati grafički, paketom <code>ggplot2</code>. Funkcija <code>slice_max()</code> zadržava deset najčešćih riječi, a <code>fct_reorder()</code> slaže riječi na osi y prema broju pojavljivanja, kako bi najčešća riječ bila na vrhu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz deset najčešćih lematiziranih riječi</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> <span class="fu">fct_reorder</span>(lemma, n))) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Broj pojavljivanja u bajkama"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Lematizirana riječ"</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_1_deskriptivna_analiza_teksta_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Uzmimo sada širi primjer svih bajki braće Bardea Bedlea. Brojanje riječi tako možemo provesti i za svaku bajku zasebno. Za to funkciji <code>count()</code> uz lematiziranu riječ navodimo i stupac <code>fairy_tale</code> pa se riječi broje unutar svake bajke.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Brojanje lema po bajkama</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,421 × 3
+   fairy_tale                                  lemma         n
+   &lt;chr&gt;                                       &lt;chr&gt;     &lt;int&gt;
+ 1 4_babbitty_rabbitty_and_her_cackling_stumps king         33
+ 2 4_babbitty_rabbitty_and_her_cackling_stumps charlatan    27
+ 3 1_the_wizard_and_the_hopping_pot            pot          23
+ 4 5_the_tale_of_the_three_brothers            brother      22
+ 5 4_babbitty_rabbitty_and_her_cackling_stumps witch        19
+ 6 5_the_tale_of_the_three_brothers            death        18
+ 7 4_babbitty_rabbitty_and_her_cackling_stumps babbitty     17
+ 8 2_the_fountain_of_fair_fortune              fountain     16
+ 9 1_the_wizard_and_the_hopping_pot            wizard       15
+10 3_the_warlocks_hairy_heart                  heart        14
+# ℹ 1,411 more rows</code></pre>
+</div>
+</div>
+<p>Najčešće riječi u svakoj bajci najpreglednije je prikazati u zasebnim grafovima, funkcijom <code>facet_wrap()</code>. Budući da je redoslijed riječi u svakoj bajci drugačiji, za slaganje riječi unutar svakog grafa koriste se funkcije <code>reorder_within()</code> i <code>scale_y_reordered()</code> iz paketa <code>tidytext</code>. Funkcija <code>slice_max()</code> pritom zadržava osam najčešćih riječi u svakoj bajci. Ako više riječi ima jednak broj pojavljivanja, prikazuju se sve pa neki grafovi mogu imati više od osam riječi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz najčešćih lema po bajkama</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale) <span class="sc">|&gt;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">8</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> <span class="fu">reorder_within</span>(lemma, n, fairy_tale), <span class="at">fill =</span> fairy_tale)) <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>fairy_tale, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Broj pojavljivanja"</span>,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Lematizirana riječ"</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Najčešće riječi u svakoj bajci"</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_1_deskriptivna_analiza_teksta_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Konačno, može nas zanimati i neka određena riječ, primjerice <em>wand</em>, te u kojim se bajkama i koliko često pojavljuje.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učestalost riječi "wand" po bajkama</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, lemma) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(lemma <span class="sc">==</span> <span class="st">"wand"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  fairy_tale                                  lemma     n
+  &lt;chr&gt;                                       &lt;chr&gt; &lt;int&gt;
+1 1_the_wizard_and_the_hopping_pot            wand      1
+2 2_the_fountain_of_fair_fortune              wand      3
+3 3_the_warlocks_hairy_heart                  wand      3
+4 4_babbitty_rabbitty_and_her_cackling_stumps wand     10
+5 5_the_tale_of_the_three_brothers            wand      8</code></pre>
+</div>
+</div>
+<p>Lema <em>wand</em> pojavljuje se u svih pet bajki, ukupno 25 puta, ali vrlo neravnomjerno. Najčešća je u bajci <em>Babbitty Rabbitty and Her Cackling Stumps</em> (10 pojavljivanja) i u bajci <em>The Tale of the Three Brothers</em> (8), dok se u bajkama <em>The Fountain of Fair Fortune</em> i <em>The Warlock’s Hairy Heart</em> pojavljuje po tri puta, a u bajci <em>The Wizard and the Hopping Pot</em> samo jednom. Pritom treba imati na umu da su bajke različite duljine pa apsolutni broj pojavljivanja ne govori nužno koliko je neka riječ važna u pojedinoj bajci. Zato ćemo u sljedećem odjeljku bajke usporediti prema relativnoj učestalosti riječi.</p>
+</section>
+<section id="relativna-učestalost-riječi" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="relativna-učestalost-riječi"><span class="header-section-number">8.2</span> Relativna učestalost riječi</h2>
+<p>Broj pojavljivanja riječi ovisi i o duljini teksta jer se u duljoj se bajci gotovo svaka riječ pojavljuje češće. Zato je bajke bolje uspoređivati prema <strong>relativnoj učestalosti</strong>, odnosno udjelu pojedine riječi u ukupnom broju riječi u bajci.</p>
+<p>Relativna se učestalost računa u nekoliko koraka:</p>
+<ol type="1">
+<li><p>Iz podataka uklanjamo tokene koji nisu riječi, poput brojeva. Funkcija <code>str_detect()</code> s uzorkom <code>"^[a-z']+$"</code> zadržava samo one leme koje se od početka (<code>^</code>) do kraja (<code>$</code>) sastoje isključivo od malih slova i apostrofa.</p></li>
+<li><p>Funkcijom <code>count()</code> brojimo pojavljivanja svake leme u svakoj bajci.</p></li>
+<li><p>Podatke grupiramo prema bajci i za svaku lemu računamo udio u ukupnom broju riječi u toj bajci (<code>n / sum(n)</code>).</p></li>
+<li><p>Uklanjamo apsolutni broj pojavljivanja i slažemo leme od najveće prema najmanjoj relativnoj učestalosti.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>tToBtB_frequency <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Zadržavanje lema koje se sastoje samo od slova i apostrofa (bez brojeva)</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(lemma, <span class="st">"^[</span><span class="sc">\\</span><span class="st">p{L}']+$"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Broj pojavljivanja svake leme u svakoj bajci</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, lemma) <span class="sc">|&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Grupiranje prema bajci</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale) <span class="sc">|&gt;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Udio leme u ukupnom broju riječi u bajci</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uklanjanje apsolutnog broja pojavljivanja</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>n) <span class="sc">|&gt;</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Slaganje od najveće prema najmanjoj relativnoj učestalosti</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(proportion))</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>tToBtB_frequency</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,421 × 3
+   fairy_tale                                  lemma     proportion
+   &lt;chr&gt;                                       &lt;chr&gt;          &lt;dbl&gt;
+ 1 5_the_tale_of_the_three_brothers            brother       0.0982
+ 2 5_the_tale_of_the_three_brothers            death         0.0804
+ 3 1_the_wizard_and_the_hopping_pot            pot           0.0561
+ 4 4_babbitty_rabbitty_and_her_cackling_stumps king          0.0482
+ 5 4_babbitty_rabbitty_and_her_cackling_stumps charlatan     0.0395
+ 6 1_the_wizard_and_the_hopping_pot            wizard        0.0366
+ 7 5_the_tale_of_the_three_brothers            wand          0.0357
+ 8 3_the_warlocks_hairy_heart                  heart         0.0317
+ 9 3_the_warlocks_hairy_heart                  warlock       0.0294
+10 4_babbitty_rabbitty_and_her_cackling_stumps witch         0.0278
+# ℹ 1,411 more rows</code></pre>
+</div>
+</div>
+<p>Rezultat je tablica s 1421 retkom u kojoj svaki redak sadrži relativnu učestalost jedne lematizirane riječi u jednoj bajci. Najveću relativnu učestalost ima riječ <em>brother</em> u bajci <em>The Tale of the Three Brothers</em> (0,0982), a u istoj je bajci na drugom mjestu lema <em>death</em> (0,0804). Slijede <em>pot</em> u bajci <em>The Wizard and the Hopping Pot</em> (0,0561) te <em>king</em> (0,0482) i <em>charlatan</em> (0,0395) u bajci <em>Babbitty Rabbitty and Her Cackling Stumps</em>. U bajci <em>The Warlock’s Hairy Heart</em> najistaknutije su riječi <em>heart</em> (0,0317) i <em>warlock</em> (0,0294). Najčešće riječi u svakoj bajci uglavnom su upravo one koje se pojavljuju i u njezinu naslovu, a što pokazuje da relativna učestalost dobro izdvaja središnje teme pojedine bajke. Jedino se bajka <em>The Fountain of Fair Fortune</em> ne pojavljuje među deset najviših vrijednosti pa se njezin rječnik čini ravnomjernije raspoređenim, bez jedne riječi koja bi se izrazito isticala.</p>
+<p>Pritom je važno ispravno protumačiti relativnu učestalost. Vrijednost 0,0982 za lemu <em>brother</em> u bajci <em>The Tale of the Three Brothers</em> znači da ta riječ čini 9,82 % svih riječi u bajci, nakon uklanjanja zaustavnih riječi. Drugim riječima, otprilike je svaka deseta riječ u toj bajci <em>brother</em>. To je i očekivano jer se priča vrti oko trojice braće, a ista je bajka i najbolji primjer zašto apsolutni i relativni broj ne moraju dati isti poredak. Lema <em>wand</em> pojavljuje se u bajci <em>Babbitty Rabbitty and Her Cackling Stumps</em> češće nego u bajci <em>The Tale of the Three Brothers</em> (10 prema 8 puta). Ipak, u bajci <em>The Tale of the Three Brothers</em> ima relativnu učestalost 0,0357 i nalazi se među deset najviših vrijednosti, dok u bajci <em>Babbitty Rabbitty</em> među njima nije. Budući da je <em>The Tale of the Three Brothers</em> kraća bajka, isti broj pojavljivanja u njoj čini veći udio svih riječi.</p>
+<p>Može nas zanimati i frekvencija pojedinih riječi u različitim bajkama što možemo jednostavnije vidjeti filtriranjem pojedine riječi, primjerice riječi <em>wand</em>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Relativna učestalost riječi "wand" po bajkama</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>tToBtB_frequency <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(lemma <span class="sc">==</span> <span class="st">"wand"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  fairy_tale                                  lemma proportion
+  &lt;chr&gt;                                       &lt;chr&gt;      &lt;dbl&gt;
+1 5_the_tale_of_the_three_brothers            wand     0.0357 
+2 4_babbitty_rabbitty_and_her_cackling_stumps wand     0.0146 
+3 3_the_warlocks_hairy_heart                  wand     0.00679
+4 2_the_fountain_of_fair_fortune              wand     0.00514
+5 1_the_wizard_and_the_hopping_pot            wand     0.00244</code></pre>
+</div>
+</div>
+<p>Ovdje su vidljive razlike među bajkama. Riječ <em>wand</em> ima najveću relativnu učestalost u bajci <em>The Tale of the Three Brothers</em> (0,0357) u kojoj čini oko 3,6 % svih riječi. Slijedi bajka <em>Babbitty Rabbitty and Her Cackling Stumps</em> (0,0146), a znatno je manja u bajkama <em>The Warlock’s Hairy Heart</em> (0,0068), <em>The Fountain of Fair Fortune</em> (0,0051) i <em>The Wizard and the Hopping Pot</em> (0,0024). U bajci <em>The Tale of the Three Brothers</em> riječ <em>wand</em> relativno je gotovo dva i pol puta češća nego u bajci <em>Babbitty Rabbitty</em>, iako se u njoj pojavljuje rjeđe (8 prema 10 puta). Razlog je u duljini bajki. Iz broja pojavljivanja i relativne učestalosti može se procijeniti da <em>The Tale of the Three Brothers</em> ima oko 220 riječi (nakon uklanjanja zaustavnih riječi), a <em>Babbitty Rabbitty</em> oko 680, odnosno otprilike tri puta više. Isti broj pojavljivanja u kraćoj bajci zato čini veći udio. Upravo zbog toga se bajke različite duljine bolje uspoređuju prema relativnoj nego prema apsolutnoj učestalosti.</p>
+<p>Relativne učestalosti svih riječi u dvjema bajkama najpreglednije je usporediti dijagramom raspršenja. Kao referentnu bajku uzet ćemo <em>The Tale of the Three Brothers</em> i s njom usporediti svaku od ostalih bajki. Za to podatke najprije treba preoblikovati:</p>
+<ol type="1">
+<li><p>Funkcijom <code>pivot_wider()</code> podatke pretvaramo u široki oblik u kojem je svaka bajka zaseban stupac, a svaki redak jedna lema. Tako su relativne učestalosti iste leme u različitim bajkama u istom retku.</p></li>
+<li><p>Funkcijom <code>pivot_longer()</code> ostale četiri bajke vraćamo u dugi oblik, dok stupac referentne bajke ostaje zaseban. Svaki redak tada sadrži riječ, njezinu relativnu učestalost u referentnoj bajci i njezinu relativnu učestalost u jednoj od ostalih bajki.</p></li>
+<li><p>Uklanjamo retke u kojima neka od dviju vrijednosti nedostaje (<code>NA</code>), odnosno riječi koje se ne pojavljuju u objema bajkama.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Priprema podataka za usporedbu s bajkom The Tale of the Three Brothers</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>tToBtB_frequency_compare <span class="ot">&lt;-</span> tToBtB_frequency <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Svaka bajka postaje zaseban stupac</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> fairy_tale, <span class="at">values_from =</span> proportion) <span class="sc">|&gt;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ostale bajke vraćaju se u dugi oblik, referentna bajka ostaje stupac</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(lemma, <span class="st">`</span><span class="at">5_the_tale_of_the_three_brothers</span><span class="st">`</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"fairy_tale"</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"proportion"</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Zadržavanje lema koje se pojavljuju u objema bajkama</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(proportion), <span class="sc">!</span><span class="fu">is.na</span>(<span class="st">`</span><span class="at">5_the_tale_of_the_three_brothers</span><span class="st">`</span>))</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>tToBtB_frequency_compare</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 136 × 4
+   lemma  `5_the_tale_of_the_three_brothers` fairy_tale               proportion
+   &lt;chr&gt;                               &lt;dbl&gt; &lt;chr&gt;                         &lt;dbl&gt;
+ 1 death                             0.0804  1_the_wizard_and_the_ho…    0.00244
+ 2 death                             0.0804  2_the_fountain_of_fair_…    0.00171
+ 3 wizard                            0.0134  1_the_wizard_and_the_ho…    0.0366 
+ 4 wizard                            0.0134  4_babbitty_rabbitty_and…    0.00877
+ 5 wand                              0.0357  1_the_wizard_and_the_ho…    0.00244
+ 6 wand                              0.0357  4_babbitty_rabbitty_and…    0.0146 
+ 7 wand                              0.0357  3_the_warlocks_hairy_he…    0.00679
+ 8 wand                              0.0357  2_the_fountain_of_fair_…    0.00514
+ 9 magic                             0.00446 1_the_wizard_and_the_ho…    0.00732
+10 magic                             0.00446 4_babbitty_rabbitty_and…    0.0161 
+# ℹ 126 more rows</code></pre>
+</div>
+</div>
+<p>Tablica ima 136 redaka. Svaki redak sadrži jednu riječ, njezinu relativnu učestalost u bajci <em>The Tale of the Three Brothers</em> i njezinu relativnu učestalost u jednoj od ostalih bajki. Riječ <em>wand</em>, primjerice, pojavljuje se u četiri retka, po jednom za svaku bajku s kojom se uspoređuje, a u svakom je retku njezina vrijednost u bajci <em>The Tale of the Three Brothers</em> ista (0,0357). U tablici su samo riječi koje se pojavljuju u obje bajke pa riječi karakteristične samo za jednu bajku u usporedbi ne sudjeluju.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dijagram raspršenja relativnih učestalosti</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  tToBtB_frequency_compare,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> proportion, <span class="at">y =</span> <span class="st">`</span><span class="at">5_the_tale_of_the_three_brothers</span><span class="st">`</span>, <span class="at">color =</span> fairy_tale)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Dijagonala kao referentna crta</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">"gray40"</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Točke s malim nasumičnim pomakom, kako se ne bi preklapale</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">width =</span> <span class="fl">0.3</span>, <span class="at">height =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Natpisi s lemama</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> lemma), <span class="at">check_overlap =</span> <span class="cn">TRUE</span>, <span class="at">vjust =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Logaritamske skale s postocima</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(<span class="at">labels =</span> <span class="fu">percent_format</span>()) <span class="sc">+</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>(<span class="at">labels =</span> <span class="fu">percent_format</span>()) <span class="sc">+</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Zaseban graf za svaku bajku</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>fairy_tale, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Sakrivanje legende</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Nazivi osi</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"The Tale of the Three Brothers"</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_1_deskriptivna_analiza_teksta_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Uzmimo za primjer riječ <em>wizard</em> i graf za bajku <em>The Wizard and the Hopping Pot</em>. U tablici za tu lemu i bajku stoje dvije vrijednosti, u bajci <em>The Wizard and the Hopping Pot</em> riječ čini 3,66 % riječi, a u bajci <em>The Tale of the Three Brothers</em> 1,34 %. Prva vrijednost određuje položaj točke na osi x, a druga na osi y. Točku zato tražimo desno na osi x (oko 3,7 %) i nisko na osi y (oko 1,3 %). Položaj ispod dijagonale znači da je riječ relativno češća u bajci na osi x nego u bajci na osi y. Koliko je češća, dobivamo dijeljenjem dviju vrijednosti: 3,66 / 1,34 ≈ 2,7. Riječ <em>wizard</em> je, dakle, u bajci <em>The Wizard and the Hopping Pot</em> relativno gotovo tri puta češća nego u bajci <em>The Tale of the Three Brothers</em>, a što je i očekivano jer je čarobnjak glavni lik te bajke.</p>
+<p>Suprotan primjer je lema <em>death</em> na istom grafu. U bajci <em>The Wizard and the Hopping Pot</em> čini samo 0,24 % riječi, a u bajci <em>The Tale of the Three Brothers</em> 8,04 % pa se točka nalazi lijevo i visoko, daleko iznad dijagonale. Omjer 8,04 / 0,24 ≈ 33 znači da je smrt u bajci o trojici braće relativno tridesetak puta češća tema. Točka bliže dijagonali je riječ <em>wand</em> na grafu za bajku <em>Babbitty Rabbitty and Her Cackling Stumps</em>, 1,46 % na osi x i 3,57 % na osi y. Nalazi se iznad dijagonale, ali bliže njoj nego <em>death</em> jer je omjer manji (3,57 / 1,46 ≈ 2,4). Štapić je, dakle, važan predmet u obje bajke, iako je u bajci o trojici braće relativno nešto češći. Na grafu za istu bajku lema <em>magic</em> nalazi se ispod dijagonale (1,61 % prema 0,45 %), pa je magija relativno oko tri i pol puta češća u bajci <em>Babbitty Rabbitty</em>.</p>
+<p>Dakle, iz ovih primjera proizlaze tri pravila za čitanje grafa:</p>
+<ul>
+<li><p>točka na dijagonali znači da riječ ima jednak udio u objema bajkama;</p></li>
+<li><p>točka iznad dijagonale znači da je riječ relativno češća u bajci <em>The Tale of the Three Brothers</em>, a točka ispod dijagonale da je češća u bajci navedenoj iznad grafa;</p></li>
+<li><p>što je točka dalje od dijagonale, to je razlika veća (budući da obje osi imaju logaritamsku skalu, jednaka udaljenost od dijagonale znači jednak omjer, a ne jednaku razliku jer je riječ s udjelima 0,5 % i 1 % jednako udaljena od dijagonale kao riječ s udjelima 2 % i 4 %).</p></li>
+</ul>
+<p>Gledamo li grafove u cjelini, većina se točaka nalazi iznad dijagonale. To je dijelom posljedica duljine bajki, odnosno da je <em>The Tale of the Three Brothers</em> znatno kraća od ostalih bajki pa svaka riječ koja se u njoj pojavi makar jednom ima udio od najmanje 0,45 %. Zato pri tumačenju treba gledati prije svega točke koje su od dijagonale izrazito udaljene, poput riječi <em>death</em>.</p>
+<section id="korelacija-relativnih-učestalosti" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="korelacija-relativnih-učestalosti"><span class="header-section-number">8.2.1</span> Korelacija relativnih učestalosti</h3>
+<p>Sličnost dviju bajki po rječniku može se izraziti i brojem, <strong>koeficijentom korelacije relativnih učestalosti</strong>. Primjerice, možemo se pitati koliko su povezane relativne učestalosti riječi u bajkama <em>The Tale of the Three Brothers</em> i <em>The Wizard and the Hopping Pot</em>. Za to se koristi Pearsonov koeficijent korelacije i funkcija <code>cor.test()</code> koja uz koeficijent provodi i test njegove statističke značajnosti.</p>
+<p>Ključno je da se pritom uspoređuju relativne učestalosti iste riječi u dvije bajke. Upravo je takav oblik podataka pripremljen u podatkovnom okviru <code>tToBtB_frequency_compare</code> u kojem je u svakom retku jedna riječ, njezina relativna učestalost u bajci <em>The Tale of the Three Brothers</em> (stupac <code>5_the_tale_of_the_three_brothers</code>) i njezina relativna učestalost u jednoj od ostalih bajki (stupac <code>proportion</code>). Postupak zato ima samo dva koraka:</p>
+<ol type="1">
+<li><p>Funkcijom <code>filter()</code> iz podatkovnog okvira <code>tToBtB_frequency_compare</code> izdvajamo retke za bajku <em>Babbitty Rabbitty and Her Cackling Stumps</em> i spremamo ih u novi objekt <code>babbitty_compare</code>. U njemu su sada samo leme koje se pojavljuju u objema bajkama, a uz svaku stoje njezine dvije relativne učestalosti.</p></li>
+<li><p>Funkcijom <code>cor.test()</code> računamo Pearsonov koeficijent korelacije između tih dviju vrijednosti i testiramo njegovu statističku značajnost. Stupce koje uspoređujemo zadajemo formulom <code>~ proportion +</code>5_the_tale_of_the_three_brothers`<code>u kojoj se nazivi stupaca navode iza znaka</code>~<code>i povezuju znakom</code>+<code>. Argumentom</code>data` navodimo podatkovni okvir u kojem se ti stupci nalaze. Budući da naziv drugog stupca počinje brojem, pišemo ga unutar obrnutih jednostrukih navodnika.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Izdvajanje usporedbe s bajkom Babbitty Rabbitty and Her Cackling Stumps</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>babbitty_compare <span class="ot">&lt;-</span> tToBtB_frequency_compare <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fairy_tale <span class="sc">==</span> <span class="st">"4_babbitty_rabbitty_and_her_cackling_stumps"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Korelacija relativnih učestalosti lema u dvjema bajkama</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> proportion <span class="sc">+</span> <span class="st">`</span><span class="at">5_the_tale_of_the_three_brothers</span><span class="st">`</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> babbitty_compare</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  proportion and 5_the_tale_of_the_three_brothers
+t = 3.4845, df = 31, p-value = 0.001494
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.2288827 0.7391884
+sample estimates:
+      cor 
+0.5305059 </code></pre>
+</div>
+</div>
+<p>Koeficijent korelacije iznosi 0,53 što upućuje na umjerenu pozitivnu povezanost relativnih učestalosti riječi u dvjema bajkama. Riječi koje su relativno česte u bajci <em>The Tale of the Three Brothers</em> uglavnom su relativno česte i u bajci <em>Babbitty Rabbitty and Her Cackling Stumps</em> i obrnuto. Na dijagramu raspršenja to se vidi tako što se točke na grafu za bajku <em>Babbitty Rabbitty</em> raspoređuju uz dijagonalu, od donjeg lijevog prema gornjem desnom kutu. Jedan od primjera je lema <em>wand</em> koja je u objema bajkama među relativno češćim riječima (3,57 % i 1,46 %).</p>
+<p>Ostale vrijednosti u ispisu govore o tome može li se taj rezultat pripisati slučaju. Vrijednost <code>df = 31</code> broj je stupnjeva slobode koji je kod korelacije jednak broju parova umanjenom za dva pa se korelacija računala na 33 leme zajedničke objema bajkama. T-statistika iznosi 3,48, a p-vrijednost 0,0015. Budući da je p-vrijednost manja od 0,05, najčešće korištenog praga statističke značajnosti, možemo odbaciti nultu hipotezu prema kojoj korelacija ne postoji i zaključiti da je povezanost statistički značajna. P-vrijednost od 0,0015 znači da bi, kad korelacije stvarno ne bi bilo, vjerojatnost dobivanja ovako jake ili jače korelacije samo slučajno iznosila oko 0,15 %.</p>
+<p>Kako bismo procijenili koliko je ta procjena precizna, koristimo 95 %-tni interval pouzdanosti koji se proteže od 0,23 do 0,74. Cijeli je interval iznad nule, a što potvrđuje da je povezanost pozitivna, ali je i razmjerno širok. S obzirom na mali broj zajedničkih riječi, stvarna povezanost mogla bi biti i slaba i prilično jaka. Zato rezultat valja tumačiti oprezno jer dvije bajke dijele dio rječnika koji je u objema relativno važan, no na temelju 33 riječi ne možemo precizno reći koliko su po rječniku slične.</p>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>Deskriptivna analiza daje pregled veličine korpusa, broja dokumenata i raspodjele osnovnih tekstualnih obilježja.</p>
-
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

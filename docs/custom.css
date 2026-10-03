@@ -56,3 +56,11 @@ div.quarto-title-breadcrumbs .breadcrumb-item.active {
   background-color: #E8DADF !important;
   color: #683546 !important;
 }
+
+strong, b {
+  color: #8B475D;
+}
+
+p code {
+  color: #8B475D !important;
+}
