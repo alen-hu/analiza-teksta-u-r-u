@@ -1,5 +1,7 @@
-# Vizualizacije teksta
-
-Vizualizacije poput grafikona učestalosti, mreža ko-pojavljivanja i prikaza
-tema pomažu u istraživanju obrazaca. Svaku vizualizaciju treba povezati s
-jasnim istraživačkim pitanjem.
+---
+title: "Vizualizacija teksta"
+description: "..."
+number-sections: true
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+---

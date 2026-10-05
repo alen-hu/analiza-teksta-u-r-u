@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Riječi u tekstu ne stoje same, nego se njihovo značenje oblikuju riječi koje im prethode i koje ih slijede, kao i riječi s kojima se pojavljuju u istoj rečenici ili odlomku. Brojanjem pojedinačnih riječi ti se odnosi gube pa iz analize ispada upravo ono što tekst čini tekstom, a ne popisom riječi. Promatranjem parova uzastopnih riječi i riječi koje se pojavljuju zajedno moguće je otkriti ustaljene izraze, povezane pojmove i skupine riječi koje zajedno grade teme teksta, a mrežni prikazi omogućuju da se ti odnosi vide svi odjednom.">
 
 <title>10&nbsp; Odnosi među riječima – Analiza teksta u R-u</title>
 <style>
@@ -22,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -73,7 +109,53 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<style>
 
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="custom.css">
 </head>
@@ -81,13 +163,13 @@ ul.task-list li input[type="checkbox"] {
 <body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_0_POČETAK U RADU S TEKSTOM.html">DESKRIPCIJSKA ANALIZA TEKSTA</a></li><li class="breadcrumb-item"><a href="./3_3_odnosi_među_riječima.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_deskriptivna_analiza_teksta.html">3_0_POČETAK U RADU S TEKSTOM.qmd</a></li><li class="breadcrumb-item"><a href="./3_3_odnosi_među_riječima.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -97,7 +179,28 @@ ul.task-list li input[type="checkbox"] {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_deskriptivna_analiza_teksta.html">3_0_POČETAK U RADU S TEKSTOM.qmd</a></li><li class="breadcrumb-item"><a href="./3_3_odnosi_među_riječima.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></h1>
+                  <div>
+        <div class="description">
+          Riječi u tekstu ne stoje same, nego se njihovo značenje oblikuju riječi koje im prethode i koje ih slijede, kao i riječi s kojima se pojavljuju u istoj rečenici ili odlomku. Brojanjem pojedinačnih riječi ti se odnosi gube pa iz analize ispada upravo ono što tekst čini tekstom, a ne popisom riječi. Promatranjem parova uzastopnih riječi i riječi koje se pojavljuju zajedno moguće je otkriti ustaljene izraze, povezane pojmove i skupine riječi koje zajedno grade teme teksta, a mrežni prikazi omogućuju da se ti odnosi vide svi odjednom.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -181,8 +284,8 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./3_0_POČETAK U RADU S TEKSTOM.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DESKRIPCIJSKA ANALIZA TEKSTA</span></a>
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3_0_POČETAK U RADU S TEKSTOM.qmd</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -260,7 +363,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_2_vizualizacije_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacije teksta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
   </div>
 </li>
       </ul>
@@ -277,33 +380,550 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#brojanje-n-grama" id="toc-brojanje-n-grama" class="nav-link active" data-scroll-target="#brojanje-n-grama"><span class="header-section-number">10.0.1</span> Brojanje n-grama</a></li>
+  <li><a href="#tf-idf-analiza-n-grama" id="toc-tf-idf-analiza-n-grama" class="nav-link" data-scroll-target="#tf-idf-analiza-n-grama"><span class="header-section-number">10.1</span> tf-idf analiza n-grama</a></li>
+  <li><a href="#mreža-n-grama" id="toc-mreža-n-grama" class="nav-link" data-scroll-target="#mreža-n-grama"><span class="header-section-number">10.2</span> Mreža n-grama</a></li>
+  <li><a href="#parovi-riječi-u-istom-odlomku" id="toc-parovi-riječi-u-istom-odlomku" class="nav-link" data-scroll-target="#parovi-riječi-u-istom-odlomku"><span class="header-section-number">10.3</span> Parovi riječi u istom odlomku</a>
+  <ul class="collapse">
+  <li><a href="#korelacija-parova-riječi" id="toc-korelacija-parova-riječi" class="nav-link" data-scroll-target="#korelacija-parova-riječi"><span class="header-section-number">10.3.1</span> Korelacija parova riječi</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_0_POČETAK U RADU S TEKSTOM.html">DESKRIPCIJSKA ANALIZA TEKSTA</a></li><li class="breadcrumb-item"><a href="./3_3_odnosi_među_riječima.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></h1>
+
+
+
+
+<p>U dosadašnjim smo analizama riječi promatrali kao zasebne jedinice. Mnoge se analize teksta, međutim, temelje na odnosima među riječima, odnosno na analizi riječi obično slijede neke druge riječi i koje se riječi pojavljuju zajedno u istom dijelu teksta. U ovom ćemo poglavlju takve odnose izračunati i prikazati. Za to ćemo, uz pakete koje već poznajemo, koristiti još tri paketa:</p>
+<ol type="1">
+<li><p><code>igraph</code> za stvaranje i obradu mreža,</p></li>
+<li><p><code>ggraph</code> koji proširuje paket <code>ggplot2</code> za crtanje mrežnih prikaza,</p></li>
+<li><p><code>widyr</code> koji računa broj zajedničkih pojavljivanja i korelacije parova riječi u urednom obliku podataka.</p></li>
+</ol>
+<p>Kao što smo vidjeli u poglavlju o pretpostavkama za analizu teksta, funkcija <code>unnest_tokens()</code> može tekst podijeliti i na nizove uzastopnih riječi, <strong>n-grame</strong>. Tako možemo promatrati koliko često neka riječ slijedi drugu. Tekst podijeljen na bigrame, odnosno parove uzastopnih riječi, već smo spremili u podatkovni okvir <code>tToBtB_bigram</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled bigrama</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,775 × 4
+    line fairy_tale                       paragraph_no bigram    
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;     
+ 1    20 1_the_wizard_and_the_hopping_pot            1 there was 
+ 2    20 1_the_wizard_and_the_hopping_pot            1 was once  
+ 3    20 1_the_wizard_and_the_hopping_pot            1 once a    
+ 4    20 1_the_wizard_and_the_hopping_pot            1 a kindly  
+ 5    20 1_the_wizard_and_the_hopping_pot            1 kindly old
+ 6    20 1_the_wizard_and_the_hopping_pot            1 old wizard
+ 7    20 1_the_wizard_and_the_hopping_pot            1 wizard who
+ 8    20 1_the_wizard_and_the_hopping_pot            1 who used  
+ 9    20 1_the_wizard_and_the_hopping_pot            1 used his  
+10    20 1_the_wizard_and_the_hopping_pot            1 his magic 
+# ℹ 5,765 more rows</code></pre>
 </div>
+</div>
+<p>Za daljnju je analizu korisno stupac <code>bigram</code> podijeliti na dva stupca, <code>word1</code> i <code>word2</code>, po jedan za svaku riječ bigrama. To radimo funkcijom <code>separate()</code> iz paketa <code>tidyr</code>, kojoj zadajemo stupac koji dijelimo, nazive novih stupaca i znak na kojem se dijeli (<code>sep = " "</code>, razmak). Tako možemo, primjerice, ukloniti bigrame u kojima je bilo koja od riječi zaustavna riječ.</p>
+<p>Za daljnju je analizu korisno stupac <code>bigram</code> podijeliti na dva stupca, <code>word1</code> i <code>word2</code>, po jedan za svaku riječ bigrama. To radimo funkcijom <code>separate()</code> iz paketa <code>tidyr</code> kojoj zadajemo stupac koji dijelimo, nazive novih stupaca i znak na kojem se dijeli (<code>sep = " "</code>, razmak). Tako možemo, primjerice, ukloniti bigrame u kojima je bilo koja od riječi zaustavna riječ.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela bigrama na dvije riječi</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_separated <span class="ot">&lt;-</span> tToBtB_bigram <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(bigram, <span class="fu">c</span>(<span class="st">"word1"</span>, <span class="st">"word2"</span>), <span class="at">sep =</span> <span class="st">" "</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled podijeljenih bigrama</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_separated</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,775 × 5
+    line fairy_tale                       paragraph_no word1  word2 
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; 
+ 1    20 1_the_wizard_and_the_hopping_pot            1 there  was   
+ 2    20 1_the_wizard_and_the_hopping_pot            1 was    once  
+ 3    20 1_the_wizard_and_the_hopping_pot            1 once   a     
+ 4    20 1_the_wizard_and_the_hopping_pot            1 a      kindly
+ 5    20 1_the_wizard_and_the_hopping_pot            1 kindly old   
+ 6    20 1_the_wizard_and_the_hopping_pot            1 old    wizard
+ 7    20 1_the_wizard_and_the_hopping_pot            1 wizard who   
+ 8    20 1_the_wizard_and_the_hopping_pot            1 who    used  
+ 9    20 1_the_wizard_and_the_hopping_pot            1 used   his   
+10    20 1_the_wizard_and_the_hopping_pot            1 his    magic 
+# ℹ 5,765 more rows</code></pre>
+</div>
+</div>
+<section id="brojanje-n-grama" class="level3" data-number="10.0.1">
+<h3 data-number="10.0.1" class="anchored" data-anchor-id="brojanje-n-grama"><span class="header-section-number">10.0.1</span> Brojanje n-grama</h3>
+<p>Analiza bigrama slična je analizi pojedinačnih riječi. Najjednostavnija je analiza brojanje najčešćih bigrama funkcijom <code>count()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Brojanje bigrama</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(bigram, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4,368 × 2
+   bigram            n
+   &lt;chr&gt;         &lt;int&gt;
+ 1 of the           40
+ 2 to the           30
+ 3 the charlatan    26
+ 4 in the           25
+ 5 and the          20
+ 6 the king         20
+ 7 the fountain     16
+ 8 at the           15
+ 9 of his           14
+10 upon the         14
+# ℹ 4,358 more rows</code></pre>
+</div>
+</div>
+<p>U bajkama se pojavljuje 4368 različitih bigrama. Najčešći su <em>of the</em> (40 pojavljivanja), <em>to the</em> (30), <em>the charlatan</em> (26) i <em>in the</em> (25). Sedam od deset najčešćih bigrama, poput <em>of the</em>, <em>to the</em>, <em>and the</em> ili <em>upon the</em>, sastoji se isključivo od zaustavnih riječi pa o sadržaju bajki ne govori ništa. Preostala tri, <em>the charlatan</em>, <em>the king</em> i <em>the fountain</em>, spajaju član <em>the</em> s riječima koje smo već upoznali kao karakteristične za pojedine bajke, ali i u njima je zaustavna riječ zapravo višak, a sadržaj nosi samo druga riječ. Zato iz podijeljenih bigrama uklanjamo one u kojima je bilo <code>word1</code> bilo <code>word2</code> zaustavna riječ, a zatim brojimo preostale.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje bigrama sa zaustavnim riječima</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_separated_stop_words <span class="ot">&lt;-</span> tToBtB_bigram_separated <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word1 <span class="sc">%in%</span> stop_words<span class="sc">$</span>word) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word2 <span class="sc">%in%</span> stop_words<span class="sc">$</span>word)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Brojanje bigrama</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_count <span class="ot">&lt;-</span> tToBtB_bigram_separated_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word1, word2, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_count</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 588 × 3
+   word1    word2        n
+   &lt;chr&gt;    &lt;chr&gt;    &lt;int&gt;
+ 1 foolish  king         8
+ 2 sir      luckless     7
+ 3 cooking  pot          6
+ 4 witch    hunters      6
+ 5 clang    clang        4
+ 6 tree     stump        4
+ 7 fair     fortune      3
+ 8 hairy    heart        3
+ 9 palace   grounds      3
+10 babbitty smiled       2
+# ℹ 578 more rows</code></pre>
+</div>
+</div>
+<p>Nakon uklanjanja zaustavnih riječi ostalo je 588 različitih bigrama, otprilike sedam puta manje nego prije. Sada su najčešći bigrami <em>foolish king</em> (8 pojavljivanja), <em>sir luckless</em> (7), <em>cooking pot</em> i <em>witch hunters</em> (po 6) te <em>clang clang</em> i <em>tree stump</em> (po 4). Riječ je uglavnom o likovima i predmetima uz pridjeve ili odrednice koje ih stalno prate: kralj je u pravilu <em>foolish</em>, vitez se pojavljuje s titulom <em>sir</em>, a lonac je <em>cooking pot</em>. Bigram <em>clang clang</em> pokazuje ponavljanje iste riječi kojim se u bajci oponaša zvuk lonca. Većina bigrama, međutim, pojavljuje se samo jednom ili dvaput. Već od desetog mjesta nijedan se bigram ne pojavljuje više od dva puta, a što pokazuje koliko su parovi riječi rjeđi od pojedinačnih riječi.</p>
+<p>Podijeljeni bigrami omogućuju i ciljanija pitanja. Primjerice, u tekstu na engleskom jeziku iza naziva ulice obično dolazi riječ <em>street</em>, pa filtriranjem bigrama u kojima je druga riječ <em>street</em> dobivamo popis svih ulica. Na isti način možemo vidjeti koje riječi u bajkama dolaze ispred riječi <em>king</em>, odnosno kako se kralj opisuje.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_separated_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word2 <span class="sc">==</span> <span class="st">"king"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word1, word2, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  word1     word2     n
+  &lt;chr&gt;     &lt;chr&gt; &lt;int&gt;
+1 foolish   king      8
+2 jubilant  king      1
+3 magical   king      1
+4 petrified king      1
+5 shamed    king      1</code></pre>
+</div>
+</div>
+<p>Kralj se u bajkama opisuje pet različitih riječi, no gotovo uvijek istom: <em>foolish</em> se pojavljuje osam puta, dok se <em>jubilant</em>, <em>magical</em>, <em>petrified</em> i <em>shamed</em> pojavljuju po jednom. Već i ovaj kratak popis pokazuje kakav je lik kralj, ponajprije budalast, a pridjevi poput <em>jubilant</em>, <em>petrified</em> i <em>shamed</em> daju naslutiti da se njegovo raspoloženje tijekom priča mijenja, od ushićenja preko straha do posramljenosti.</p>
+<p>Za neke je analize bigrame nakon filtriranja korisno ponovno spojiti u jedan stupac. To radimo funkcijom <code>unite()</code> koja je suprotna funkciji <code>separate()</code> i spaja zadane stupce u jedan, s navedenim znakom između njih.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ponovno spajanje riječi u bigrame</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_united <span class="ot">&lt;-</span> tToBtB_bigram_separated_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(bigram, word1, word2, <span class="at">sep =</span> <span class="st">" "</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_united</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 639 × 4
+    line fairy_tale                       paragraph_no bigram          
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;           
+ 1    20 1_the_wizard_and_the_hopping_pot            1 magic generously
+ 2    20 1_the_wizard_and_the_hopping_pot            1 true source     
+ 3    20 1_the_wizard_and_the_hopping_pot            1 potions charms  
+ 4    20 1_the_wizard_and_the_hopping_pot            1 antidotes sprang
+ 5    20 1_the_wizard_and_the_hopping_pot            1 sprang ready    
+ 6    20 1_the_wizard_and_the_hopping_pot            1 lucky cooking   
+ 7    20 1_the_wizard_and_the_hopping_pot            1 cooking pot     
+ 8    21 1_the_wizard_and_the_hopping_pot            2 beloved wizard  
+ 9    21 1_the_wizard_and_the_hopping_pot            2 wizard lived    
+10    21 1_the_wizard_and_the_hopping_pot            2 goodly age      
+# ℹ 629 more rows</code></pre>
+</div>
+</div>
+<p>Na isti se način mogu analizirati i trigrami. Ovdje tekst tokeniziramo na trigrame, uklanjamo retke iz kojih se trigram nije mogao stvoriti, dijelimo trigrame na tri riječi, uklanjamo trigrame sa zaustavnim riječima, brojimo ih i na kraju ponovno spajamo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešći trigrami bez zaustavnih riječi</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>tToBtB_df <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(trigram, text, <span class="at">token =</span> <span class="st">"ngrams"</span>, <span class="at">n =</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(trigram)) <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(trigram, <span class="fu">c</span>(<span class="st">"word1"</span>, <span class="st">"word2"</span>, <span class="st">"word3"</span>), <span class="at">sep =</span> <span class="st">" "</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>word1 <span class="sc">%in%</span> stop_words<span class="sc">$</span>word,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>word2 <span class="sc">%in%</span> stop_words<span class="sc">$</span>word,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>word3 <span class="sc">%in%</span> stop_words<span class="sc">$</span>word</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word1, word2, word3, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(trigram, word1, word2, word3, <span class="at">sep =</span> <span class="st">" "</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 146 × 2
+   trigram                      n
+   &lt;chr&gt;                    &lt;int&gt;
+ 1 clang clang clang            2
+ 2 witch hunting hounds         2
+ 3 admiring death's gifts       1
+ 4 age softened mind            1
+ 5 aged parents died            1
+ 6 altheda cast rocks           1
+ 7 altheda walked faster        1
+ 8 antidotes sprang ready       1
+ 9 appointed day hundreds       1
+10 appointed grand sorcerer     1
+# ℹ 136 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="tf-idf-analiza-n-grama" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="tf-idf-analiza-n-grama"><span class="header-section-number">10.1</span> tf-idf analiza n-grama</h2>
+<p>Bigram se može tretirati kao pojam na isti način kao pojedinačna riječ. Tako možemo izračunati tf-idf bigrama i pronaći bigrame najkarakterističnije za pojedinu bajku.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tf-idf bigrama</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_tf_idf <span class="ot">&lt;-</span> tToBtB_bigram_united <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, bigram) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_tf_idf</span>(bigram, fairy_tale, n) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(tf_idf))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_tf_idf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 589 × 6
+   fairy_tale                                  bigram      n     tf   idf tf_idf
+   &lt;chr&gt;                                       &lt;chr&gt;   &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1 1_the_wizard_and_the_hopping_pot            cookin…     6 0.0508  1.61 0.0818
+ 2 2_the_fountain_of_fair_fortune              sir lu…     7 0.0470  1.61 0.0756
+ 3 4_babbitty_rabbitty_and_her_cackling_stumps foolis…     8 0.0417  1.61 0.0671
+ 4 1_the_wizard_and_the_hopping_pot            clang …     4 0.0339  1.61 0.0546
+ 5 4_babbitty_rabbitty_and_her_cackling_stumps witch …     6 0.0312  1.61 0.0503
+ 6 3_the_warlocks_hairy_heart                  hairy …     3 0.0233  1.61 0.0374
+ 7 4_babbitty_rabbitty_and_her_cackling_stumps tree s…     4 0.0208  1.61 0.0335
+ 8 2_the_fountain_of_fair_fortune              fair f…     3 0.0201  1.61 0.0324
+ 9 5_the_tale_of_the_three_brothers            admiri…     1 0.0196  1.61 0.0316
+10 5_the_tale_of_the_three_brothers            boaste…     1 0.0196  1.61 0.0316
+# ℹ 579 more rows</code></pre>
+</div>
+</div>
+<p>Na vrhu tablice nalaze se bigrami koje smo već vidjeli među najčešćima: <em>cooking pot</em> u bajci <em>The Wizard and the Hopping Pot</em>, <em>sir luckless</em> u bajci <em>The Fountain of Fair Fortune</em> i <em>foolish king</em> u bajci <em>Babbitty Rabbitty and Her Cackling Stumps</em>. Svi bigrami u prvih deset redaka imaju isti idf, 1,61, što znači da se svaki pojavljuje u samo jednoj bajci. To nije slučajno jer tablica ima 589 redaka, a različitih bigrama ima 588 pa se samo jedan bigram pojavljuje u više od jedne bajke. Za razliku od pojedinačnih riječi, parovi riječi gotovo su uvijek svojstveni samo jednoj bajci pa poredak prema tf-idf ovdje ovisi gotovo isključivo o tome koliko se bigram puta pojavljuje (tf).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bigrami s najvećim tf-idf vrijednostima po bajkama</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_tf_idf <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fairy_tale =</span> <span class="fu">str_replace_all</span>(fairy_tale, <span class="st">"_"</span>, <span class="st">" "</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> tf_idf, <span class="at">y =</span> <span class="fu">reorder_within</span>(bigram, tf_idf, fairy_tale), <span class="at">fill =</span> fairy_tale)) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>fairy_tale, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">scales =</span> <span class="st">"free"</span>, <span class="at">labeller =</span> <span class="fu">label_wrap_gen</span>(<span class="at">width =</span> <span class="dv">25</span>)) <span class="sc">+</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"tf-idf"</span>, <span class="at">y =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_3_odnosi_među_riječima_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Graf pokazuje bigrame najkarakterističnije za svaku bajku. U četiri bajke na vrhu se nalaze bigrami koji opisuju središnje likove i predmete: lonac (<em>cooking pot</em>, <em>clang clang</em>, <em>pot hopping</em>), vitez (<em>sir luckless</em>), čarobnjakovo srce (<em>hairy heart</em>) i kralj (<em>foolish king</em>), uz koje se u bajci <em>Babbitty Rabbitty</em> pojavljuju i lovci na vještice (<em>witch hunters</em>) i panj (<em>tree stump</em>). Bajka <em>The Tale of the Three Brothers</em> znatno se razlikuje kod koje svi njezini bigrami imaju jednaku tf-idf vrijednost jer se svaki pojavljuje samo jednom. Takvih je bigrama više od deset, a funkcija <code>slice_max()</code> s argumentom <code>with_ties = FALSE</code> među njima bira prvih deset prema redoslijedu u tablici pa poredak na tom grafu nema značenja.</p>
+<p>To dobro pokazuje glavno ograničenje analize bigrama. Parovi riječi mogu otkriti strukturu koja se ne vidi kad se broje samo pojedinačne riječi i daju kontekst koji pojedine riječi čini razumljivijima. No bigrami su mnogo rjeđi od pojedinačnih riječi jer se svaki par riječi pojavljuje rjeđe od bilo koje od riječi koje ga čine. U kratkim tekstovima, poput bajki, većina se bigrama pojavljuje samo jednom, pa analiza bigrama više dolazi do izražaja na većim zbirkama tekstova.</p>
+</section>
+<section id="mreža-n-grama" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="mreža-n-grama"><span class="header-section-number">10.2</span> Mreža n-grama</h2>
+<p>Ponekad je korisno prikazati sve odnose među riječima odjednom, a ne samo nekoliko najčešćih. Jedan od takvih prikaza je <strong>mreža riječi</strong>. Mreža se sastoji od čvorova (engl. <em>nodes</em>), u ovom slučaju riječi, i bridova (engl. <em>edges</em>) koji povezuju čvorove, u ovom slučaju riječi koje se pojavljuju kao bigram. Za stvaranje mreže potreban je podatkovni okvir s tri vrste stupaca:</p>
+<ul>
+<li><p><code>from</code> - čvor iz kojeg brid polazi (prva riječ bigrama),</p></li>
+<li><p><code>to</code> - čvor u koji brid ulazi (druga riječ bigrama),</p></li>
+<li><p>dodatni stupci s atributima bridova (npr. težina brida - ovdje broj pojavljivanja bigrama).</p></li>
+</ul>
+<p>Upravo takav oblik ima podatkovni okvir <code>tToBtB_bigram_count</code>, sa stupcima <code>word1</code>, <code>word2</code> i <code>n</code>. Funkcija <code>graph_from_data_frame()</code> iz paketa <code>igraph</code> od njega stvara mrežu u kojoj prva dva stupca tumači kao početni i završni čvor, a ostale kao atribute bridova. Kako mreža ne bi bila prenapučena, zadržavamo samo bigrame koji se pojavljuju više od jednom.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mreža bigrama koji se pojavljuju više od jednom</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_graph <span class="ot">&lt;-</span> tToBtB_bigram_count <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">graph_from_data_frame</span>()</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_graph</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>IGRAPH 7f1f23b DN-- 42 25 -- 
++ attr: name (v/c), n (e/n)
++ edges from 7f1f23b (vertex names):
+ [1] foolish  -&gt;king     sir      -&gt;luckless cooking  -&gt;pot     
+ [4] witch    -&gt;hunters  clang    -&gt;clang    tree     -&gt;stump   
+ [7] fair     -&gt;fortune  hairy    -&gt;heart    palace   -&gt;grounds 
+[10] babbitty -&gt;smiled   brass    -&gt;foot     bush     -&gt;babbitty
+[13] crystal  -&gt;casket   enchanted-&gt;garden   garden   -&gt;walls   
+[16] grand    -&gt;sorcerer hunting  -&gt;hounds   loud     -&gt;cackling
+[19] magical  -&gt;powers   palace   -&gt;leaving  perform  -&gt;magic   
+[22] pot      -&gt;hopping  sun      -&gt;rose     true     -&gt;witch   
++ ... omitted several edges</code></pre>
+</div>
+</div>
+<p>Paket <code>igraph</code> ima i vlastite funkcije za crtanje, no za crtanje mreža u stilu paketa <code>ggplot2</code> pogodniji je paket <code>ggraph</code>. Mrežu crtamo funkcijom <code>ggraph()</code>, a zatim joj, kao u paketu <code>ggplot2</code>, dodajemo slojeve. Za osnovni prikaz potrebna su tri sloja: bridovi (<code>geom_edge_link()</code>), čvorovi (<code>geom_node_point()</code>) i natpisi čvorova (<code>geom_node_text()</code>). Argument <code>layout = "fr"</code> određuje algoritam (Fruchterman–Reingold) koji raspoređuje čvorove tako da povezani čvorovi budu blizu, a nepovezani daleko. Budući da algoritam uključuje slučajnost, funkcijom <code>set.seed()</code> osiguravamo da graf pri svakom pokretanju izgleda jednako.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Osiguravanje ponovljivosti rasporeda čvorova</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2017</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Osnovni prikaz mreže bigrama</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(tToBtB_bigram_graph, <span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>() <span class="sc">+</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>() <span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_3_odnosi_među_riječima_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Prikaz se može doraditi:</p>
+<ul>
+<li><p>argumentom <code>edge_alpha = n</code> prozirnost brida ovisi o tome koliko je bigram čest pa su češći bigrami tamniji;</p></li>
+<li><p>funkcijom <code>arrow()</code> bridovima se dodaju strelice koje pokazuju smjer, odnosno koja riječ dolazi prva;</p></li>
+<li><p>argumentom <code>end_cap</code> strelica završava malo prije čvora kako ga ne bi prekrila;</p></li>
+<li><p>čvorovi se povećavaju i boje (<code>color = "lightblue"</code>, <code>size = 5</code>);</p></li>
+<li><p>funkcijom <code>theme_void()</code> uklanjaju se osi i pozadina koje u mrežnom prikazu nemaju značenje.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Osiguravanje ponovljivosti rasporeda čvorova</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2020</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Izgled strelica</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">arrow</span>(<span class="at">type =</span> <span class="st">"closed"</span>, <span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.15</span>, <span class="st">"inches"</span>))</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Dorađeni prikaz mreže bigrama</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggraph</span>(tToBtB_bigram_graph, <span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">edge_alpha =</span> n),</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.legend =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> a,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">end_cap =</span> <span class="fu">circle</span>(<span class="fl">0.07</span>, <span class="st">"inches"</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="at">color =</span> <span class="st">"lightblue"</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_3_odnosi_među_riječima_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Mreža se sastoji od mnogo malih i međusobno nepovezanih dijelova. Većinom su to samo dvije riječi povezane jednom strelicom, poput <em>fair</em> → <em>fortune</em>, <em>hairy</em> → <em>heart</em> ili <em>crystal</em> → <em>casket</em>, a tek se poneke riječi povezuju u kraće nizove. To je posljedica kratkoće bajki, odnosno toga da smo u mrežu uključili samo bigrame koji se pojavljuju više od jednom, a takvih je u bajkama malo. U većim zbirkama tekstova ovakva mreža obično ima i veliku središnju skupinu međusobno povezanih riječi.</p>
+<p>Ovakva je mreža prikaz <strong>Markovljeva lanca</strong>, modela u kojem izbor svake riječi ovisi samo o riječi koja joj prethodi. Generator teksta koji bi slijedio ovaj model mogao bi, primjerice, krenuti od riječi <em>enchanted</em>, nastaviti s <em>garden</em>, a zatim s <em>walls</em>, ili od riječi <em>cooking</em> preko <em>pot</em> do <em>hopping</em>, birajući svaki put jednu od riječi u koje vodi strelica. Prozirnost strelica pokazuje koliko su pojedini prijelazi česti, tamne strelice <em>foolish</em> → <em>king</em>, <em>sir</em> → <em>luckless</em> i <em>witch</em> → <em>hunters</em>, odgovaraju najčešćim bigramima, dok su strelice bigrama koji se pojavljuju samo dvaput svjetlije. Bigram <em>clang clang</em> u mreži se vidi samo kao usamljeni čvor <em>clang</em> jer je riječ povezana sama sa sobom, a takav se brid u ovom prikazu ne iscrtava.</p>
+</section>
+<section id="parovi-riječi-u-istom-odlomku" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="parovi-riječi-u-istom-odlomku"><span class="header-section-number">10.3</span> Parovi riječi u istom odlomku</h2>
+<p>Tokenizacija na bigrame korisna je za proučavanje susjednih riječi. Međutim, mogu nas zanimati i riječi koje se pojavljuju zajedno u istom dijelu teksta, iako ne stoje jedna uz drugu. Uredni podaci prikladni su za usporedbe među stupcima ili grupiranje po retcima, ali je s njima teže uspoređivati retke međusobno, npr. izbrojati koliko se puta dvije riječi pojavljuju u istom odlomku. Paket <code>widyr</code> olakšava takve izračune tako da podatke privremeno pretvara u široki oblik, provodi izračun i rezultat vraća u uredan oblik.</p>
+<p>Kao dio teksta u kojem tražimo zajednička pojavljivanja uzet ćemo odlomak. Svaki odlomak u podatkovnom okviru <code>tToBtB_df</code> ima jedinstven redni broj u stupcu <code>line</code> pa ga možemo koristiti kao oznaku odlomka. Tekst tokeniziramo na riječi i uklanjamo zaustavne riječi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi po odlomcima, bez zaustavnih riječi</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>tToBtB_paragraph_words <span class="ot">&lt;-</span> tToBtB_df <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text) <span class="sc">|&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> stop_words<span class="sc">$</span>word)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>tToBtB_paragraph_words</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,344 × 4
+    line fairy_tale                       paragraph_no word      
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;     
+ 1    20 1_the_wizard_and_the_hopping_pot            1 kindly    
+ 2    20 1_the_wizard_and_the_hopping_pot            1 wizard    
+ 3    20 1_the_wizard_and_the_hopping_pot            1 magic     
+ 4    20 1_the_wizard_and_the_hopping_pot            1 generously
+ 5    20 1_the_wizard_and_the_hopping_pot            1 wisely    
+ 6    20 1_the_wizard_and_the_hopping_pot            1 benefit   
+ 7    20 1_the_wizard_and_the_hopping_pot            1 neighbours
+ 8    20 1_the_wizard_and_the_hopping_pot            1 reveal    
+ 9    20 1_the_wizard_and_the_hopping_pot            1 true      
+10    20 1_the_wizard_and_the_hopping_pot            1 source    
+# ℹ 2,334 more rows</code></pre>
+</div>
+</div>
+<p>Funkcija <code>pairwise_count()</code> iz paketa <code>widyr</code> broji u koliko se odlomaka svaki par riječi pojavljuje zajedno. Prvi joj je argument stupac s riječima, a drugi stupac koji označava odlomak.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj odlomaka u kojima se parovi riječi pojavljuju zajedno</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_pairs <span class="ot">&lt;-</span> tToBtB_paragraph_words <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pairwise_count</span>(word, line, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>tToBtB_word_pairs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 35,136 × 3
+   item1     item2         n
+   &lt;chr&gt;     &lt;chr&gt;     &lt;dbl&gt;
+ 1 charlatan king         11
+ 2 king      charlatan    11
+ 3 pot       wizard        8
+ 4 king      magic         8
+ 5 wizard    pot           8
+ 6 brother   death         8
+ 7 king      foolish       8
+ 8 magic     king          8
+ 9 foolish   king          8
+10 babbitty  charlatan     8
+# ℹ 35,126 more rows</code></pre>
+</div>
+</div>
+<p>Ulazni podaci imali su jedan redak za svaki par odlomka i riječi, a rezultat ima jedan redak za svaki par riječi. I to je uredan oblik podataka, ali drugačije strukture. Tablica ima 35136 redaka, no svaki se par pojavljuje dvaput, jednom kao (<em>X</em>, <em>Y</em>) i jednom kao (<em>Y</em>, <em>X</em>), pa je različitih parova upola manje, 17568. To se vidi već na vrhu tablice jer se najčešći par, <em>charlatan</em> i <em>king</em>, nalazi se u prva dva retka, jednom u jednom, a jednom u drugom redoslijedu. Te se dvije riječi zajedno pojavljuju u 11 odlomaka. Slijede parovi koji se zajedno pojavljuju u po osam odlomaka: <em>pot</em> i <em>wizard</em>, <em>king</em> i <em>magic</em>, <em>brother</em> i <em>death</em>, <em>king</em> i <em>foolish</em> te <em>babbitty</em> i <em>charlatan</em>. Svaki od tih parova povezuje riječi iz iste bajke, pa nam ovakvo brojanje pokazuje koji se likovi i pojmovi u bajkama pojavljuju zajedno. Lako možemo pronaći i riječi koje se najčešće pojavljuju uz neku određenu riječ, primjerice uz riječ <em>king</em>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi koje se najčešće pojavljuju u istom odlomku kao riječ "king"</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_pairs <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(item1 <span class="sc">==</span> <span class="st">"king"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 245 × 3
+   item1 item2         n
+   &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;
+ 1 king  charlatan    11
+ 2 king  magic         8
+ 3 king  foolish       8
+ 4 king  babbitty      6
+ 5 king  palace        5
+ 6 king  perform       5
+ 7 king  power         4
+ 8 king  magical       4
+ 9 king  witch         4
+10 king  twig          4
+# ℹ 235 more rows</code></pre>
+</div>
+</div>
+<p>Riječ <em>king</em> pojavljuje se u istim odlomcima s ukupno 245 različitih riječi. Najčešće se pojavljuje uz <em>charlatan</em> (11 odlomaka), <em>magic</em> i <em>foolish</em> (po 8) te <em>babbitty</em> (6). Slijede <em>palace</em> i <em>perform</em> (po 5) te <em>power</em>, <em>magical</em>, <em>witch</em> i <em>twig</em> (po 4). Popis tako okuplja glavne likove bajke <em>Babbitty Rabbitty and Her Cackling Stumps</em>, kralja, šarlatana i Babbitty, ali i skupinu riječi vezanih uz magiju (<em>magic</em>, <em>magical</em>, <em>power</em>, <em>perform</em>). To upućuje na to da se odlomci u kojima se kralj pojavljuje često bave magijom i njezinim izvođenjem. Pritom treba imati na umu da se na vrhu ovakvog popisa nalaze i riječi koje su same po sebi česte pa se pojavljuju uz mnoge druge riječi. Zato ćemo u sljedećem koraku izračunati korelaciju koja to uzima u obzir.</p>
+<section id="korelacija-parova-riječi" class="level3" data-number="10.3.1">
+<h3 data-number="10.3.1" class="anchored" data-anchor-id="korelacija-parova-riječi"><span class="header-section-number">10.3.1</span> Korelacija parova riječi</h3>
+<p>Parovi riječi koji se najčešće pojavljuju zajedno nisu nužno i najpovezaniji jer to mogu biti jednostavno vrlo česte riječi. Zato je korisnije izračunati <strong>korelaciju među riječima</strong> koja pokazuje koliko se često pojavljuju zajedno u odnosu na to koliko se često pojavljuju odvojeno. Za to se koristi <strong>koeficijent phi</strong> (φ), uobičajena mjera povezanosti dviju binarnih varijabli. On pokazuje koliko je vjerojatnije da se u odlomku pojave obje riječi ili nijedna nego da se pojavi samo jedna od njih.</p>
+<p>Koeficijent phi najlakše je objasniti tablicom:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 23%">
+<col style="width: 27%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;"><strong>Sadrži riječ Y</strong></th>
+<th style="text-align: center;"><strong>Ne sadrži riječ Y</strong></th>
+<th style="text-align: center;"><strong>Ukupno</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Sadrži riječ X</strong></td>
+<td style="text-align: center;"><em>n</em><sub>11</sub></td>
+<td style="text-align: center;"><em>n</em><sub>10</sub></td>
+<td style="text-align: center;"><em>n</em><sub>1·</sub></td>
+</tr>
+<tr class="even">
+<td><strong>Ne sadrži riječ X</strong></td>
+<td style="text-align: center;"><em>n</em><sub>01</sub></td>
+<td style="text-align: center;"><em>n</em><sub>00</sub></td>
+<td style="text-align: center;"><em>n</em><sub>0·</sub></td>
+</tr>
+<tr class="odd">
+<td><strong>Ukupno</strong></td>
+<td style="text-align: center;"><em>n</em><sub>·1</sub></td>
+<td style="text-align: center;"><em>n</em><sub>·0</sub></td>
+<td style="text-align: center;"><em>n</em></td>
+</tr>
+</tbody>
+</table>
+<p>U tablici <em>n</em><sub>11</sub> označava broj odlomaka u kojima se pojavljuju obje riječi, <em>n</em><sub>00</sub> broj odlomaka u kojima se ne pojavljuje nijedna, a <em>n</em><sub>10</sub> i <em>n</em><sub>01</sub> broj odlomaka u kojima se pojavljuje samo jedna od njih. Koeficijent phi tada je:</p>
+<p><span class="math inline">\(\phi = \frac{n_{11}n_{00} - n_{10}n_{01}}{\sqrt{n_{1\cdot}n_{0\cdot}n_{\cdot 0}n_{\cdot 1}}}\)</span></p>
+<p>Kao i Pearsonov koeficijent korelacije, kreće se od -1 do 1. Vrijednost blizu 1 znači da se riječi gotovo uvijek pojavljuju zajedno, a vrijednost blizu nule da međusobno nisu povezane.</p>
+<p>Koeficijent phi računa se funkcijom <code>pairwise_cor()</code> iz paketa <code>widyr</code> s istim argumentima kao <code>pairwise_count()</code>. Prije toga zadržavamo samo riječi koje se pojavljuju barem pet puta. Kod rijetkih riječi korelacija nije pouzdana pa bi dvije riječi koje se pojavljuju samo jednom, u istom odlomku, imale savršenu korelaciju 1, iako to može biti puka slučajnost.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Korelacija parova riječi</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_cors <span class="ot">&lt;-</span> tToBtB_paragraph_words <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(word) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;=</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pairwise_cor</span>(word, line, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>tToBtB_word_cors</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7,140 × 3
+   item1    item2    correlation
+   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
+ 1 hunters  brigade        1    
+ 2 brigade  hunters        1    
+ 3 luckless sir            0.788
+ 4 sir      luckless       0.788
+ 5 brother  death          0.712
+ 6 death    brother        0.712
+ 7 walls    garden         0.662
+ 8 garden   walls          0.662
+ 9 pot      cooking        0.643
+10 cooking  pot            0.643
+# ℹ 7,130 more rows</code></pre>
+</div>
+</div>
+<p>Tablica ima 7140 redaka, a i ovdje se svaki par pojavljuje dvaput, pa je različitih parova 3570. Toliko parova može se oblikovati od 85 riječi, koliko ih se u bajkama pojavljuje barem pet puta. Najveću korelaciju, 1, imaju riječi <em>hunters</em> i <em>brigade</em>, što znači da se pojavljuju uvijek u istim odlomcima, u svakom odlomku u kojem je jedna, nalazi se i druga. Visoke korelacije imaju i parovi <em>sir</em> i <em>luckless</em> (0,79), <em>brother</em> i <em>death</em> (0,71), <em>walls</em> i <em>garden</em> (0,66) te <em>pot</em> i <em>cooking</em> (0,64). Većinu tih parova već smo susreli među bigramima, kao <em>sir luckless</em>, <em>garden walls</em> i <em>cooking pot</em>, jer riječi koje stoje jedna uz drugu nužno se nalaze i u istom odlomku. Par <em>brother</em> i <em>death</em>, međutim, nije bigram, odnosno riječi se ne pojavljuju jedna uz drugu, ali se gotovo uvijek javljaju u istim odlomcima.</p>
+<p>Usporedba s prethodnim ispisom pokazuje i razliku između broja zajedničkih pojavljivanja i korelacije. Par <em>charlatan</em> i <em>king</em> zajedno se pojavljuje u najviše odlomaka (11), ali ga nema među parovima s najvećom korelacijom. Obje riječi pojavljuju se i u mnogim odlomcima jedna bez druge, pa njihova povezanost, iako česta, nije toliko isključiva kao, primjerice, povezanost riječi <em>sir</em> i <em>luckless</em>.</p>
+<p>Tako možemo odabrati nekoliko riječi koje nas zanimaju i pronaći riječi koje su s njima najpovezanije.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi najpovezanije s odabranim riječima</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_cors <span class="sc">|&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(item1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"king"</span>, <span class="st">"brother"</span>, <span class="st">"pot"</span>, <span class="st">"fountain"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(item1) <span class="sc">|&gt;</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(correlation, <span class="at">n =</span> <span class="dv">8</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> correlation, <span class="at">y =</span> <span class="fu">reorder_within</span>(item2, correlation, item1))) <span class="sc">+</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>item1, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Korelacija (phi)"</span>, <span class="at">y =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_3_odnosi_među_riječima_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Graf za svaku od četiri odabrane riječi prikazuje osam riječi s kojima je najviše povezana, odnosno s kojima se najčešće pojavljuje u istim odlomcima u odnosu na to koliko se pojavljuju odvojeno. Svaka od četiri riječi okuplja oko sebe prepoznatljiv dio svoje bajke. Riječ <em>brother</em> najviše je povezana s riječima <em>death</em> (0,71) i <em>dead</em>, a zatim sa <em>stone</em> i <em>wand</em>, predmetima koje braća u bajci <em>The Tale of the Three Brothers</em> dobivaju od Smrti. Riječ <em>fountain</em> najviše je povezana s riječju <em>bathe</em>, a zatim s <em>knight</em>, <em>hill</em>, <em>walls</em> i <em>garden</em>, koje opisuju put do fontane i mjesto na kojem se nalazi. Riječ <em>king</em> najviše je povezana s riječju <em>foolish</em>, a zatim s <em>perform</em>, <em>charlatan</em> i <em>magic</em>, što odgovara kralju koji želi izvoditi magiju i kojeg pritom vara šarlatan. Riječ <em>pot</em> najviše je povezana s riječju <em>cooking</em> (0,64), a zatim s <em>warts</em>, <em>hopping</em> i <em>clang</em>, koje opisuju lonac koji je dobio bradavice, skakuće i zvecka.</p>
+<p>Pri usporedbi grafova treba imati na umu da svaki ima vlastitu skalu na osi x (<code>scales = "free"</code>). Najveće korelacije za riječi <em>brother</em> i <em>pot</em> veće su od 0,6, a za riječ <em>fountain</em> manje od 0,4. Riječ <em>fountain</em>, dakle, nije ni s jednom riječi povezana tako snažno kao <em>brother</em> s riječju <em>death</em>, nego je slabije povezana s više riječi.</p>
+<p>Paket <code>ggraph</code> možemo koristiti i za prikaz korelacija u obliku mreže. Kako mreža ne bi bila prenapučena, zadržavamo samo parove s korelacijom većom od 0,5. Za razliku od mreže bigrama, ovdje odnosi nemaju smjer jer je korelacija riječi <em>X</em> s riječi <em>Y</em> jednaka korelaciji riječi <em>Y</em> s riječi <em>X</em> pa bridovi nemaju strelice. Argument <code>repel = TRUE</code> razmiče natpise kako se ne bi preklapali.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Osiguravanje ponovljivosti rasporeda čvorova</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2016</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mreža parova riječi s korelacijom većom od 0,5</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>tToBtB_word_cors <span class="sc">|&gt;</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(correlation <span class="sc">&gt;</span> <span class="fl">0.5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">graph_from_data_frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">edge_alpha =</span> correlation), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="at">color =</span> <span class="st">"lightblue"</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> name), <span class="at">repel =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_3_odnosi_među_riječima_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Uz prag od 0,5 mreža je rijetka. Sastoji se od devet zasebnih dijelova, uglavnom parova riječi, a većinu smo već susreli među bigramima: <em>sir</em> i <em>luckless</em>, <em>pot</em> i <em>cooking</em>, <em>walls</em> i <em>garden</em> te <em>palace</em> i <em>grounds</em>. To nije neočekivano jer riječi koje stoje jedna uz drugu nužno se nalaze i u istom odlomku. Mreža, međutim, otkriva i veze koje bigrami ne pokazuju. Riječi <em>death</em> i <em>brother</em> povezane su iako ne čine bigram, a <em>witches</em> i <em>knight</em> povezuje bajka <em>The Fountain of Fair Fortune</em> u kojoj se vitez i vještice pojavljuju u istim prizorima. Nizovi <em>babbitty</em> - <em>bush</em> - <em>inside</em> i <em>son</em> - <em>father’s</em> - <em>slipper</em> povezuju po tri riječi iz istih dijelova bajki.</p>
+<p>Jedina veća skupina čine riječi <em>witch</em>, <em>hunters</em>, <em>brigade</em> i <em>hounds</em> koje su gotovo sve međusobno povezane, a najtamniji brid, između riječi <em>hunters</em> i <em>brigade</em>, odgovara njihovoj savršenoj korelaciji (1). Ta skupina pokazuje ono što mreža korelacija može otkriti, a mreža bigrama ne može, da skupinu riječi koje zajedno opisuju jedan pojam ili prizor, ovdje lov na vještice, iako ne stoje uvijek jedna uz drugu. Za razliku od mreže bigrama, u ovoj su mreži povezane riječi koje se pojavljuju u istim odlomcima, a ne nužno jedna uz drugu pa odnosi nemaju smjer.</p>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>Ko-pojavljivanje riječi omogućuje istraživanje pojmova koji se često javljaju u istim dokumentima ili rečenicama.</p>
-
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

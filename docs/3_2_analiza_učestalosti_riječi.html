@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Riječi koje se u tekstu pojavljuju najčešće rijetko su one koje o njemu govore najviše. Učestalost riječi u jeziku podliježe pravilnosti poznatoj kao Zipfov zakon, a prema kojem se malobrojne riječi pojavljuju iznimno često, a velika većina tek rijetko. Zato samo brojanje riječi ne govori koje su riječi za neki tekst doista važne. Odgovor na to pitanje daje mjera tf-idf koja učestalost riječi u jednom tekstu uspoređuje s njezinom prisutnošću u ostalim tekstovima i tako izdvaja riječi po kojima se pojedini tekst razlikuje od ostalih.">
 
 <title>9&nbsp; Analiza učestalosti riječi – Analiza teksta u R-u</title>
 <style>
@@ -108,7 +109,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<style>
 
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="custom.css">
 </head>
@@ -116,13 +163,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_0_POČETAK U RADU S TEKSTOM.html">DESKRIPCIJSKA ANALIZA TEKSTA</a></li><li class="breadcrumb-item"><a href="./3_2_analiza_učestalosti_riječi.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_deskriptivna_analiza_teksta.html">3_0_POČETAK U RADU S TEKSTOM.qmd</a></li><li class="breadcrumb-item"><a href="./3_2_analiza_učestalosti_riječi.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -132,7 +179,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_deskriptivna_analiza_teksta.html">3_0_POČETAK U RADU S TEKSTOM.qmd</a></li><li class="breadcrumb-item"><a href="./3_2_analiza_učestalosti_riječi.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></h1>
+                  <div>
+        <div class="description">
+          Riječi koje se u tekstu pojavljuju najčešće rijetko su one koje o njemu govore najviše. Učestalost riječi u jeziku podliježe pravilnosti poznatoj kao Zipfov zakon, a prema kojem se malobrojne riječi pojavljuju iznimno često, a velika većina tek rijetko. Zato samo brojanje riječi ne govori koje su riječi za neki tekst doista važne. Odgovor na to pitanje daje mjera tf-idf koja učestalost riječi u jednom tekstu uspoređuje s njezinom prisutnošću u ostalim tekstovima i tako izdvaja riječi po kojima se pojedini tekst razlikuje od ostalih.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -216,8 +284,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./3_0_POČETAK U RADU S TEKSTOM.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DESKRIPCIJSKA ANALIZA TEKSTA</span></a>
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3_0_POČETAK U RADU S TEKSTOM.qmd</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -295,7 +363,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_2_vizualizacije_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacije teksta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
   </div>
 </li>
       </ul>
@@ -312,42 +380,295 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#zipfov-zakon" id="toc-zipfov-zakon" class="nav-link active" data-scroll-target="#zipfov-zakon"><span class="header-section-number">9.1</span> Zipfov zakon</a></li>
+  <li><a href="#tf-idf-analiza" id="toc-tf-idf-analiza" class="nav-link" data-scroll-target="#tf-idf-analiza"><span class="header-section-number">9.2</span> tf-idf analiza</a></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_0_POČETAK U RADU S TEKSTOM.html">DESKRIPCIJSKA ANALIZA TEKSTA</a></li><li class="breadcrumb-item"><a href="./3_2_analiza_učestalosti_riječi.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></h1>
-</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
-
-
-<p>Učestalost riječi može ukazati na dominantne pojmove u korpusu. Pri interpretaciji treba uzeti u obzir duljinu dokumenata i kontekst u kojem se riječi pojavljuju.</p>
+<p>U prethodnom smo poglavlju učestalost riječi analizirali brojanjem, odnosno računanjem koliko se puta pojedina riječ pojavljuje u tekstu i koliki je njezin udio u ukupnom broju riječi. Takva analiza govori koje su riječi česte, ali ne i koje su važne. Veći broj pojavljivanja ne znači nužno da je riječ važnija za sadržaj teksta. U ovom ćemo poglavlju najprije pogledati kako je učestalost riječi u tekstu raspoređena, a zatim upoznati mjeru koja pokušava izdvojiti riječi koje su za pojedini tekst doista karakteristične.</p>
+<section id="zipfov-zakon" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="zipfov-zakon"><span class="header-section-number">9.1</span> Zipfov zakon</h2>
+<p>Raspodjela učestalosti riječi u jeziku slijedi pravilnost poznatu kao <strong>Zipfov zakon</strong>, nazvan prema američkom lingvistu Georgeu Zipfu. Prema tom zakonu, učestalost riječi obrnuto je proporcionalna njezinu rangu, odnosno mjestu na popisu riječi poredanih od najčešće prema najrjeđoj. Drugim riječima, druga najčešća riječ pojavljuje se otprilike upola rjeđe od najčešće, treća otprilike trećinu toliko često i tako dalje. Matematički se to može zapisati ovako:</p>
+<p><span class="math inline">\(\text{Učestalost riječi} \propto \frac{1}{\text{rang riječi}}\)</span></p>
+<p>Primjerice, ako se u nekom velikom tekstu najčešća riječ pojavljuje 10000 puta, druga najčešća pojavit će se otprilike 5000 puta, a treća otprilike 3333 puta. Posljedica je da malobrojne riječi, uglavnom zaustavne riječi poput <em>the</em>, <em>and</em> ili <em>of</em>, čine velik dio svakog teksta, dok se velika većina riječi pojavljuje tek nekoliko puta ili samo jednom.</p>
+<p>Zipfov zakon možemo provjeriti na bajkama barda Beedlea s nekoliko funkcija iz paketa <code>dplyr</code>. Budući da nas zanima raspodjela učestalosti svih riječi u tekstu, koristimo tokenizirani tekst u izvornom obliku, sa zaustavnim riječima (<code>tToBtB_word_tokens</code>). Postupak je sljedeći:</p>
+<ol type="1">
+<li><p>Funkcijom <code>count()</code> brojimo koliko se puta svaka riječ pojavljuje u svakoj bajci. Argument <code>sort = TRUE</code> slaže riječi od najčešće prema najrjeđoj.</p></li>
+<li><p>Podatke grupiramo prema bajci kako bi se sljedeći izračuni provodili zasebno za svaku bajku.</p></li>
+<li><p>Funkcijom <code>mutate()</code> stvaramo tri nova stupca:</p></li>
+</ol>
+<ul>
+<li><p><code>rank</code> - redni broj riječi na popisu poredanom prema učestalosti koji dobivamo funkcijom <code>row_number()</code>;</p></li>
+<li><p><code>total</code> - ukupan broj riječi u bajci i</p></li>
+<li><p><code>term_frequency</code> - relativnu učestalost riječi, odnosno njezin udio u ukupnom broju riječi u bajci.</p></li>
+</ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>rijeci <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"tekst"</span>, <span class="st">"tekst"</span>, <span class="st">"R"</span>, <span class="st">"podatak"</span>, <span class="st">"R"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">table</span>(rijeci), <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rang i relativna učestalost riječi u svakoj bajci</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tToBtB_freq_by_rank <span class="ot">&lt;-</span> tToBtB_word_tokens <span class="sc">|&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, word, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale) <span class="sc">|&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Rang riječi unutar bajke</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">rank =</span> <span class="fu">row_number</span>(),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ukupan broj riječi u bajci</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">total =</span> <span class="fu">sum</span>(n),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Relativna učestalost riječi</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">term_frequency =</span> n <span class="sc">/</span> total</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>tToBtB_freq_by_rank</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>rijeci
-      R   tekst podatak 
-      2       2       1 </code></pre>
+<pre><code># A tibble: 2,283 × 6
+   fairy_tale                             word      n  rank total term_frequency
+   &lt;chr&gt;                                  &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;          &lt;dbl&gt;
+ 1 4_babbitty_rabbitty_and_her_cackling_… the     159     1  1687         0.0943
+ 2 2_the_fountain_of_fair_fortune         the     146     1  1479         0.0987
+ 3 1_the_wizard_and_the_hopping_pot       the      86     1  1023         0.0841
+ 4 3_the_warlocks_hairy_heart             the      74     1  1096         0.0675
+ 5 2_the_fountain_of_fair_fortune         and      70     2  1479         0.0473
+ 6 4_babbitty_rabbitty_and_her_cackling_… and      69     2  1687         0.0409
+ 7 4_babbitty_rabbitty_and_her_cackling_… of       54     3  1687         0.0320
+ 8 1_the_wizard_and_the_hopping_pot       and      53     2  1023         0.0518
+ 9 3_the_warlocks_hairy_heart             and      47     2  1096         0.0429
+10 5_the_tale_of_the_three_brothers       the      47     1   665         0.0707
+# ℹ 2,273 more rows</code></pre>
 </div>
 </div>
+<p>Stupac <code>rank</code> pokazuje mjesto svake riječi na popisu riječi u njezinoj bajci, poredanom od najčešće prema najrjeđoj.</p>
+<p>Zipfov zakon najlakše je provjeriti na jednoj bajci, primjerice na bajci <em>The Fountain of Fair Fortune</em>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rang i relativna učestalost riječi u bajci The Fountain of Fair Fortune</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tToBtB_freq_by_rank <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fairy_tale <span class="sc">==</span> <span class="st">"2_the_fountain_of_fair_fortune"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 554 × 6
+   fairy_tale                     word      n  rank total term_frequency
+   &lt;chr&gt;                          &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;          &lt;dbl&gt;
+ 1 2_the_fountain_of_fair_fortune the     146     1  1479         0.0987
+ 2 2_the_fountain_of_fair_fortune and      70     2  1479         0.0473
+ 3 2_the_fountain_of_fair_fortune of       45     3  1479         0.0304
+ 4 2_the_fountain_of_fair_fortune to       32     4  1479         0.0216
+ 5 2_the_fountain_of_fair_fortune her      25     5  1479         0.0169
+ 6 2_the_fountain_of_fair_fortune in       21     6  1479         0.0142
+ 7 2_the_fountain_of_fair_fortune was      21     7  1479         0.0142
+ 8 2_the_fountain_of_fair_fortune they     20     8  1479         0.0135
+ 9 2_the_fountain_of_fair_fortune a        18     9  1479         0.0122
+10 2_the_fountain_of_fair_fortune she      18    10  1479         0.0122
+# ℹ 544 more rows</code></pre>
+</div>
+</div>
+<p>Bajka <em>The Fountain of Fair Fortune</em> ima ukupno 1479 riječi, od čega 554 različite. Najčešća riječ je <em>the</em> koja se pojavljuje 146 puta i čini 9,87 % svih riječi u bajci, pa je otprilike svaka deseta riječ <em>the</em>. Druga najčešća riječ, <em>and</em>, pojavljuje se 70 puta, a treća, <em>of</em>, 45 puta. Prema Zipfovu zakonu, riječ na rangu <em>r</em> trebala bi se pojavljivati otprilike 146 / <em>r</em> puta:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Rang</th>
+<th>Riječ</th>
+<th>Očekivano (146 / <em>r</em>)</th>
+<th>Opaženo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><em>the</em></td>
+<td>146</td>
+<td>146</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><em>and</em></td>
+<td>73</td>
+<td>70</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><em>of</em></td>
+<td>49</td>
+<td>45</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><em>to</em></td>
+<td>37</td>
+<td>32</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td><em>her</em></td>
+<td>29</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td><em>she</em></td>
+<td>15</td>
+<td>18</td>
+</tr>
+</tbody>
+</table>
+<p>Opažene se vrijednosti dobro slažu s onima koje predviđa Zipfov zakon, iako ne savršeno. Riječi na rangovima od 2 do 5 nešto su rjeđe od predviđenog, a riječ na rangu 10 nešto češća. Ispis pokazuje i drugu posljedicu Zipfova zakona. Svih deset najčešćih riječi zaustavne su riječi, a zajedno se pojavljuju 416 puta, pa čine 28 % svih riječi u bajci. Više od četvrtine riječi u tekstu, dakle, otpada na riječi koje ne govore ništa o njegovu sadržaju. Riječi koje se pojavljuju jednako često, poput <em>in</em> i <em>was</em> (po 21 put), dobivaju različite rangove (6 i 7) jer funkcija <code>row_number()</code> svakoj riječi dodjeljuje drugi redni broj.</p>
+<p>Zipfov zakon obično se prikazuje grafom na kojem je rang na osi x, a relativna učestalost na osi y. Pritom obje osi imaju logaritamsku skalu. Na takvom grafu obrnuto proporcionalan odnos izgleda kao pravac s negativnim nagibom.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tToBtB_freq_by_rank, <span class="fu">aes</span>(<span class="at">x =</span> rank, <span class="at">y =</span> term_frequency, <span class="at">colour =</span> fairy_tale)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.1</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Rang"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Relativna učestalost"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"Bajka"</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>) <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour =</span> <span class="fu">guide_legend</span>(<span class="at">ncol =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_2_analiza_učestalosti_riječi_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Crte svih pet bajki gotovo se preklapaju i spuštaju od gornjeg lijevog prema donjem desnom kutu. Najčešće riječi, na rangu 1, čine između 7 i 10 % svih riječi u bajci, dok se riječi na rangu od nekoliko stotina pojavljuju sa samo nekoliko desetinki postotka. Budući da obje osi imaju logaritamsku skalu, takav pad, koji je kroz veći dio raspona približno ravna crta, upravo je ono što predviđa Zipfov zakon. Odnos ranga i relativne učestalosti, dakle, gotovo je jednak u svim bajkama, bez obzira na to o čemu govore.</p>
+<p>Ipak, crte nisu posve ravne. Na desnom kraju pretvaraju se u vodoravne stube jer se mnogo rijetkih riječi pojavljuje jednako često, samo jednom ili dvaput, pa sve imaju istu relativnu učestalost. Crte su i različite duljine. Crta bajke <em>The Tale of the Three Brothers</em> završava ranije i na višoj vrijednosti od ostalih jer je ta bajka najkraća pa ima manje različitih riječi, a riječ koja se u njoj pojavi samo jednom čini veći udio svih riječi. Zato ćemo nagib izračunati za srednji dio raspona ranga u kojem je odnos najpravilniji. Za to koristimo funkciju <code>lm()</code> koja procjenjuje linearni model. Budući da je odnos linearan tek na logaritamskoj skali, u model unosimo logaritme ranga i relativne učestalosti (<code>log10()</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi srednjeg raspona ranga</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>tToBtB_rank_subset <span class="ot">&lt;-</span> tToBtB_freq_by_rank <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(rank <span class="sc">&gt;</span> <span class="dv">10</span>, rank <span class="sc">&lt;</span> <span class="dv">500</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Linearni model logaritma relativne učestalosti i logaritma ranga</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>tToBtB_zipf_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log10</span>(term_frequency) <span class="sc">~</span> <span class="fu">log10</span>(rank), <span class="at">data =</span> tToBtB_rank_subset)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>tToBtB_zipf_model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log10(term_frequency) ~ log10(rank), data = tToBtB_rank_subset)
+
+Coefficients:
+(Intercept)  log10(rank)  
+    -1.2107      -0.7566  </code></pre>
+</div>
+</div>
+<p>Ispis prikazuje dva koeficijenta. Odsječak (<code>(Intercept)</code>) iznosi -1,21, a nagib (koeficijent uz <code>log10(rank)</code>) -0,76. Nagib je najvažniji jer pokazuje koliko brzo relativna učestalost pada s porastom ranga. U klasičnom obliku Zipfova zakona nagib je -1, a što znači da se dvostrukim povećanjem ranga učestalost smanjuje upola. Nagib od -0,76 znači da pri dvostrukom povećanju ranga relativna učestalost pada na otprilike 59 % prethodne vrijednosti (2<sup>−0,76</sup> ≈ 0,59), a ne na 50 %. U bajkama, dakle, učestalost riječi u srednjem dijelu raspona pada nešto sporije nego što predviđa klasični Zipfov zakon, ali je obrazac i dalje jasno potencijski.</p>
+<p>Blaži nagib dijelom je posljedica kratkoće bajki. Svaka bajka ima tek nekoliko stotina različitih riječi, pa raspon ranga od 10 do 500 obuhvaća i velik broj riječi koje se pojavljuju samo jednom ili dvaput. Kao što smo vidjeli na grafu, takve riječi čine vodoravne stube pa u tom dijelu učestalost gotovo ne pada, a što ublažava procijenjeni nagib. U duljim tekstovima, poput romana, nagib je obično bliži -1.</p>
+<p>Procijenjeni pravac možemo ucrtati u graf. Funkcija <code>coef()</code> izdvaja koeficijente modela, prvi je odsječak na osi y (<code>intercept</code>), a drugi nagib (<code>slope</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz Zipfova zakona s procijenjenim pravcem</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tToBtB_freq_by_rank, <span class="fu">aes</span>(<span class="at">x =</span> rank, <span class="at">y =</span> term_frequency, <span class="at">colour =</span> fairy_tale)) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">intercept =</span> <span class="fu">coef</span>(tToBtB_zipf_model)[<span class="dv">1</span>],</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">slope =</span> <span class="fu">coef</span>(tToBtB_zipf_model)[<span class="dv">2</span>],</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"gray50"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="dv">2</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.1</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Rang"</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Relativna učestalost"</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"Bajka"</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_2_analiza_učestalosti_riječi_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Ovakva se analiza može proširiti i na usporedbu različitih autora ili bilo kojih drugih zbirki tekstova, a zahvaljujući urednom obliku podataka provodi se istim postupkom.</p>
+</section>
+<section id="tf-idf-analiza" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="tf-idf-analiza"><span class="header-section-number">9.2</span> tf-idf analiza</h2>
+<p>Zipfov zakon pokazuje da su najčešće riječi u tekstu uglavnom one koje o njegovu sadržaju govore najmanje, no, slijedeći prikazani zakon, ostaje pronaći riječi koje su za neki tekst doista važne. Dva su takva pristupa u analizi učestalosti riječi.</p>
+<p>Jedan je pristup <strong>učestalost pojma</strong> (engl. <em>term frequency</em>, <strong>tf</strong>), odnosno relativna učestalost riječi u dokumentu koju smo računali i u prethodnom poglavlju. Što se riječ češće pojavljuje u dokumentu, to je vjerojatnije da je za njega važna. No mnoge su riječi česte u svim dokumentima pa ne govore ništa o tome po čemu se pojedini dokument razlikuje od ostalih.</p>
+<p>Drugi je pristup <strong>inverzna učestalost dokumenata</strong> (engl. <em>inverse document frequency</em>, <strong>idf</strong>). Ona pokazuje u koliko se dokumenata u zbirci riječ pojavljuje. Pritom riječ koja se pojavljuje u svim dokumentima dobiva idf 0, a što je u manje dokumenata, to joj je idf veći. Računa se kao prirodni logaritam omjera ukupnog broja dokumenata i broja dokumenata koji sadrže riječ:</p>
+<p><span class="math inline">\(\text{idf} = \ln \left( \frac{\text{broj dokumenata}}{\text{broj dokumenata koji sadrže riječ}} \right)\)</span></p>
+<p>U našem slučaju dokumenti su bajke pa riječ koja se pojavljuje u samo jednoj od pet bajki ima idf = ln(5/1) ≈ 1,61, riječ koja se pojavljuje u dvije bajke ln(5/2) ≈ 0,92, a riječ koja se pojavljuje u svih pet ln(5/5) = 0.</p>
+<p>Umnožak te dvije mjere je <strong>tf-idf</strong>, odnosno mjera prema kojoj riječ ima visok tf-idf ako se (1) često pojavljuje u jednom dokumentu (visok tf), a (2) rijetka je u ostalim dokumentima (visok idf). Tako tf-idf izdvaja riječi koje su karakteristične za pojedini dokument unutar zbirke dokumenata.</p>
+<p>Tf-idf se računa funkcijom <code>bind_tf_idf()</code> iz paketa <code>tidytext</code>. Funkcija kao ulaz očekuje tablicu u kojoj svaki redak sadrži jedan pojam iz jednog dokumenta i broj njegovih pojavljivanja u tom dokumentu. Zato najprije funkcijom <code>count()</code> prebrojimo lematizirane riječi u svakoj bajci. Funkciji <code>bind_tf_idf()</code> zatim zadajemo tri argumenta:</p>
+<ul>
+<li><p><code>term</code> - stupac s riječima,</p></li>
+<li><p><code>document</code> - stupac s dokumentima (bajke) i</p></li>
+<li><p><code>n</code> - stupac s brojem pojavljivanja.</p></li>
+</ul>
+<p>Funkcija tablici dodaje tri nova stupca, <code>tf</code>, <code>idf</code> i <code>tf_idf</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Izračun tf-a, idf-a i tf-idf-a</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tToBtB_tf_idf <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_tf_idf</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">term =</span> lemma,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">document =</span> fairy_tale,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> n</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(tf_idf))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>tToBtB_tf_idf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,421 × 6
+   fairy_tale                                  lemma       n     tf   idf tf_idf
+   &lt;chr&gt;                                       &lt;chr&gt;   &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1 5_the_tale_of_the_three_brothers            brother    22 0.0982 1.61  0.158 
+ 2 1_the_wizard_and_the_hopping_pot            pot        23 0.0561 1.61  0.0903
+ 3 4_babbitty_rabbitty_and_her_cackling_stumps king       33 0.0482 1.61  0.0776
+ 4 4_babbitty_rabbitty_and_her_cackling_stumps charla…    27 0.0395 1.61  0.0635
+ 5 3_the_warlocks_hairy_heart                  warlock    13 0.0294 1.61  0.0473
+ 6 2_the_fountain_of_fair_fortune              founta…    16 0.0274 1.61  0.0441
+ 7 5_the_tale_of_the_three_brothers            death      18 0.0804 0.511 0.0410
+ 8 4_babbitty_rabbitty_and_her_cackling_stumps babbit…    17 0.0249 1.61  0.0400
+ 9 3_the_warlocks_hairy_heart                  warloc…    10 0.0226 1.61  0.0364
+10 1_the_wizard_and_the_hopping_pot            clang       9 0.0220 1.61  0.0353
+# ℹ 1,411 more rows</code></pre>
+</div>
+</div>
+<p>Tablica prikazuje lematizirane riječi poredane od najveće prema najmanjoj vrijednosti tf-idf, a na vrhu su leme koje su najkarakterističnije za svoju bajku. Najveći tf-idf ima lema <em>brother</em> u bajci <em>The Tale of the Three Brothers</em> (0,158). Ona ima visoku relativnu učestalost u toj bajci (tf = 0,0982), odnosno čini gotovo 10 % njezinih riječi te se ne pojavljuje ni u jednoj drugoj bajci pa ima najveći mogući idf (idf = ln(5/1) ≈ 1,61).</p>
+<p>Umnožak tih vrijednosti (0,0982 × 1,61 ≈ 0,158) čini je ključnom riječi koja opisuje tu bajku i razlikuje je od ostalih. Slično vrijedi i za ostale leme na vrhu tablice: <em>pot</em> i <em>clang</em> za bajku <em>The Wizard and the Hopping Pot</em>, <em>king</em>, <em>charlatan</em> i <em>babbitty</em> za bajku <em>Babbitty Rabbitty and Her Cackling Stumps</em>, <em>warlock</em> za bajku <em>The Warlock’s Hairy Heart</em> te <em>fountain</em> za bajku <em>The Fountain of Fair Fortune</em>. Gotovo sve imaju idf 1,61, a što znači da se svaka pojavljuje u samo jednoj bajci.</p>
+<p>Kako idf mijenja poredak najbolje se vidi na lemi <em>death</em>. U bajci <em>The Tale of the Three Brothers</em> ima drugu najveću relativnu učestalost od svih lema u tablici (tf = 0,0804), veću od leme <em>pot</em> u bajci <em>The Wizard and the Hopping Pot</em> (0,0561). Ipak, u tablici je tek sedma. Razlog je u tome što se pojavljuje i u još dvije bajke pa njezin idf iznosi samo ln(5/3) ≈ 0,51, a tf-idf 0,0804 × 0,51 ≈ 0,041. Smrt je, dakle, središnja tema bajke o trojici braće, ali riječ <em>death</em> ipak ne razlikuje tu bajku od ostalih tako jasno kao riječ <em>brother</em>.</p>
+<p>Na suprotnom kraju tablice nalaze se riječi koje se pojavljuju u svim bajkama. Njihov idf iznosi ln(5/5) = 0, pa je i tf-idf 0, bez obzira na to koliko su česte. Takve riječi, koliko god bile česte, ne pomažu razlikovati jednu bajku od drugih.</p>
+<p>Iste podatke možemo prikazati i grafički, s deset lema s najvećim tf-idf vrijednostima u svakoj bajci.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi s najvećim tf-idf vrijednostima po bajkama</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tToBtB_tf_idf <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> tf_idf, <span class="at">y =</span> <span class="fu">reorder_within</span>(lemma, tf_idf, fairy_tale), <span class="at">fill =</span> fairy_tale)) <span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>fairy_tale, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"tf-idf"</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Lema"</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Najkarakterističnije riječi po bajci"</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="3_2_analiza_učestalosti_riječi_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Graf pokazuje po čemu se bajke međusobno razlikuju. Najkarakterističnije riječi uglavnom su likovi, imena i predmeti oko kojih se vrti radnja pojedine bajke. U bajci <em>The Wizard and the Hopping Pot</em> to su lonac (<em>pot</em>) i zvukovi koje proizvodi (<em>clang</em>, <em>groan</em>), u bajci <em>The Fountain of Fair Fortune</em> fontana (<em>fountain</em>), vitez (<em>knight</em>) i imena triju vještica (<em>amata</em>, <em>asha</em>, <em>altheda</em>), u bajci <em>The Warlock’s Hairy Heart</em> čarobnjak (<em>warlock</em>), djevojka (<em>maiden</em>) i srce (<em>heart</em>), u bajci <em>Babbitty Rabbitty and Her Cackling Stumps</em> kralj (<em>king</em>), šarlatan (<em>charlatan</em>) i sama Babbitty, a u bajci <em>The Tale of the Three Brothers</em> braća (<em>brother</em>), smrt (<em>death</em>), rijeka (<em>river</em>) i plašt (<em>cloak</em>). Zanimljivo je da se u svakoj bajci među najkarakterističnijim riječima nalazi i riječ iz njezina naslova.</p>
+<p>Graf pokazuje i koliko se bajke razlikuju po tome koliko se jedna riječ ističe. U bajci <em>The Tale of the Three Brothers</em> riječ <em>brother</em> ima gotovo četiri puta veći tf-idf od sljedeće riječi, <em>death</em>, pa tu bajku određuje jedna riječ. U ostalim se bajkama vrijednosti smanjuju postupnije pa ih opisuje skupina riječi. To je i svrha mjere tf-idf, izdvojiti riječi koje su važne za jedan dokument unutar zbirke dokumenata, a koje ga ujedno razlikuju od ostalih dokumenata.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

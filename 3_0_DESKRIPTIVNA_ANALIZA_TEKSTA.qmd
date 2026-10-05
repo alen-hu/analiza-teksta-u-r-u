@@ -1,3 +1,3 @@
-# DESKRIPCIJSKA ANALIZA TEKSTA {.unnumbered}
+# DESKRIPTIVNA ANALIZA TEKSTA {.unnumbered}
 
 Ovaj dio prikazuje osnovne načine opisivanja tekstualnih podataka.
