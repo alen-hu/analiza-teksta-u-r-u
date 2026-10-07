@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Tekst ne prenosi samo informacije, nego i osjećaje. Isti događaj može se opisati radosno ili tjeskobno, a čitatelj gotovo nesvjesno prepoznaje kada se ton priče mijenja, kada raste napetost i kada nastupa olakšanje. Analiza sentimenata pokušava taj emocionalni sloj teksta učiniti mjerljivim tako da riječima pridružuje vrijednosti iz unaprijed pripremljenih rječnika osjećaja. Takav je pristup jednostavan i pregledan, ali i ograničen jer riječ izvučena iz rečenice gubi kontekst, a negacija, ironija ili neobičan jezik mogu promijeniti njezino značenje. Zato je za analizu sentimenata jednako važno znati što ona može pokazati koliko i gdje griješi.">
 
-<title>11&nbsp; Analiza sentimenta – Analiza teksta u R-u</title>
+<title>11&nbsp; Analiza sentimenata – Analiza teksta u R-u</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -22,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -73,6 +109,23 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
 
 
 <link rel="stylesheet" href="custom.css">
@@ -81,13 +134,13 @@ ul.task-list li input[type="checkbox"] {
 <body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./4_0_ANALIZA_SENTIMENATA.html">ANALIZA SENTIMENATA</a></li><li class="breadcrumb-item"><a href="./4_1_analiza_sentimenata.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenta</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./4_0_ANALIZA_SENTIMENATA.html">ANALIZA SENTIMENATA</a></li><li class="breadcrumb-item"><a href="./4_1_analiza_sentimenata.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -97,7 +150,28 @@ ul.task-list li input[type="checkbox"] {
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./4_0_ANALIZA_SENTIMENATA.html">ANALIZA SENTIMENATA</a></li><li class="breadcrumb-item"><a href="./4_1_analiza_sentimenata.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></h1>
+                  <div>
+        <div class="description">
+          Tekst ne prenosi samo informacije, nego i osjećaje. Isti događaj može se opisati radosno ili tjeskobno, a čitatelj gotovo nesvjesno prepoznaje kada se ton priče mijenja, kada raste napetost i kada nastupa olakšanje. Analiza sentimenata pokušava taj emocionalni sloj teksta učiniti mjerljivim tako da riječima pridružuje vrijednosti iz unaprijed pripremljenih rječnika osjećaja. Takav je pristup jednostavan i pregledan, ali i ograničen jer riječ izvučena iz rečenice gubi kontekst, a negacija, ironija ili neobičan jezik mogu promijeniti njezino značenje. Zato je za analizu sentimenata jednako važno znati što ona može pokazati koliko i gdje griješi.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
@@ -181,8 +255,8 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">3_0_POČETAK U RADU S TEKSTOM.qmd</span></a>
+            <a href="./3_0_DESKRIPTIVNA_ANALIZA_TEKSTA.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DESKRIPTIVNA ANALIZA TEKSTA</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -220,7 +294,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_1_analiza_sentimenata.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></span></a>
   </div>
 </li>
       </ul>
@@ -277,33 +351,534 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#leksikoni-sentimenata" id="toc-leksikoni-sentimenata" class="nav-link active" data-scroll-target="#leksikoni-sentimenata"><span class="header-section-number">11.1</span> Leksikoni sentimenata</a></li>
+  <li><a href="#sentiment-pojedinih-riječi" id="toc-sentiment-pojedinih-riječi" class="nav-link" data-scroll-target="#sentiment-pojedinih-riječi"><span class="header-section-number">11.2</span> Sentiment pojedinih riječi</a>
+  <ul class="collapse">
+  <li><a href="#najčešće-pozitivne-i-negativne-riječi" id="toc-najčešće-pozitivne-i-negativne-riječi" class="nav-link" data-scroll-target="#najčešće-pozitivne-i-negativne-riječi"><span class="header-section-number">11.2.1</span> Najčešće pozitivne i negativne riječi</a></li>
+  </ul></li>
+  <li><a href="#sentiment-kroz-tekst" id="toc-sentiment-kroz-tekst" class="nav-link" data-scroll-target="#sentiment-kroz-tekst"><span class="header-section-number">11.3</span> Sentiment kroz tekst</a>
+  <ul class="collapse">
+  <li><a href="#najnegativniji-odlomci" id="toc-najnegativniji-odlomci" class="nav-link" data-scroll-target="#najnegativniji-odlomci"><span class="header-section-number">11.3.1</span> Najnegativniji odlomci</a></li>
+  </ul></li>
+  <li><a href="#sentiment-izvan-pojedinačnih-riječi" id="toc-sentiment-izvan-pojedinačnih-riječi" class="nav-link" data-scroll-target="#sentiment-izvan-pojedinačnih-riječi"><span class="header-section-number">11.4</span> Sentiment izvan pojedinačnih riječi</a></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./4_0_ANALIZA_SENTIMENATA.html">ANALIZA SENTIMENATA</a></li><li class="breadcrumb-item"><a href="./4_1_analiza_sentimenata.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenta</span></a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza sentimenta</span></h1>
+
+
+
+
+<p>Kad čitamo tekst, na temelju značenja riječi zaključujemo je li neki njegov dio pozitivan ili negativan te prevladava li u njemu neka emocija, poput radosti, straha ili gađenja. <strong>Analiza sentimenata</strong> (engl. <em>sentiment analysis</em>) postupak je kojim se taj emocionalni ton teksta pokušava odrediti računalno. Cilj joj je prepoznati stavove, mišljenja i emocije izražene u tekstu. Primjenjuje se, primjerice, na društvenim mrežama gdje se analizom objava i komentara prate javno mnijenje i reakcije na događaje, u marketingu gdje se analizom recenzija proizvoda i usluga utvrđuje što kupci o njima misle, u politici gdje se analizom medijskih sadržaja i komentara prate stavovi javnosti o strankama, političarima i javnim politikama i slično. Ovdje ćemo se koristiti najjednostavnijim pristupom koji tekst promatramo kao skup pojedinačnih riječi, a sentiment teksta kao zbroj sentimenata riječi od kojih se sastoji.</p>
+<section id="leksikoni-sentimenata" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="leksikoni-sentimenata"><span class="header-section-number">11.1</span> Leksikoni sentimenata</h2>
+<p>Sentiment pojedinih riječi određuje se pomoću <strong>leksikona sentimenata</strong>, rječnika u kojima je velikom broju riječi pridružena oznaka ili ocjena sentimenta. Paket <code>tidytext</code> omogućuje pristup četirima leksikonima za engleski jezik: <code>bing</code>, <code>AFINN</code>, <code>nrc</code> i <code>loughran</code>. Svi se temelje na pojedinačnim riječima, a dohvaćaju se funkcijom <code>get_sentiments()</code> kojoj se kao argument zadaje naziv leksikona.</p>
+<p>Leksikon <code>bing</code> dio je paketa <code>tidytext</code>, dok se leksikoni <code>AFINN</code>, <code>nrc</code> i <code>loughran</code> preuzimaju s interneta paketom <code>textdata</code>. Pri prvom pozivu, npr. <code>get_sentiments("afinn")</code>, R pita prihvaćamo li uvjete korištenja leksikona na što treba odgovoriti u konzoli. Leksikon se zatim sprema na računalo i sljedeći put učitava bez pitanja. Zato svaki od tih leksikona prvi put treba učitati ručno u konzoli, a ne pri renderiranju dokumenta jer renderiranje na pitanje ne može odgovoriti i zaustavit će se.</p>
+<p>Leksikon <strong>bing</strong> kategorizira riječi na binarni način u pozitivne i negativne kategorije. Bing sadrži riječi označene kao pozitivne ili negativne te je prikladan za osnovne analize sentimenta, no ne prepoznaje intenzitet emocija te ne daje dodatne informacije o specifičnim emocijama (npr. ljutnja, radost).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">"bing"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6,786 × 2
+   word        sentiment
+   &lt;chr&gt;       &lt;chr&gt;    
+ 1 2-faces     negative 
+ 2 abnormal    negative 
+ 3 abolish     negative 
+ 4 abominable  negative 
+ 5 abominably  negative 
+ 6 abominate   negative 
+ 7 abomination negative 
+ 8 abort       negative 
+ 9 aborted     negative 
+10 aborts      negative 
+# ℹ 6,776 more rows</code></pre>
 </div>
+</div>
+<p><strong>AFINN</strong> leksikon ocjenjuje riječi s rezultatom koji se kreće između -5 i 5 pri čemu negativni rezultat ukazuje na negativan sentiment, a pozitivni na pozitivan. AFINN leksikon je koristan kada nam je potrebna kvantitativna mjera koja omogućuje nijansirano razumijevanje sentimenta i kod tekstova gdje je intenzitet emocija važan. S druge strane, taj leksikon nema kategorije za neutralne emocije te nije toliko bogat u smislu raznolikosti emocija.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">"afinn"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,477 × 2
+   word       value
+   &lt;chr&gt;      &lt;dbl&gt;
+ 1 abandon       -2
+ 2 abandoned     -2
+ 3 abandons      -2
+ 4 abducted      -2
+ 5 abduction     -2
+ 6 abductions    -2
+ 7 abhor         -3
+ 8 abhorred      -3
+ 9 abhorrent     -3
+10 abhors        -3
+# ℹ 2,467 more rows</code></pre>
+</div>
+</div>
+<p>Leksikon <strong>NRC</strong> kategorizira riječi u nekoliko kategorija riječi: pozitivne, negativne, riječi ljutnje, iščekivanja, gađenja, straha, radosti, tuge, iznenađenja i povjerenja. NRC leksikon je bogat u raznolikosti emocija pružajući detaljniju analizu na temelju čega može analizirati emocionalni ton teksta, ali, kao i <code>bing</code>, ne razlikuje pojedine emocije.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">"nrc"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13,872 × 2
+   word        sentiment
+   &lt;chr&gt;       &lt;chr&gt;    
+ 1 abacus      trust    
+ 2 abandon     fear     
+ 3 abandon     negative 
+ 4 abandon     sadness  
+ 5 abandoned   anger    
+ 6 abandoned   fear     
+ 7 abandoned   negative 
+ 8 abandoned   sadness  
+ 9 abandonment anger    
+10 abandonment fear     
+# ℹ 13,862 more rows</code></pre>
+</div>
+</div>
+<p>Leksikon <strong>loughran</strong> dizajniran je specifično za financijske i poslovne tekstove klasificirajući riječi u šest kategorija: pozitivno, negativno, sudsko-pravno, nesigurnost, ograničavajuće i suvišno. Budući da je prilagođen poslovnom jeziku, za opće tekstove, pa i za bajke, nije prikladan.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">"loughran"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4,150 × 2
+   word         sentiment
+   &lt;chr&gt;        &lt;chr&gt;    
+ 1 abandon      negative 
+ 2 abandoned    negative 
+ 3 abandoning   negative 
+ 4 abandonment  negative 
+ 5 abandonments negative 
+ 6 abandons     negative 
+ 7 abdicated    negative 
+ 8 abdicates    negative 
+ 9 abdicating   negative 
+10 abdication   negative 
+# ℹ 4,140 more rows</code></pre>
+</div>
+</div>
+<p>Odabir leksikona sentimenta za analizu teksta ovisi o specifičnim potrebama analize, prirodi teksta i vrsti informacija koju želimo izvući.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 67%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Svrha analize</strong></th>
+<th><strong>Preporučeni leksikon</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>razvrstavanje na pozitivno i negativno</td>
+<td><code>bing</code>, <code>nrc</code></td>
+</tr>
+<tr class="even">
+<td>intenzitet sentimenta</td>
+<td><code>AFINN</code></td>
+</tr>
+<tr class="odd">
+<td>analiza pojedinih emocija</td>
+<td><code>nrc</code></td>
+</tr>
+<tr class="even">
+<td>poslovni i financijski tekstovi</td>
+<td><code>loughran</code></td>
+</tr>
+</tbody>
+</table>
+<p>Leksikoni sentimenata izrađeni su za suvremeni engleski jezik i provjereni uglavnom na suvremenim tekstovima, poput recenzija i objava na društvenim mrežama. Na tekstovima drugačijeg žanra, poput bajki, mogu davati manje pouzdane rezultate jer neke riječi u njima imaju drugačije značenje. Primjerice, riječi <em>fair</em> i <em>fortune</em> u leksikonu <code>bing</code> označene su kao pozitivne pa se svako spominjanje fontane <em>Fountain of Fair Fortune</em> broji kao dvije pozitivne riječi, iako je riječ samo o nazivu.</p>
+</section>
+<section id="sentiment-pojedinih-riječi" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="sentiment-pojedinih-riječi"><span class="header-section-number">11.2</span> Sentiment pojedinih riječi</h2>
+<p>Analiza sentimenata provodi se na tekstu tokeniziranom na riječi iz kojeg su uklonjene zaustavne riječi. Riječi iz teksta zatim povezujemo s riječima iz leksikona funkcijom <code>inner_join()</code> iz paketa <code>dplyr</code>. Ona zadržava samo one riječi iz teksta koje se nalaze i u leksikonu, a svakoj od njih pridružuje oznaku sentimenta iz leksikona. Argumentom <code>by = "word"</code> navodimo da se tablice povezuju prema stupcu <code>word</code>.</p>
+<p>Recimo da nas zanimaju riječi koje izražavaju radost u bajci <em>The Fountain of Fair Fortune</em>. Najprije iz leksikona <code>nrc</code> izdvajamo riječi u kategoriji radosti (<em>joy</em>), a zatim ih povezujemo s riječima iz bajke i brojimo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi iz leksikona nrc koje izražavaju radost</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>nrc_joy <span class="ot">&lt;-</span> <span class="fu">get_sentiments</span>(<span class="st">"nrc"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sentiment <span class="sc">==</span> <span class="st">"joy"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi koje izražavaju radost u bajci The Fountain of Fair Fortune</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fairy_tale <span class="sc">==</span> <span class="st">"2_the_fountain_of_fair_fortune"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(nrc_joy, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 25 × 2
+   word          n
+   &lt;chr&gt;     &lt;int&gt;
+ 1 garden        6
+ 2 sun           6
+ 3 enchanted     3
+ 4 fortune       3
+ 5 happy         3
+ 6 pay           3
+ 7 delighted     2
+ 8 found         2
+ 9 lover         2
+10 magical       2
+# ℹ 15 more rows</code></pre>
+</div>
+</div>
+<p>U bajci <em>The Fountain of Fair Fortune</em> pojavljuje se 25 različitih riječi koje leksikon <code>nrc</code> svrstava u kategoriju radosti. Najčešće su <em>garden</em> i <em>sun</em> (po 6 pojavljivanja), a slijede <em>enchanted</em>, <em>fortune</em>, <em>happy</em> i <em>pay</em> (po 3) te <em>delighted</em>, <em>found</em>, <em>lover</em> i <em>magical</em> (po 2). Neke od njih, poput <em>happy</em>, <em>delighted</em> ili <em>lover</em>, doista izražavaju radost. Za druge to vrijedi tek uvjetno, primjerice <em>garden</em> i <em>sun</em> koje su u bajci ponajprije mjesto i doba dana, a <em>fortune</em> se većinom pojavljuje kao dio naziva fontane. Riječ <em>pay</em> u kategoriju radosti svrstana je prema jednom od svojih značenja (nagrada, isplata) koje ne mora odgovarati značenju u tekstu. Ovaj primjer dobro pokazuje glavno ograničenje analize sentimenata pomoću leksikona, da je oznaka sentimenta pridružena riječi, a ne njezinu značenju u konkretnom tekstu. Zato rezultate uvijek treba provjeriti pregledom riječi koje su im najviše pridonijele.</p>
+<p>Na isti način možemo prebrojati riječi u svim kategorijama leksikona <code>nrc</code>. Razlika je samo u tome što leksikon ne filtriramo, nego povezujemo cijeli leksikon i brojimo riječi po kategorijama sentimenta. Pritom je u funkciji potreban argument <code>relationship = "many-to-many"</code> jer se ista riječ u leksikonu <code>nrc</code> može pojaviti u više kategorija, a ista riječ u bajci više puta. Bez tog argumenta funkcija javlja upozorenje.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj riječi po kategorijama sentimenta u bajci The Fountain of Fair Fortune</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_tokens_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fairy_tale <span class="sc">==</span> <span class="st">"2_the_fountain_of_fair_fortune"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(<span class="fu">get_sentiments</span>(<span class="st">"nrc"</span>), <span class="at">by =</span> <span class="st">"word"</span>, <span class="at">relationship =</span> <span class="st">"many-to-many"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(sentiment, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> <span class="fu">fct_reorder</span>(sentiment, n), <span class="at">fill =</span> sentiment)) <span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Broj riječi"</span>, <span class="at">y =</span> <span class="st">"Sentiment"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_1_analiza_sentimenata_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Najviše je riječi u općim kategorijama pozitivnog (oko 90) i negativnog sentimenta (oko 70), a što je i očekivano jer leksikon <code>nrc</code> u te dvije kategorije svrstava najveći broj riječi. Među pojedinim emocijama najzastupljeniji su povjerenje, iščekivanje i radost, s po pedesetak riječi, a slijede tuga, iznenađenje, strah i ljutnja. Najmanje je riječi koje izražavaju gađenje, oko 20. Bajka <em>The Fountain of Fair Fortune</em> tako ima pretežno pozitivan emocionalni ton s naglaskom na povjerenju, iščekivanju i radosti, a što odgovara priči o putovanju prema fontani koja ispunjava želje. Ipak, ni negativni osjećaji nisu zanemarivi pa je riječ o priči u kojoj se smjenjuju nada i poteškoće. Pritom treba imati na umu ograničenje koje smo vidjeli u prethodnom primjeru, da je dio riječi, poput <em>garden</em>, <em>sun</em> ili <em>fortune</em>, svrstan u pozitivne kategorije zbog svog općeg značenja, a ne zbog uloge u bajci.</p>
+<section id="najčešće-pozitivne-i-negativne-riječi" class="level3" data-number="11.2.1">
+<h3 data-number="11.2.1" class="anchored" data-anchor-id="najčešće-pozitivne-i-negativne-riječi"><span class="header-section-number">11.2.1</span> Najčešće pozitivne i negativne riječi</h3>
+<p>Korisno je pogledati i koje riječi najviše pridonose pozitivnom, a koje negativnom sentimentu. Tako se može provjeriti odgovaraju li oznake iz leksikona značenju riječi u našem tekstu. Za to koristimo leksikon <code>bing</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešće pozitivne i negativne riječi u bajkama</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bing_word_counts <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(<span class="fu">get_sentiments</span>(<span class="st">"bing"</span>), <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, sentiment, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>tToBtB_bing_word_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 277 × 3
+   word    sentiment     n
+   &lt;chr&gt;   &lt;chr&gt;     &lt;int&gt;
+ 1 death   negative     20
+ 2 magic   positive     17
+ 3 magical positive     12
+ 4 fell    negative     10
+ 5 gold    positive     10
+ 6 foolish negative      9
+ 7 stump   negative      9
+ 8 dead    negative      6
+ 9 majesty positive      6
+10 loud    negative      5
+# ℹ 267 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bing_word_counts <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sentiment) <span class="sc">|&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> <span class="fu">reorder_within</span>(word, n, sentiment), <span class="at">fill =</span> sentiment)) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>sentiment, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Broj pojavljivanja"</span>, <span class="at">y =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_1_analiza_sentimenata_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>U bajkama se pojavljuje 277 različitih riječi kojima leksikon <code>bing</code> pridružuje sentiment. Najčešća negativna riječ je <em>death</em> (20 pojavljivanja), a slijede <em>fell</em> (10), <em>stump</em> i <em>foolish</em> (po 9) te <em>dead</em> (6). Najčešće pozitivne riječi su <em>magic</em> (17), <em>magical</em> (12), <em>gold</em> (10) i <em>majesty</em> (6).</p>
+<p>Popis pokazuje koliko je važno provjeriti riječi koje najviše pridonose sentimentu. Riječi poput <em>death</em>, <em>dead</em>, <em>foolish</em> ili <em>dreadful</em> doista nose negativan sentiment, a <em>delighted</em>, <em>treasure</em> ili <em>beauty</em> pozitivan. No nekoliko je riječi svrstano pogrešno jer leksikon ne poznaje njihovo značenje u bajkama. Riječ <em>stump</em> u leksikonu je negativna, ali se u bajkama odnosi na panj iz bajke <em>Babbitty Rabbitty and Her Cackling Stumps</em>. Riječ <em>fell</em> u leksikonu je negativan pridjev (okrutan, smrtonosan), a u tekstu je najvjerojatnije prošlo vrijeme glagola <em>fall</em> (pasti). Riječ <em>majesty</em> pozitivna je, iako se u bajkama koristi kao oslovljavanje kralja (<em>Your Majesty</em>). Slično tome, <em>magic</em> i <em>magical</em> u svijetu čarobnjaka i vještica nisu izraz pozitivnog stava, nego opis svakodnevice. Takve riječi iskrivljuju rezultat pa ih je opravdano ukloniti iz analize, primjerice tako da se dodaju na popis zaustavnih riječi.</p>
+</section>
+</section>
+<section id="sentiment-kroz-tekst" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="sentiment-kroz-tekst"><span class="header-section-number">11.3</span> Sentiment kroz tekst</h2>
+<p>Analiza sentimenata posebno je zanimljiva kad pratimo kako se sentiment mijenja kroz priču. Za to tekst dijelimo na manje dijelove i za svaki dio računamo <strong>neto sentiment</strong>, odnosno razliku između broja pozitivnih i broja negativnih riječi. Postupak je sljedeći:</p>
+<ol type="1">
+<li><p>Funkcijom <code>inner_join()</code> riječima pridružujemo sentiment iz leksikona <code>bing</code>.</p></li>
+<li><p>Funkcijom <code>count()</code> brojimo pozitivne i negativne riječi u svakom dijelu svake bajke. Dio teksta određujemo stupcem <code>index</code> koji ovdje stvaramo izravno unutar funkcije <code>count()</code>, odnsono <code>paragraph_no %/% 3</code> dijeli redni broj odlomka s 3 i zadržava samo cijeli dio rezultata (cjelobrojno dijeljenje) pa odlomci 0 do 2 dobivaju indeks 0, odlomci 3 do 5 indeks 1 i tako dalje. Tako svaki dio teksta obuhvaća tri odlomka.</p></li>
+<li><p>Funkcijom <code>pivot_wider()</code> pozitivne i negativne riječi stavljamo u zasebne stupce, a pri čemu dijelovima bez pozitivnih ili negativnih riječi upisujemo 0 (<code>values_fill = 0</code>).</p></li>
+<li><p>Funkcijom <code>mutate()</code> računamo neto sentiment (<code>positive - negative</code>).</p></li>
+</ol>
+<p>Veličina dijela teksta važna je odluka. Premali dijelovi imaju premalo riječi s oznakom sentimenta za pouzdanu procjenu, a preveliki prikrivaju promjene u priči. Za kratke tekstove poput bajki dobro funkcioniraju dijelovi od nekoliko odlomaka, ali to valja prilagoditi svakom tekstu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Neto sentiment u dijelovima od tri odlomka</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>tToBtB_sentiment <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(<span class="fu">get_sentiments</span>(<span class="st">"bing"</span>), <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, <span class="at">index =</span> paragraph_no <span class="sc">%/%</span> <span class="dv">3</span>, sentiment) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> sentiment, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sentiment =</span> positive <span class="sc">-</span> negative)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>tToBtB_sentiment</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 60 × 5
+   fairy_tale                       index negative positive sentiment
+   &lt;chr&gt;                            &lt;dbl&gt;    &lt;int&gt;    &lt;int&gt;     &lt;int&gt;
+ 1 1_the_wizard_and_the_hopping_pot     0        3       13        10
+ 2 1_the_wizard_and_the_hopping_pot     1        4        3        -1
+ 3 1_the_wizard_and_the_hopping_pot     3        8        3        -5
+ 4 1_the_wizard_and_the_hopping_pot     4        2        0        -2
+ 5 1_the_wizard_and_the_hopping_pot     5        2        2         0
+ 6 1_the_wizard_and_the_hopping_pot     6        2        0        -2
+ 7 1_the_wizard_and_the_hopping_pot     7        6        0        -6
+ 8 1_the_wizard_and_the_hopping_pot     8        7        7         0
+ 9 1_the_wizard_and_the_hopping_pot     9        0        1         1
+10 2_the_fountain_of_fair_fortune       0        1        7         6
+# ℹ 50 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tToBtB_sentiment, <span class="fu">aes</span>(<span class="at">x =</span> index, <span class="at">y =</span> sentiment, <span class="at">fill =</span> fairy_tale)) <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>fairy_tale, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">scales =</span> <span class="st">"free_x"</span>, <span class="at">labeller =</span> <span class="fu">label_wrap_gen</span>(<span class="at">width =</span> <span class="dv">25</span>)) <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Dio bajke (tri odlomka)"</span>, <span class="at">y =</span> <span class="st">"Neto sentiment"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_1_analiza_sentimenata_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Svaki graf prikazuje jednu bajku od početka do kraja. Stupci iznad nule označavaju dijelove u kojima prevladavaju pozitivne riječi, a stupci ispod nule dijelove u kojima prevladavaju negativne. Ako za neki dio stupca nema, u tom dijelu nema nijedne riječi iz leksikona.</p>
+<p>Bajke se po kretanju sentimenta jasno razlikuju. Bajka <em>The Wizard and the Hopping Pot</em> počinje izrazito pozitivno. U prvom dijelu nalazi se 13 pozitivnih i samo 3 negativne riječi (neto sentiment +10). Nakon toga prevladavaju negativni dijelovi, a sentiment se vraća prema nuli tek pred kraj. Bajka <em>The Fountain of Fair Fortune</em> također počinje pozitivno, u sredini se kolebaju blago pozitivni i blago negativni dijelovi, a pred kraj se pojavljuje izrazito pozitivan dio, a što odgovara sretnom završetku priče. U bajci <em>The Warlock’s Hairy Heart</em> kretanje je obrnuto, odnosno pozitivni dijelovi nalaze se u sredini, a kraj je negativan, a što odgovara tragičnom završetku. Bajka <em>Babbitty Rabbitty and Her Cackling Stumps</em> kroz cijelu se priču koleba oko nule s jednim izrazitije negativnim dijelom pred kraj. Bajka <em>The Tale of the Three Brothers</em> jedina je u kojoj su svi dijelovi negativni što ne iznenađuje u priči u kojoj je smrt jedan od glavnih likova.</p>
+<p>Ovakav prikaz pokazuje emocionalni luk priče, odnosno kako se ton mijenja od početka do kraja. Ipak, treba ga tumačiti oprezno. Bajke su kratke pa svaki dio sadrži tek nekoliko riječi iz leksikona, a već jedna ili dvije riječi mogu promijeniti smjer stupca. Uz to, na rezultat utječu i riječi koje leksikon pogrešno tumači, kao što smo vidjeli u prethodnom odjeljku.</p>
+<p>Ako za dio teksta uzmemo samo jedan odlomak, prikaz je detaljniji, ali i nemirniji. Jedina je razlika u tome što je indeks sada sam redni broj odlomka.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Neto sentiment po odlomcima</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>tToBtB_paragraph_sentiment <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(<span class="fu">get_sentiments</span>(<span class="st">"bing"</span>), <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, <span class="at">index =</span> paragraph_no, sentiment) <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> sentiment, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sentiment =</span> positive <span class="sc">-</span> negative)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tToBtB_paragraph_sentiment, <span class="fu">aes</span>(<span class="at">x =</span> index, <span class="at">y =</span> sentiment, <span class="at">fill =</span> fairy_tale)) <span class="sc">+</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>fairy_tale, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">scales =</span> <span class="st">"free_x"</span>, <span class="at">labeller =</span> <span class="fu">label_wrap_gen</span>(<span class="at">width =</span> <span class="dv">25</span>)) <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Odlomak"</span>, <span class="at">y =</span> <span class="st">"Neto sentiment"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_1_analiza_sentimenata_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Prikaz po odlomcima detaljniji je, ali i znatno nemirniji od prikaza po dijelovima od tri odlomka. Većina odlomaka ima neto sentiment od svega nekoliko riječi u jednom ili drugom smjeru, a u mnogim odlomcima stupca uopće nema jer u njima nema nijedne riječi iz leksikona. Zato se iz ovakvog prikaza teže iščitava ukupno kretanje priče. Ipak, glavni obrasci ostaju isti, a prikaz po odlomcima pokazuje i nešto što se u prikazu po dijelovima gubi, primjerice, točno mjesto naglih promjena tona, poput pojedinačnih izrazito pozitivnih odlomaka u bajci <em>The Fountain of Fair Fortune</em>. Usporedba dvaju prikaza dobro pokazuje da je veličina dijela teksta odluka koja utječe na to što ćemo u podacima vidjeti.</p>
+<section id="najnegativniji-odlomci" class="level3" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="najnegativniji-odlomci"><span class="header-section-number">11.3.1</span> Najnegativniji odlomci</h3>
+<p>Sentiment možemo izračunati i za cijele odlomke, primjerice kako bismo pronašli najnegativniji odlomak u svakoj bajci. Budući da su odlomci različite duljine, broj negativnih riječi treba podijeliti s ukupnim brojem riječi u odlomku, kako duži odlomci ne bi imali prednost. Postupak je sljedeći:</p>
+<ol type="1">
+<li><p>Iz leksikona <code>bing</code> izdvajamo negativne riječi.</p></li>
+<li><p>Za svaki odlomak brojimo ukupan broj riječi.</p></li>
+<li><p>Za svaki odlomak brojimo negativne riječi. Funkcija <code>semi_join()</code> zadržava samo one riječi iz teksta koje se nalaze u popisu negativnih riječi, ali im, za razliku od funkcije <code>inner_join()</code>, ne dodaje stupce iz leksikona.</p></li>
+<li><p>Spajamo oba broja i računamo udio negativnih riječi u odlomku. Pritom izostavljamo vrlo kratke odlomke, s manje od deset riječi, jer bi u njima već jedna negativna riječ činila velik udio.</p></li>
+<li><p>Za svaku bajku izdvajamo odlomak s najvećim udjelom negativnih riječi.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Negativne riječi iz leksikona bing</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>bing_negative <span class="ot">&lt;-</span> <span class="fu">get_sentiments</span>(<span class="st">"bing"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sentiment <span class="sc">==</span> <span class="st">"negative"</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Ukupan broj riječi u svakom odlomku</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>tToBtB_word_counts <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, paragraph_no, <span class="at">name =</span> <span class="st">"words"</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj negativnih riječi u svakom odlomku</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>tToBtB_negative_counts <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words <span class="sc">|&gt;</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(bing_negative, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, paragraph_no, <span class="at">name =</span> <span class="st">"negative_words"</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Najnegativniji odlomak u svakoj bajci</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>tToBtB_negative_counts <span class="sc">|&gt;</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(tToBtB_word_counts, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"fairy_tale"</span>, <span class="st">"paragraph_no"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(words <span class="sc">&gt;=</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ratio =</span> negative_words <span class="sc">/</span> words) <span class="sc">|&gt;</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale) <span class="sc">|&gt;</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(ratio, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 5
+  fairy_tale                             paragraph_no negative_words words ratio
+  &lt;chr&gt;                                         &lt;int&gt;          &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+1 1_the_wizard_and_the_hopping_pot                 13              2    11 0.182
+2 2_the_fountain_of_fair_fortune                   37              5    10 0.5  
+3 3_the_warlocks_hairy_heart                        9              5    16 0.312
+4 4_babbitty_rabbitty_and_her_cackling_…           47              6    21 0.286
+5 5_the_tale_of_the_three_brothers                 12              6    17 0.353</code></pre>
+</div>
+</div>
+<p>Rezultat sadrži sljedeće stupce:</p>
+<ul>
+<li><p><code>fairy_tale</code> - naziv bajke,</p></li>
+<li><p><code>paragraph_no</code> - redni broj odlomka u bajci,</p></li>
+<li><p><code>negative_words</code> - broj negativnih riječi u odlomku,</p></li>
+<li><p><code>words</code> - ukupan broj riječi u odlomku (nakon uklanjanja zaustavnih riječi) i</p></li>
+<li><p><code>ratio</code> – udio negativnih riječi u ukupnom broju riječi u odlomku.</p></li>
+</ul>
+<p>Najveći udio negativnih riječi ima odlomak 37 bajke <em>The Fountain of Fair Fortune</em> kod kojeg, od njegovih deset riječi (nakon uklanjanja zaustavnih riječi), pet je negativnih pa je udio 0,5, odnosno svaka druga riječ. Slijede odlomak 12 bajke <em>The Tale of the Three Brothers</em> (6 negativnih riječi od 17, udio 0,35), odlomak 9 bajke <em>The Warlock’s Hairy Heart</em> (5 od 16, udio 0,31) i odlomak 47 bajke <em>Babbitty Rabbitty and Her Cackling Stumps</em> (6 od 21, udio 0,29). Najnegativniji odlomak bajke <em>The Wizard and the Hopping Pot</em>, odlomak 13, ima znatno manji udio negativnih riječi (2 od 11, udio 0,18) pa je ta bajka, barem prema leksikonu <code>bing</code>, najblaža po tonu.</p>
+<p>Rezultat treba tumačiti oprezno. Najnegativniji odlomak bajke <em>The Fountain of Fair Fortune</em> ima točno deset riječi, koliko iznosi granica koju smo postavili, pa je njegov visok udio dijelom posljedica kratkoće. Zato je dobro pročitati i same odlomke, kako bismo provjerili odgovara li njihov sadržaj izračunatom sentimentu.</p>
+</section>
+</section>
+<section id="sentiment-izvan-pojedinačnih-riječi" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="sentiment-izvan-pojedinačnih-riječi"><span class="header-section-number">11.4</span> Sentiment izvan pojedinačnih riječi</h2>
+<p>Ponekad je korisno pogledati različite jedinice teksta umjesto pojedinih riječi jer neki algoritmi za analizu sentimenta gledaju dalje od pojedinačnih riječi kako bi pokušali razumjeti sentiment rečenice u cjelini. Primjerice, u rečenici <em>I am not happy</em> riječ <em>happy</em> pozitivna je, iako je rečenica u cjelini negativna jer je riječ negirana. Neki postupci analize sentimenta zato ne gledaju pojedinačne riječi, nego veće jedinice teksta, poput rečenica. Za to tekst treba tokenizirati na rečenice argumentom <code>token = "sentences"</code> funkcije <code>unnest_tokens()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na rečenice</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>tToBtB_sentences <span class="ot">&lt;-</span> tToBtB_df <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(sentence, text, <span class="at">token =</span> <span class="st">"sentences"</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>tToBtB_sentences</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 316 × 4
+    line fairy_tale                       paragraph_no sentence                 
+   &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;                    
+ 1    20 1_the_wizard_and_the_hopping_pot            1 "there was once a kindly…
+ 2    20 1_the_wizard_and_the_hopping_pot            1 "rather than reveal the …
+ 3    20 1_the_wizard_and_the_hopping_pot            1 "from miles around peopl…
+ 4    21 1_the_wizard_and_the_hopping_pot            2 "this well-beloved wizar…
+ 5    21 1_the_wizard_and_the_hopping_pot            2 "this son was of a very …
+ 6    21 1_the_wizard_and_the_hopping_pot            2 "those who could not wor…
+ 7    22 1_the_wizard_and_the_hopping_pot            3 "upon the father's death…
+ 8    22 1_the_wizard_and_the_hopping_pot            3 "he opened it, hoping fo…
+ 9    22 1_the_wizard_and_the_hopping_pot            3 "a fragment of parchment…
+10    23 1_the_wizard_and_the_hopping_pot            4 "the son cursed his fath…
+# ℹ 306 more rows</code></pre>
+</div>
+</div>
+<p>Tekst se može podijeliti i na veće cjeline, primjerice na poglavlja, argumentom <code>token = "regex"</code> i regularnim izrazom koji prepoznaje naslove poglavlja. U našem je primjeru tekst već podijeljen na bajke i odlomke, pa to nije potrebno.</p>
+<p>Jednostavniji način da se uzme u obzir kontekst je analiza bigrama. Kad je tekst podijeljen na bigrame, možemo vidjeti kojim riječima prethodi negacija, primjerice riječ <em>not</em>. Za to koristimo bigrame sa zaustavnim riječima jer su riječi poput <em>not</em>, <em>no</em> i <em>never</em> i same zaustavne riječi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela bigrama na dvije riječi</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_separated <span class="ot">&lt;-</span> tToBtB_bigram <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(bigram, <span class="fu">c</span>(<span class="st">"word1"</span>, <span class="st">"word2"</span>), <span class="at">sep =</span> <span class="st">" "</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi kojima prethodi "not"</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_separated <span class="sc">|&gt;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word1 <span class="sc">==</span> <span class="st">"not"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word1, word2, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 21 × 3
+   word1 word2       n
+   &lt;chr&gt; &lt;chr&gt;   &lt;int&gt;
+ 1 not   all         2
+ 2 not   let         2
+ 3 not   sleep       2
+ 4 not   a           1
+ 5 not   believe     1
+ 6 not   even        1
+ 7 not   fail        1
+ 8 not   fear        1
+ 9 not   know        1
+10 not   mourn       1
+# ℹ 11 more rows</code></pre>
+</div>
+</div>
+<p>Riječima koje slijede iza negacije možemo pridružiti sentiment iz leksikona <code>AFINN</code> i vidjeti koje od njih imaju sentiment, a analiza ih broji u pogrešnom smjeru.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Leksikon AFINN</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>afinn <span class="ot">&lt;-</span> <span class="fu">get_sentiments</span>(<span class="st">"afinn"</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi sa sentimentom kojima prethodi "not"</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>tToBtB_not_words <span class="ot">&lt;-</span> tToBtB_bigram_separated <span class="sc">|&gt;</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word1 <span class="sc">==</span> <span class="st">"not"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(afinn, <span class="at">by =</span> <span class="fu">c</span>(<span class="at">word2 =</span> <span class="st">"word"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word2, value, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>tToBtB_not_words</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+  word2   value     n
+  &lt;chr&gt;   &lt;dbl&gt; &lt;int&gt;
+1 fail       -2     1
+2 fear       -2     1
+3 mourn      -2     1
+4 trouble    -2     1
+5 trust       1     1</code></pre>
+</div>
+</div>
+<p>Riječi kojima prethodi <em>not</em> i koje imaju ocjenu u leksikonu <code>AFINN</code> u bajkama je samo pet i svaka se pojavljuje samo jednom. Četiri su negativne: <em>fail</em>, <em>fear</em>, <em>mourn</em> i <em>trouble</em>, sve s ocjenom -2. Jedna je pozitivna, <em>trust</em>, s ocjenom 1. Negacija u bajkama, dakle, nije česta pa njezin utjecaj na ukupan sentiment nije velik. Ipak, sve su te riječi u analizi pojedinačnih riječi ubrojene u pogrešnom smjeru, <em>not fear</em> ili <em>not mourn</em> izražavaju olakšanje, a ne strah ili tugu, dok <em>not trust</em> izražava nepovjerenje.</p>
+<p>Koliko je koja od tih riječi pridonijela pogrešnom smjeru sentimenta, možemo izračunati tako da njezinu ocjenu pomnožimo s brojem pojavljivanja. Riječ s ocjenom +3 koja se pojavljuje deset puta tako ima isti učinak kao riječ s ocjenom +1 koja se pojavljuje 30 puta.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Doprinos riječi kojima prethodi "not"</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>tToBtB_not_words <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">contribution =</span> n <span class="sc">*</span> value) <span class="sc">|&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="fu">abs</span>(contribution), <span class="at">n =</span> <span class="dv">20</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> contribution, <span class="at">y =</span> <span class="fu">fct_reorder</span>(word2, contribution), <span class="at">fill =</span> contribution <span class="sc">&gt;</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Ocjena sentimenta × broj pojavljivanja"</span>,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Riječi kojima prethodi </span><span class="sc">\"</span><span class="st">not</span><span class="sc">\"</span><span class="st">"</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_1_analiza_sentimenata_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>U našem primjeru četiri riječi s negativnom ocjenom (<em>fail</em>, <em>fear</em>, <em>mourn</em> i <em>trouble</em>) pridonose s po -2, a riječ <em>trust</em> s +1. Zajedno su ukupnom sentimentu pridonijele -7, iako bi, uzme li se u obzir negacija, njihov doprinos trebao biti pozitivan. Budući da se svaka od njih pojavljuje samo jednom, ta je pogreška u bajkama mala, no u duljim tekstovima u kojima su negacije česte, može znatno iskriviti rezultat.</p>
+<p>Riječ <em>not</em> nije jedina riječ koja negira sljedeću riječ. Isti postupak možemo provesti za nekoliko uobičajenih negacija odjednom.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uobičajene negacije</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>negation_words <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"not"</span>, <span class="st">"no"</span>, <span class="st">"never"</span>, <span class="st">"without"</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi sa sentimentom kojima prethodi negacija</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>tToBtB_negated_words <span class="ot">&lt;-</span> tToBtB_bigram_separated <span class="sc">|&gt;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word1 <span class="sc">%in%</span> negation_words) <span class="sc">|&gt;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(afinn, <span class="at">by =</span> <span class="fu">c</span>(<span class="at">word2 =</span> <span class="st">"word"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word1, word2, value, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>tToBtB_negated_words</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 4
+  word1 word2    value     n
+  &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;int&gt;
+1 never fallen      -2     1
+2 no    hope         2     1
+3 no    obstacle    -2     1
+4 no    true         2     1
+5 not   fail        -2     1
+6 not   fear        -2     1
+7 not   mourn       -2     1
+8 not   trouble     -2     1
+9 not   trust        1     1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>tToBtB_negated_words <span class="sc">|&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">contribution =</span> n <span class="sc">*</span> value) <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(word1) <span class="sc">|&gt;</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="fu">abs</span>(contribution), <span class="at">n =</span> <span class="dv">10</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> contribution, <span class="at">y =</span> <span class="fu">reorder_within</span>(word2, contribution, word1), <span class="at">fill =</span> contribution <span class="sc">&gt;</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>word1, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Ocjena sentimenta × broj pojavljivanja"</span>,</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Riječi kojima prethodi negacija"</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_1_analiza_sentimenata_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Uz četiri negacije pronađeno je ukupno devet riječi sa sentimentom, a svaka se pojavljuje samo jednom. Najviše ih slijedi iza riječi <em>not</em> (pet), zatim iza riječi <em>no</em> (tri) i <em>never</em> (jedna), dok iza riječi <em>without</em> nema nijedne. Kod riječi <em>no</em> i <em>never</em> vidi se isti problem kao i kod riječi <em>not</em> jer <em>no hope</em> izražava beznađe, a ne nadu, dok <em>no obstacle</em> i <em>never fallen</em> imaju pozitivno značenje, iako su ih leksikon i analiza pojedinačnih riječi ubrojili kao negativne.</p>
+<p>Primjer <em>no true</em> pokazuje, međutim, da negacija ne mijenja uvijek smjer sentimenta riječi koja slijedi. U izrazima poput <em>no true wizard</em> riječ <em>no</em> ne negira riječ <em>true</em>, nego cijeli izraz pa ovakav jednostavan postupak ne može pouzdano odrediti stvarno značenje. Analiza bigrama zato je koristan način da se otkriju mjesta na kojima analiza pojedinačnih riječi griješi, ali ne i potpuno rješenje problema konteksta. Za to su potrebni složeniji postupci koji uzimaju u obzir strukturu cijele rečenice.</p>
+<p>Pri usporedbi grafova treba imati na umu da svaki ima vlastitu skalu na osi x (<code>scales = "free"</code>). Graf za riječ <em>never</em> zato izgleda kao da prikazuje veliku vrijednost, iako je riječ o jednom pojavljivanju s doprinosom −2, jednakom kao kod riječi <em>fail</em> ili <em>fear</em>.</p>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>Analiza sentimenta povezuje riječi s leksičkim oznakama poput pozitivnog ili negativnog sentimenta. Rezultate treba interpretirati u odnosu na jezik, kontekst i primjerenost korištenog leksikona.</p>
-
-
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

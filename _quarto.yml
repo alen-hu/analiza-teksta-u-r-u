@@ -29,7 +29,7 @@ book:
         - 2_2_regularni_izrazi.qmd
         - 2_3_učitavanje_i_oblikovanje_podataka.qmd
         - 2_4_pretpostavke_za_analizu_teksta_u_tidytext-u.qmd
-    - part: "3_0_POČETAK U RADU S TEKSTOM.qmd"
+    - part: "3_0_DESKRIPTIVNA_ANALIZA_TEKSTA.qmd"
       chapters:
         - 3_1_deskriptivna_analiza_teksta.qmd
         - 3_2_analiza_učestalosti_riječi.qmd
