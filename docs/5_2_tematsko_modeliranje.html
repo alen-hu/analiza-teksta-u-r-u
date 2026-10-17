@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hr" xml:lang="hr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Kad čitamo zbirku tekstova, gotovo nesvjesno prepoznajemo o kojim temama govore i koji tekstovi pripadaju zajedno. Tematsko modeliranje pokušava to isto učiniti računalno, bez unaprijed zadanih kategorija na način da iz samih riječi i njihova zajedničkog pojavljivanja otkriva skupine riječi koje tvore teme te pokazuje u kojoj se mjeri svaka tema pojavljuje u pojedinom tekstu. Rezultat nije gotov odgovor, nego prijedlog koji istraživač mora protumačiti i provjeriti jer model ne zna što teme znače, nego samo koje se riječi pojavljuju zajedno.">
+
+<title>17&nbsp; Tematsko modeliranje – Analiza teksta u R-u</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./5_3_strukturno_tematsko_modeliranje.html" rel="next">
+<link href="./5_1_slicnosti_tekstova_i_grupiranje.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ed937027807105842f1b8e9a1d8c8bec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5_0_otkrivanje_struktura_u_tekstu.html">OTKRIVANJE STRUKTURA U TEKSTU</a></li><li class="breadcrumb-item"><a href="./5_2_tematsko_modeliranje.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5_0_otkrivanje_struktura_u_tekstu.html">OTKRIVANJE STRUKTURA U TEKSTU</a></li><li class="breadcrumb-item"><a href="./5_2_tematsko_modeliranje.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></h1>
+                  <div>
+        <div class="description">
+          Kad čitamo zbirku tekstova, gotovo nesvjesno prepoznajemo o kojim temama govore i koji tekstovi pripadaju zajedno. Tematsko modeliranje pokušava to isto učiniti računalno, bez unaprijed zadanih kategorija na način da iz samih riječi i njihova zajedničkog pojavljivanja otkriva skupine riječi koje tvore teme te pokazuje u kojoj se mjeri svaka tema pojavljuje u pojedinom tekstu. Rezultat nije gotov odgovor, nego prijedlog koji istraživač mora protumačiti i provjeriti jer model ne zna što teme znače, nego samo koje se riječi pojavljuju zajedno.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Analiza teksta u R-u</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/alen-hu" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Predgovor</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./1_0_uvod_u_analizu_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UVOD U ANALIZU TEKSTA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_1_tekst_kao_podatak.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Tekst kao podatak: temelji analize teksta i obrade prirodnoga jezika</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Primjena analize teksta u znanstvenim istraživanjima</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./2_0_rad_s_tekstom_u_r_u.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RAD S TEKSTOM U R-U</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_1_tekstualni_nizovi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Tekstualni nizovi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_2_regularni_izrazi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regularni izrazi</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./3_0_od_izvora_do_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OD IZVORA DO PODATAKA: PRIKUPLJANJE I PRIPREMA TEKSTA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_1_prikupljanje_tekstova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Prikupljanje tekstova</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_2_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_3_pretpostavke_za_analizu_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_4_lingvisticka_obrada_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_5_rad_s_neurednim_podacima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./4_0_opisivanje_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OPISIVANJE TEKSTA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_1_deskriptivna_analiza_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_2_analiza_ucestalosti_riječi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_3_odnosi_medu_rijecima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_4_stil_i_slozenost_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Stil i složenost teksta: stilometrija, čitljivost i leksička raznolikost</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_5_vizualizacije_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./5_0_otkrivanje_struktura_u_tekstu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OTKRIVANJE STRUKTURA U TEKSTU</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_1_slicnosti_tekstova_i_grupiranje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_2_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_3_strukturno_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./6_0_mjerenje pomocu teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mjerenje pomoću teksta</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_1_analiza_pomocu_rjecnika.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Analiza pomoću rječnika</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_2_analiza_sentimenata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_3_rucno_kodiranje_i_pouzdanost.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Ručno kodiranje i pouzdanost</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_4_nadzirano_strojno_ucenje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Nadzirano strojno učenje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_5_skaliranje_tekstova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Skaliranje tekstova</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./7_0_moderna_obrada_prirodnoga_jezika.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MODERNA OBRADA PRIRODNOGA JEZIKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_1_vektorske_reprezentacije_rijeci_i_dokumenata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Vektorske reprezentacije riječi i dokumenata</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_2_transformeri_i_veliki_jezicni_modeli.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Transformeri i veliki jezični modeli</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_3_tematsko_modeliranje_pomocu_vektorskih_reprezentacija.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Tematsko modeliranje pomoću vektorskih reprezentacija</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_4_semanticko_pretrazivanje_i_generiranje_potpomognuto_pretrazivanjem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Semantičko pretraživanje i generiranje potpomognuto pretraživanjem (RAG)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./8_0_jezik_etika_i_umjetna_inteligencija.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">JEZIK, ETIKA I UMJETNA INTELIGENCIJA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_1_analiza_teksta_na_hrvatskom_jeziku.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Analiza teksta na hrvatskom jeziku</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_2_etika_pravni_okvir_i_istrazivačka_praksa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Etika, pravni okvir i istraživačka praksa</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_3_obrada_prirodnoga_jezika_i_umjetna_inteligencija.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Obrada prirodnoga jezika i umjetna inteligencija</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./9_0_od_pitanja_do_zakljucka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OD PITANJA DO ZAKLJUČKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9_1_cjelovita_studija_slucaja.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Cjelovita studija slučaja</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literatura</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#vjerojatnosti-riječi-po-temama" id="toc-vjerojatnosti-riječi-po-temama" class="nav-link active" data-scroll-target="#vjerojatnosti-riječi-po-temama"><span class="header-section-number">17.1</span> Vjerojatnosti riječi po temama</a></li>
+  <li><a href="#vjerojatnosti-tema-po-dokumentima" id="toc-vjerojatnosti-tema-po-dokumentima" class="nav-link" data-scroll-target="#vjerojatnosti-tema-po-dokumentima"><span class="header-section-number">17.2</span> Vjerojatnosti tema po dokumentima</a>
+  <ul class="collapse">
+  <li><a href="#koliko-dobro-teme-odgovaraju-bajkama" id="toc-koliko-dobro-teme-odgovaraju-bajkama" class="nav-link" data-scroll-target="#koliko-dobro-teme-odgovaraju-bajkama"><span class="header-section-number">17.2.1</span> Koliko dobro teme odgovaraju bajkama</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p>U analizi teksta često radimo sa zbirkama dokumenata koje želimo razvrstati u prirodne skupine kako bismo ih lakše razumjeli. <strong>Tematsko modeliranje</strong> (engl. <em>topic modeling</em>) metoda je nenadziranog razvrstavanja dokumenata koja pronalazi skupine riječi koje se pojavljuju zajedno, odnosno teme, iako unaprijed ne znamo koje su to teme. Najpoznatija metoda tematskog modeliranja je <strong>latentna Dirichletova alokacija</strong> (engl. <em>latent Dirichlet allocation</em>, <strong>LDA</strong>). Ona svaki dokument promatra kao mješavinu tema, a svaku temu kao mješavinu riječi. Zato se dokumenti mogu sadržajno preklapati, umjesto da budu razvrstani u strogo odvojene skupine.</p>
+<p>LDA se temelji na dva načela:</p>
+<ul>
+<li><p><strong>Svaki je dokument mješavina tema</strong>, odnosno može sadržavati riječi iz više tema u različitim omjerima. Primjerice, u modelu s dvije teme mogli bismo reći da je dokument 1 90 % tema A i 10 % tema B, a dokument 2 30 % tema A i 70 % tema B.</p></li>
+<li><p><strong>Svaka je tema mješavina riječi</strong> pa, primjerice, u modelu vijesti s dvije teme, jednom o politici i jednom o zabavi, najčešće riječi u temi o politici mogle bi biti <em>predsjednik</em>, <em>sabor</em> i <em>vlada</em>, a u temi o zabavi <em>film</em>, <em>televizija</em> i <em>glumac</em>. Ista riječ može pripadati i jednoj i drugoj temi.</p></li>
+</ul>
+<p>LDA istodobno procjenjuje oboje, koje riječi čine svaku temu i koje teme čine svaki dokument.</p>
+<p>U primjeru korištenom u ovom tekstu je samo pet bajki, a što je premalo dokumenata da bi model mogao pronaći teme. Zato ćemo za dokument uzeti odlomak pa ćemo imati oko 180 dokumenata. To nam omogućuje i zanimljivu provjeru prema kojem, ako model zadamo s pet tema, možemo vidjeti hoće li teme odgovarati bajkama, odnosno hoće li model samo na temelju riječi prepoznati iz koje bajke dolazi koji odlomak.</p>
+<p>Funkcija <code>LDA()</code> iz paketa <code>topicmodels</code> kao ulaz ne prima uredan podatkovni okvir, nego <strong>matricu dokumenata i pojmova</strong> (engl. <em>document-term matrix</em>, <strong>DTM</strong>). U njoj su dokumenti u recima, pojmovi u stupcima, a vrijednosti su broj pojavljivanja pojma u dokumentu. Matricu stvaramo u tri koraka:</p>
+<ol type="1">
+<li><p>Funkcijom <code>unite()</code> stvaramo stupac <code>document</code>, jedinstvenu oznaku odlomka koja spaja naziv bajke i redni broj odlomka, odvojene znakom <code>|</code>. Argument <code>remove = FALSE</code> čuva izvorne stupce.</p></li>
+<li><p>Funkcijom <code>count()</code> brojimo koliko se puta svaka lema pojavljuje u svakom odlomku.</p></li>
+<li><p>Funkcijom <code>cast_dtm()</code> iz paketa <code>tidytext</code> uredan podatkovni okvir pretvaramo u matricu dokumenata i pojmova. Zadajemo joj stupac s dokumentima, stupac s pojmovima i stupac s brojem pojavljivanja.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Matrica dokumenata (odlomaka) i pojmova (lema)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tToBtB_dtm <span class="ot">&lt;-</span> tToBtB_word_tokens_stop_words_lemmatize <span class="sc">|&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(document, fairy_tale, paragraph_no, <span class="at">sep =</span> <span class="st">"|"</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(document, lemma) <span class="sc">|&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cast_dtm</span>(<span class="at">document =</span> document, <span class="at">term =</span> lemma, <span class="at">value =</span> n)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>tToBtB_dtm</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;&lt;DocumentTermMatrix (documents: 175, terms: 1076)&gt;&gt;
+Non-/sparse entries: 2250/186050
+Sparsity           : 99%
+Maximal term length: 13
+Weighting          : term frequency (tf)</code></pre>
+</div>
+</div>
+<p>Matrica ima 175 dokumenata (odlomaka) i 1076 pojmova (lema), što je jednako broju različitih lema koji smo dobili u poglavlju o deskriptivnoj analizi. Od ukupno 188300 ćelija matrice (175 × 1076) samo 2250 sadrži vrijednost veću od nule (<code>Non-/sparse entries</code>) pa je rijetkost matrice 99 %. Drugim riječima, prosječan odlomak sadrži tek trinaestak različitih lema od njih više od tisuću. Takva je rijetkost uobičajena za tekstne podatke jer se svaki dokument sastoji od tek malog dijela ukupnog rječnika, no kod nas je izraženija zbog kratkoće odlomaka. Za model to znači da o svakom dokumentu ima malo podataka, a što treba imati na umu pri tumačenju rezultata.</p>
+<p>Model procjenjujemo funkcijom <code>LDA()</code>. Njezini su najvažniji argumenti:</p>
+<ul>
+<li><p><code>x</code> - matrica dokumenata i pojmova;</p></li>
+<li><p><code>k</code> - broj tema koje model treba pronaći;</p></li>
+<li><p><code>method</code> - metoda procjene: zadana je <code>"VEM"</code>, a druga mogućnost je <code>"Gibbs"</code> (Gibbsovo uzorkovanje);</p></li>
+<li><p><code>control</code> - popis dodatnih postavki, primjerice <code>seed</code> za ponovljivost rezultata ili, kod metode <code>"Gibbs"</code>, <code>iter</code> za broj iteracija.</p></li>
+</ul>
+<p>Broj tema <code>k</code> mora se zadati unaprijed. Postoje statistički postupci za njegov odabir, no često je najvažnije je li dobiveni model smislen i protumačiv. U našem slučaju zadajemo pet tema, koliko ima i bajki.</p>
+<p>Procjena modela uključuje slučajnost, pa bi model pri svakom pokretanju mogao dati nešto drugačije rezultate. Zato argumentom <code>control = list(seed = 1234)</code> postavljamo <strong>sjeme</strong> (engl. <em>seed</em>) generatora slučajnih brojeva kako bismo pri svakom pokretanju dobili iste rezultate.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LDA model s pet tema</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tToBtB_lda <span class="ot">&lt;-</span> <span class="fu">LDA</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    tToBtB_dtm,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">k =</span> <span class="dv">5</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> <span class="fu">list</span>(<span class="at">seed =</span> <span class="dv">1234</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>tToBtB_lda</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>A LDA_VEM topic model with 5 topics.</code></pre>
+</div>
+</div>
+<p>Ispis pokazuje samo da je procijenjen model s pet tema metodom VEM. Sam model sadrži mnogo informacija, a za njihovo izdvajanje koristimo funkciju <code>tidy()</code> iz paketa <code>tidytext</code> koja ih pretvara u uredan oblik. Ostatak analize uključuje istraživanje i tumačenje modela.</p>
+<section id="vjerojatnosti-riječi-po-temama" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="vjerojatnosti-riječi-po-temama"><span class="header-section-number">17.1</span> Vjerojatnosti riječi po temama</h2>
+<p>Vjerojatnost da se pojedina riječ pojavi u pojedinoj temi označava se slovom beta <span class="math inline">\(\beta\)</span>. Izdvajamo je funkcijom <code>tidy()</code> s argumentom <code>matrix = "beta"</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vjerojatnosti riječi po temama</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tToBtB_topics <span class="ot">&lt;-</span> <span class="fu">tidy</span>(tToBtB_lda, <span class="at">matrix =</span> <span class="st">"beta"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>tToBtB_topics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,380 × 3
+   topic term          beta
+   &lt;int&gt; &lt;chr&gt;        &lt;dbl&gt;
+ 1     1 antidote 2.44e-  3
+ 2     2 antidote 1.96e-190
+ 3     3 antidote 7.73e-191
+ 4     4 antidote 3.07e-192
+ 5     5 antidote 1.05e-187
+ 6     1 benefit  2.44e-  3
+ 7     2 benefit  3.60e-174
+ 8     3 benefit  3.18e- 17
+ 9     4 benefit  1.87e-  3
+10     5 benefit  3.28e-174
+# ℹ 5,370 more rows</code></pre>
+</div>
+</div>
+<p>Rezultat ima oblik <strong>jedna tema po pojmu po retku</strong>, odnosno, za svaku kombinaciju teme i riječi navedena je vjerojatnost da se ta lema pojavi u toj temi. Tablica zato ima 5380 redaka, koliko je i kombinacija pet tema i 1076 lema (5 × 1 076). Vrijednosti su zapisane u znanstvenom zapisu u kojem <code>e-3</code> znači „pomnoženo s 10 na minus treću”. Tako <code>2.44e-3</code> iznosi 0,00244, a <code>1.96e-190</code> broj je s 189 nula iza decimalnog zareza, odnosno praktički nula.</p>
+<p>Primjerice, riječ <em>antidote</em> u temi 1 ima vjerojatnost 0,00244, a u ostalim temama vjerojatnost joj je praktički nula pa pripada samo temi 1. Rijek <em>benefit</em> ima vjerojatnost 0,00244 u temi 1 i 0,00187 u temi 4, a u ostalim temama praktički nula. Ona je, dakle, podijeljena između dvije teme. To je upravo ono po čemu se tematsko modeliranje razlikuje od strogog razvrstavanja jer ista riječ može pripadati više tema s različitom vjerojatnošću.</p>
+<p>Teme je najlakše razumjeti prema njihovim najvjerojatnijim riječima. Funkcijom <code>slice_max()</code> za svaku temu izdvajamo deset lema s najvećom vrijednošću beta i prikazujemo ih grafički.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Deset najvjerojatnijih lema u svakoj temi</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>tToBtB_top_terms <span class="ot">&lt;-</span> tToBtB_topics <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(topic) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    beta, <span class="at">n =</span> <span class="dv">10</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">with_ties =</span> <span class="cn">FALSE</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(topic, <span class="sc">-</span>beta)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>tToBtB_top_terms <span class="sc">|&gt;</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> <span class="fu">reorder_within</span>(term, beta, topic)) <span class="sc">|&gt;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> beta, <span class="at">y =</span> term, <span class="at">fill =</span> <span class="fu">factor</span>(topic))) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>topic, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"β"</span>, <span class="at">y =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="5_2_tematsko_modeliranje_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Ova vizualizacija omogućuje razumijevanje tema koje su izdvojene iz bajki.</p>
+<p>Tema 3 jedina jasno odgovara jednoj bajci. Njezine najvjerojatnije riječi, <em>king</em>, <em>charlatan</em>, <em>babbitty</em>, <em>palace</em>, <em>foolish</em>, <em>magic</em> i <em>perform</em>, gotovo su sve iz bajke <em>Babbitty Rabbitty and Her Cackling Stumps</em> pa je model tu bajku prepoznao kao zasebnu temu.</p>
+<p>Ostale su teme mješavine riječi iz više bajki. Teme 1 i 2 spajaju bajke <em>The Wizard and the Hopping Pot</em> i <em>The Tale of the Three Brothers</em> s obzirom da se u obje nalaze <em>pot</em> i <em>wizard</em> iz prve bajke te <em>brother</em> iz druge, a tema 1 sadrži još i <em>death</em> i <em>stone</em>, dok tema 2 sadrži <em>hop</em>, <em>groan</em>, <em>slipper</em> i <em>wart</em>. Tema 4 većinom opisuje bajku <em>The Fountain of Fair Fortune</em> (<em>knight</em>, <em>fountain</em>, <em>wall</em>, <em>garden</em>, <em>sun</em>), ali u njoj se nalaze i riječi koje smo u poglavlju o odnosima među riječima vidjeli kao skupinu vezanu uz lov na vještice (<em>witch</em>, <em>hunter</em>, <em>brigade</em>, <em>hound</em>). Tema 5 spaja bajku <em>The Warlock’s Hairy Heart</em> (<em>heart</em>, <em>warlock</em>, <em>maiden</em>) s imenima iz bajke <em>The Fountain of Fair Fortune</em> (<em>amata</em>, <em>altheda</em>, <em>sir</em>, <em>bathe</em>).</p>
+<p>Model, dakle, nije pet tema u potpunosti poistovjetio s pet bajki. Djelomično je to posljedica kratkoće bajki i odlomaka, a djelomično toga što bajke dijele dio rječnika, primjerice riječi <em>wand</em>, <em>magic</em> i <em>wizard</em> koje pojavljuju se u više tema. Bajka <em>The Tale of the Three Brothers</em>, najkraća od pet bajki, nije dobila vlastitu temu, nego su njezine riječi raspoređene u teme 1 i 2.</p>
+<p>Neke se riječi pojavljuju u više tema. To je prednost tematskog modeliranja pred metodama koje dokumente strogo razvrstavaju u jednu skupinu jer se i u prirodnom jeziku iste riječi koriste u različitim temama.</p>
+</section>
+<section id="vjerojatnosti-tema-po-dokumentima" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="vjerojatnosti-tema-po-dokumentima"><span class="header-section-number">17.2</span> Vjerojatnosti tema po dokumentima</h2>
+<p>Osim što svaku temu procjenjuje kao mješavinu riječi, LDA svaki dokument procjenjuje kao mješavinu tema. Udio pojedine teme u pojedinom dokumentu označava se slovom gama (<span class="math inline">\(\gamma\)</span>), a izdvajamo ga funkcijom <code>tidy()</code> s argumentom <code>matrix = "gamma"</code>. Funkcijom <code>separate()</code> oznaku dokumenta ponovno dijelimo na naziv bajke i redni broj odlomka. Znak <code>|</code> u regularnim izrazima ima posebno značenje pa ga u argumentu <code>sep</code> pišemo kao <code>"\\|"</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Udjeli tema po odlomcima</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>tToBtB_documents <span class="ot">&lt;-</span> <span class="fu">tidy</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    tToBtB_lda,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">matrix =</span> <span class="st">"gamma"</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    document,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"fairy_tale"</span>, <span class="st">"paragraph_no"</span>),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">|"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">convert =</span> <span class="cn">TRUE</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>tToBtB_documents</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 875 × 4
+   fairy_tale                       paragraph_no topic   gamma
+   &lt;chr&gt;                                   &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;
+ 1 1_the_wizard_and_the_hopping_pot            1     1 0.995  
+ 2 1_the_wizard_and_the_hopping_pot           10     1 0.994  
+ 3 1_the_wizard_and_the_hopping_pot           11     1 0.994  
+ 4 1_the_wizard_and_the_hopping_pot           12     1 0.0167 
+ 5 1_the_wizard_and_the_hopping_pot           13     1 0.00326
+ 6 1_the_wizard_and_the_hopping_pot           14     1 0.972  
+ 7 1_the_wizard_and_the_hopping_pot           15     1 0.00190
+ 8 1_the_wizard_and_the_hopping_pot           16     1 0.133  
+ 9 1_the_wizard_and_the_hopping_pot           17     1 0.863  
+10 1_the_wizard_and_the_hopping_pot           18     1 0.00591
+# ℹ 865 more rows</code></pre>
+</div>
+</div>
+<p>Vrijednosti game kreću se od 0 do 1 i za svaki se dokument zbrajaju na 1. Vrijednost blizu 1 znači da se odlomak gotovo u potpunosti sastoji od riječi iz te teme, a vrijednost blizu 0 da te teme u odlomku gotovo nema.</p>
+<p>Ako teme odgovaraju bajkama, odlomci svake bajke trebali bi imati visok gama za jednu temu, a nizak za ostale. To možemo provjeriti kutijastim dijagramom koji za svaku bajku prikazuje raspodjelu gama po temama.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Raspodjela udjela tema po bajkama</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>tToBtB_documents <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fairy_tale =</span> <span class="fu">str_wrap</span>(<span class="fu">str_replace_all</span>(fairy_tale, <span class="st">"_"</span>, <span class="st">" "</span>), <span class="dv">25</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(topic), <span class="at">y =</span> gamma)) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>fairy_tale) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Tema"</span>, <span class="at">y =</span> <span class="st">"γ"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="5_2_tematsko_modeliranje_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Vrijednosti game uglavnom su ili vrlo blizu 0 ili vrlo blizu 1. To znači da model gotovo svaki odlomak pripisuje uglavnom jednoj temi, a ne mješavini više tema što je očekivano kod tako kratkih dokumenata. Zato kutije na dijagramu izgledaju neobično. Kutija koja se proteže od 0 do 1, s medijanom blizu 0, znači da je ta tema prevladavajuća u manjem dijelu odlomaka bajke (između četvrtine i polovine), dok je u ostalima gotovo nema.</p>
+<p>Dijagram potvrđuje ono što smo vidjeli na najvjerojatnijim riječima tema. Bajka <em>Babbitty Rabbitty and Her Cackling Stumps</em> najjasnije je povezana s jednom temom jer medijan game za temu 3 iznosi oko 0,93 pa je u većini njezinih odlomaka upravo ta tema prevladavajuća. Bajka <em>The Warlock’s Hairy Heart</em> povezana je ponajprije s temom 5, ali nešto slabije (medijan oko 0,2) pa je ta tema prevladavajuća u manjem dijelu njezinih odlomaka. Ostale su bajke podijeljene između dvije teme. Odlomci bajki <em>The Wizard and the Hopping Pot</em> i <em>The Tale of the Three Brothers</em> raspoređeni su između tema 1 i 2, a pri čemu je kod bajke <em>The Tale of the Three Brothers</em> tema 1 nešto izraženija (medijan oko 0,6). Odlomci bajke <em>The Fountain of Fair Fortune</em> raspoređeni su između tema 4 i 5.</p>
+<p>Model je, dakle, dvije bajke, <em>The Wizard and the Hopping Pot</em> i <em>The Tale of the Three Brothers</em>, spojio u isti par tema, a bajke <em>The Fountain of Fair Fortune</em> i <em>The Warlock’s Hairy Heart</em> dijele temu 5. Točke izvan kutija pokazuju pojedinačne odlomke koje je model pripisao temi neuobičajenoj za njihovu bajku.</p>
+<section id="koliko-dobro-teme-odgovaraju-bajkama" class="level3" data-number="17.2.1">
+<h3 data-number="17.2.1" class="anchored" data-anchor-id="koliko-dobro-teme-odgovaraju-bajkama"><span class="header-section-number">17.2.1</span> Koliko dobro teme odgovaraju bajkama</h3>
+<p>Na kraju možemo provjeriti koliko je odlomaka model „ispravno” razvrstao. Postupak je sljedeći:</p>
+<ol type="1">
+<li><p>Za svaki odlomak funkcijom <code>slice_max()</code> izdvajamo temu s najvećom gamom, odnosno temu koja u njemu prevladava.</p></li>
+<li><p>Za svaku bajku pronalazimo temu koja prevladava u najviše njezinih odlomaka i proglašavamo je temom te bajke (<code>consensus</code>).</p></li>
+<li><p>Za svaki odlomak provjeravamo podudara li se njegova tema s temom njegove bajke.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tema koja prevladava u svakom odlomku</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tToBtB_classifications <span class="ot">&lt;-</span> tToBtB_documents <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale, paragraph_no) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(gamma, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Tema koja prevladava u svakoj bajci</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>tToBtB_consensus <span class="ot">&lt;-</span> tToBtB_classifications <span class="sc">|&gt;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fairy_tale, topic) <span class="sc">|&gt;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale) <span class="sc">|&gt;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(fairy_tale, <span class="at">consensus =</span> topic)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Udio odlomaka čija tema odgovara temi bajke</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>tToBtB_classifications <span class="sc">|&gt;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(tToBtB_consensus, <span class="at">by =</span> <span class="st">"fairy_tale"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fairy_tale, consensus) <span class="sc">|&gt;</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">paragraphs =</span> <span class="fu">n</span>(),</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">correct =</span> <span class="fu">sum</span>(topic <span class="sc">==</span> consensus),</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">share =</span> correct <span class="sc">/</span> paragraphs,</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 5
+  fairy_tale                                  consensus paragraphs correct share
+  &lt;chr&gt;                                           &lt;int&gt;      &lt;int&gt;   &lt;int&gt; &lt;dbl&gt;
+1 1_the_wizard_and_the_hopping_pot                    2         28      13 0.464
+2 2_the_fountain_of_fair_fortune                      4         48      20 0.417
+3 3_the_warlocks_hairy_heart                          5         32      14 0.438
+4 4_babbitty_rabbitty_and_her_cackling_stumps         3         53      33 0.623
+5 5_the_tale_of_the_three_brothers                    1         14       7 0.5  </code></pre>
+</div>
+</div>
+<p>Svaka je bajka dobila drugu temu kao prevladavajuću, <em>The Wizard and the Hopping Pot</em> temu 2, <em>The Fountain of Fair Fortune</em> temu 4, <em>The Warlock’s Hairy Heart</em> temu 5, <em>Babbitty Rabbitty and Her Cackling Stumps</em> temu 3, a <em>The Tale of the Three Brothers</em> temu 1. U tom smislu model je pet tema doista povezao s pet bajki. Udio odlomaka koji pripadaju temi svoje bajke, međutim, nije velik. Najveći je kod bajke <em>Babbitty Rabbitty and Her Cackling Stumps</em> u kojoj je temi 3 pripisano 33 od 53 odlomka (62 %), a najmanji kod bajke <em>The Fountain of Fair Fortune</em> u kojoj je temi 4 pripisano 20 od 48 odlomaka (42 %). Kod ostalih bajki udio je između 44 i 50 %.</p>
+<p>Ukupno je model temi svoje bajke pripisao 87 od 175 odlomaka, odnosno nešto manje od polovine (50 %). To je znatno bolje od slučajnog razvrstavanja, kod kojeg bi uz pet tema svaki odlomak imao 20 % vjerojatnosti da dobije temu svoje bajke, ali je daleko od savršenog. Pritom treba imati na umu da je „ispravna” tema svake bajke određena upravo prema tome koja tema u njoj prevladava pa ovakav izračun rezultat donekle uljepšava.</p>
+<p>Ovaj rezultat zaokružuje ono što smo vidjeli u ovom poglavlju. Model je samo na temelju riječi bez ikakvih podataka o tome iz koje je bajke koji odlomak uspio djelomično prepoznati bajke, i to najbolje onu s najizrazitijim rječnikom, <em>Babbitty Rabbitty and Her Cackling Stumps</em>. No bajke dijele dio rječnika, a odlomci su kratki pa se teme u velikoj mjeri preklapaju. Upravo zato rezultate tematskog modeliranja treba tumačiti kao prijedlog, a ne kao konačan odgovor.</p>
+<p>Funkcija <code>LDA()</code> iz paketa <code>topicmodels</code> samo je jedna od implementacija latentne Dirichletove alokacije. Paket <code>mallet</code> omogućuje korištenje programa MALLET, napisanog u programskom jeziku Java, a paket <code>tidytext</code> i za njegove rezultate nudi funkcije <code>tidy()</code>. Paket <code>mallet</code> drugačije pristupa ulaznim podacima te kao ulaz uzima netokenizirane dokumente, sam ih tokenizira i zahtijeva zasebnu datoteku sa zaustavnim riječima. Zato prije procjene modela tekst svakog dokumenta treba spojiti u jedan niz. Za tematsko modeliranje u R-u često se koristi i paket <code>stm</code> (engl. <em>structural topic model</em>) koji omogućuje da se u model uključe i podaci o dokumentima, poput autora ili vremena nastanka.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./5_1_slicnosti_tekstova_i_grupiranje.html" class="pagination-link" aria-label="Sličnost tekstova i grupiranje">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./5_3_strukturno_tematsko_modeliranje.html" class="pagination-link" aria-label="Strukturno tematsko modeliranje">
+        <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2026, Alen Husnjak</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="./www.linkedin.com/in/alen-husnjak-5a0bb9206">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

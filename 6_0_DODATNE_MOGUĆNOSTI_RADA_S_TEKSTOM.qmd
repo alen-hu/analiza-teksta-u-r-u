@@ -1,3 +1,0 @@
-# DODATNE MOGUĆNOSTI RADA S TEKSTOM {.unnumbered}
-
-Završni dio obrađuje nestrukturirane podatke i vizualizacije teksta.
