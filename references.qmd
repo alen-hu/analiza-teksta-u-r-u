@@ -1,7 +1,16 @@
 ---
 nocite: |
-  @james2021introduction
-  @field2024discovering
+  @bonikowski2022
+  @dimaggio2015
+  @eisenstein2019
+  @grimmer2013
+  @grimmer2022
+  @jurafsky2026
+  @krippendorff2004
+  @macanovic2022
+  @manning2022
+  @menshikova2025
+  @nelson2020
 ---
 
 # Literatura {.unnumbered}

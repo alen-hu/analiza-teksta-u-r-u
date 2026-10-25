@@ -1,3 +1,0 @@
-# RAD S TEKSTOM U R-U {.unnumbered}
-
-U ovom dijelu tekstualne podatke pripremamo za analizu u R-u.

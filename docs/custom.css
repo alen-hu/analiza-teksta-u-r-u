@@ -64,3 +64,7 @@ strong, b {
 p code {
   color: #8B475D !important;
 }
+
+#refs {
+  display: block !important;
+}

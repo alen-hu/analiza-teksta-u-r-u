@@ -1,67 +1,520 @@
 ---
 title: "Tekst kao podatak: temelji analize teksta i obrade prirodnoga jezika"
-description: "..."
+description: "Novinski članci, objave na društvenim mrežama, intervjui, zakoni i saborske rasprave tragovi su društvenog života zapisani riječima. Društvene znanosti oduvijek su znale da se u tim tragovima krije mnogo toga, ali ih dugo nisu mogle proučavati u većem opsegu jer je čitanje bilo sporo, a kodiranje skupo. Danas su tekstovi dostupni u digitalnom obliku i u količinama koje nitko ne može pročitati, a računala nude načine da ih se obradi. Da bi računalo moglo raditi s tekstom, tekst je potrebno pretvoriti u brojeve, a svako takvo pretvaranje ujedno je i odluka o tome što je u tekstu važno, a što se smije izgubiti. Zato je za dobru analizu teksta potrebno razumjeti kako se te odluke donose i kako računalo uopće obrađuje tekst jer tek se tada brojevi koje dobijemo mogu smisleno povezati s društvenim pitanjima koja nas zanimaju."
 number-sections: true
 title-block-banner: "#8B475D"
 title-block-banner-color: "white"
 ---
 
-**Tekstualna analiza** je postupak obrade i analize tekstualnih podataka kako bi se izvukli korisni obrasci, informacije i uvidi. Cilj je strukturirati neuređeni tekstualni sadržaj u oblik prikladan za analizu. Ova metoda često uključuje korake poput čišćenja podataka, pretvaranja teksta u numeričke vrijednosti i primjene statističkih i lingvističkih metoda te metoda strojnog učenja za interpretaciju podataka.
+## Tekst kao podatak
 
-Tekstualna analiza uključuje sljedeće korake:
+Velik dio društvenog života odvija se kroz jezik. Jezikom se zapisuju zakoni, prenose vjerska uvjerenja i pamte povijesni događaji, a njime se služe i građani koji se žale svojim predstavnicima, aktivisti koji pozivaju na prosvjed i oglašivači koji prodaju proizvode. U politici je jezik još i važniji jer se kroz govore, rasprave, sporazume i stranačke programe odvija gotovo sve što političari rade. Sve što se u društvu kaže ili napiše ostavlja trag, a taj trag je tekst.
 
-1. Prikupljanje tekstualnog sadržaja iz izvora kao što su društvene mreže, članci, e-pošta, recenzije, itd.
+Unatoč tome, kvantitativne društvene znanosti donedavno su se tekstovima vrlo malo koristile. Razlog nije bio nedostatak zanimanja, nego to što je s velikim brojem tekstova bilo vrlo teško raditi. Tekstove je najprije trebalo prikupiti i prepisati, što često nije bilo moguće, a zatim ih je trebalo i pročitati, a što bi za zbirke od milijardi riječi trajalo nezamislivo dugo. Čak i kad bi se tekstovi pročitali, trebalo ih je razvrstati u kategorije ili u njima izmjeriti neke pojmove, a i to se činilo neizvedivim. Zbog toga su se tekstovi u društvenim znanostima koristili rijetko i to uglavnom u malim skupovima podataka ili u radu velikih i dobro financiranih timova. Glavni problem bila je, dakle, količina.
 
-2. Predobrada, odnosno čišćenje podataka (npr. interpunkcija, zaustavne riječi i brojevi) i pretvaranje teksta u standardizirani format.
+To se u posljednje vrijeme promijenilo jer je analiza velikih zbirki tekstova postala mnogo jeftinija pa su danas posve uobičajeni radovi koji analiziraju milijune objava s društvenih mreža. Ta promjena ima dva izvora. Prvi je tehnološki, a očituje se u tome što je internet olakšao prikupljanje tekstova, dok današnja prijenosna računala mogu obaviti izračune za koje su nekad bili potrebni poslužitelji. Drugi izvor je metodološki jer su računalne znanosti i računalna lingvistika, a zatim i društvene i humanističke znanosti, razvile alate i programe za analizu tekstova u velikom opsegu. Možda je ipak najvažnije to što je tekst danas gotovo uvijek digitalan. Organizacije svoje dokumente stvaraju na računalu pa svakodnevno nastaje golema količina tekstova o gotovo svakoj temi koja zanima društvene znanstvenike. Budući da se velik dio društvenog života preselio u digitalni prostor, nastale su količine podataka s kojima se uobičajenim izvorima i metodama više ne može izaći na kraj.
 
-3. Razbijanje teksta na manje dijelove, poput riječi ili rečenica - tokena.
+Sociologija s računalnom analizom teksta ima dugo iskustvo, i to u kvantitativnoj i u kvalitativnoj tradiciji. Sociolozi su računalnim metodama proučavali kako govore političke elite, kako se izražavaju internetske zajednice i društveni pokreti, kako mediji uokviruju događaje te kako teku javne rasprave o različitim društvenim pitanjima. Računalna analiza teksta pomogla je i u praćenju promjena kulturnih značenja u cijelom društvu, ali i u proučavanju vrijednosti i kulturnih shema pojedinaca. Jedno je takvo istraživanje, primjerice, na temelju riječi iz milijuna knjiga objavljenih u razdoblju od stotinu godina pratilo kako su se mijenjale kulturne dimenzije društvene klase, poput imućnosti ili statusa. Sociolozi tako pomoću tekstova mjere kulturu, prate demografske promjene i istražuju digitalne tragove različitih zajednica.
 
-4. Pretvaranje teksta u numeričke formate kao što su vreće riječi, tf-idf ili ugrađivanja riječi.
+### Što znači promatrati tekst kao podatak
 
-5. Primjena metoda kao što su analiza sentimenta, klasifikacija, tematsko modeliranje itd.
+Izraz **tekst kao podatak** označava korištenje tekstova i jezika za zaključivanje o ljudskom ponašanju. Pritom je važno imati na umu što je zapravo predmet istraživanja. Društvenog znanstvenika obično ne zanima tekst sam po sebi, nego ljudi i procesi koji su tekst proizveli i koji se u njemu odražavaju. Politički, ekonomski i društveni procesi ostavljaju trag u tekstovima, a istraživač preko tih tragova pokušava doznati nešto o samim procesima. Zato ono što će iz teksta izvući ovisi o istraživačkom pitanju, odnosno o tome što želi otkriti, izmjeriti ili zaključiti.
 
-6. Vizualizacija i interpretacija pomoću grafova, oblaka riječi i sličnih metoda za lakšu interpretaciju.
+Odluke o prikupljanju tekstova i njihovu pretvaranju u brojeve nisu nešto posve novo jer slične odluke društveni znanstvenici donose i kad mjere druge pojave. Prikupljanje korpusa nalik je odabiru uzorka iz populacije, a pretvaranje teksta u brojeve nalik je mjerenju ekonomske aktivnosti neke zemlje bruto domaćim proizvodom. U oba se slučaja složena pojava pojednostavnjuje u brojeve s kojima se zatim može računati.
 
-Tekstualna analiza može se izvoditi u različitim programskim jezicima kao što su R, Python, Java, C++ i Julia.
+Tekst se ipak razlikuje od drugih podataka po tome što ga je netko napisao ili izgovorio kako bi nekome nešto značio. Ta značenja čine tekst onim što tekst jest pa ih istraživač ne smije zanemariti. Iz toga proizlaze i posebne prednosti teksta kao izvora podataka:
 
-Tekstualna analiza uključuje razne mjere kojima analizira tekst, primjerice:
+- Tekst **ne utječe na one koje proučavamo**, za razliku od eksperimenta, intervjua ili ankete, u kojima ljudi znaju da ih se promatra pa na njihove odgovore mogu utjecati sama situacija, njihova očekivanja ili način na koji je pitanje postavljeno. Tekstovi koji su nastali neovisno o istraživanju nemaju taj problem.
 
-- **analiza sentimenta** - identifikacija emocionalnog tona teksta (pozitivan, negativan, neutralan);
+- Tekst **ne nameće gotove odgovore**, za razliku od anketa koje ispitanicima nude unaprijed zadane odgovore koje je lako prebrojiti, ali u kojima ne čujemo njihov vlastiti glas. U tekstu ljudi govore svojim riječima i svojim pojmovima.
 
-- **tf-idf** - mjera važnosti riječi u dokumentu s obzirom na cijeli korpus;
+- Tekst **nosi svoj kontekst** jer ima smisao za ljude koji ga koriste, a analiza teksta to može uzeti u obzir.
 
-- **tematsko modeliranje** - identificiranje tematskih obrazaca u tekstovima;
+- Tekstova **ima mnogo**, a oni koji nastaju na internetu bilježe kako se ljudi stvarno ponašaju, u stvarnim situacijama i u stvarnom vremenu pa daju uvide koje tradicionalne metode ne mogu dati.
 
-- **n-gram analiza** - analiza sekvenci riječi (dvo-grami, tro-grami itd.);
+Te prednosti imaju i svoju cijenu. Računalne analize teksta najčešće rade s **pronađenim podacima**, odnosno s podacima koje istraživač nije sam prikupio, nego ih je zatekao. Prednost takvih podataka je u tome što su nastali prirodno, izvan istraživanja, ali oni imaju i svoja ograničenja. Objave na društvenim mrežama oblikuje sama platforma, povijesnim arhivima često nedostaju važni dijelovi, a političkim govorima kontekst u kojem su izgovoreni. Osim toga, rijetko koji takav skup podataka predstavlja cijelu populaciju. Budući da pronađeni tekstovi nisu nastali za potrebe istraživanja, često im nedostaju i podaci koji istraživača zanimaju, poput obrazovanja ili socioekonomskog položaja autora. Veliki skupovi tekstova s interneta mogu se činiti potpunima, no to je samo privid jer se u njima odražavaju način na koji je platforma oblikovana, to tko je odlučio koristiti platformu i ograničenja koja platforma postavlja na pristup podacima.
 
-- **NER** - prepoznavanje entiteta poput imena, mjesta i datuma.
+Tekst se od uobičajenih kvantitativnih podataka razlikuje i po svojoj strukturi. Dohodak, dob ili mišljenje ispitanika u anketi mogu se zapisati kao jedan broj, dok bi nam za zapisivanje svega što se nalazi u nekom tekstu trebalo jako mnogo stupaca. Zato kažemo da je tekst **visokodimenzionalan**. Već nekoliko tekstova može sadržavati tisuće različitih riječi, a budući da svaki pojedini tekst sadrži tek malen dio svih riječi koje se pojavljuju u cijeloj zbirci, kažemo i da su tekstualni podaci **rijetki**.
 
-Tekstualna analiza tako omogućuje ekstrakciju ključnih informacija iz velikih količina tekstualnih podataka, praćenje stavova i ponašanja korisnika, automatizaciju obrade podataka u raznim industrijama (prepoznavanje prijevara i analiza recenzija), donošenje informiranih poslovnih odluka temeljenih na podacima i slično.
+Računalne metode mogu se primijeniti na gotovo svaki tekst, od prepisanih govora i intervjua do odgovora na otvorena anketna pitanja i etnografskih bilješki s terena. Pisani oblik pritom nije uvjet jer se i slike, karte, zvukovi, simboli ili umjetnička djela mogu promatrati kao tekstovi ako nekome nešto govore. Ovdje ćemo se baviti pisanim tekstom, ali većina onoga o čemu govorimo vrijedi i šire.
 
-Primjeri aktualnih tekstualnih analiza su:
+## Kratka povijest
 
-- analiza sentimenta na društvenim mrežama,
+Analiza teksta ima dva izvora koja su se dugo razvijala odvojeno. Jedan je analiza sadržaja u društvenim znanostima, a drugi obrada jezika u računalnim znanostima, a obje ćemo ovdje samo ukratko pregledati kako bismo se zadržali na tome kako su se susrele u sociologiji.
 
-- automatsko sažimanje teksta,
+Sustavna analiza tekstova stara je nekoliko stoljeća. Već u 17. stoljeću Crkva je s nepovjerenjem pratila širenje tiskanih tekstova koji nisu bili vjerski, a u Švedskoj se u 18. stoljeću vodila rasprava o zbirci himni nepoznatog autora u kojoj su se simboli u tekstu prvi put sustavno brojali. Sam izraz **analiza sadržaja** u engleskom se jeziku pojavio tek 1941. godine. Kvantitativna analiza teksta u društvenim znanostima počela se razvijati s procvatom tiska početkom 20. stoljeća. Već je 1893. godine objavljena analiza koja je pokazala da su njujorške novine u dvanaest godina smanjile prostor za vjeru, znanost i književnost, a povećale prostor za tračeve, sport i skandale. Max Weber predložio je 1910. godine opsežnu analizu sadržaja tiska, ali to istraživanje nikad nije provedeno. Važan doprinos dao je i sociolog Malcolm M. Willey koji je 1926. godine objavio knjigu *The Country Newspaper* o lokalnim tjednicima.
 
-- prepoznavanje dezinformacija i
+Suvremena kvantitativna analiza teksta u sociologiji razvila se iz istraživanja masovne komunikacije i propagande 1930-ih i 1940-ih godina. Tada su se analizom počeli baviti i ugledni društveni znanstvenici koji nisu samo mjerili koliko prostora novine daju kojoj temi, nego su počeli istraživati stereotipe, simbole, vrijednosti i propagandne postupke. U Drugom svjetskom ratu analiza sadržaja koristila se za praćenje neprijateljske propagande, a analitičari su na temelju neprijateljskih radijskih emisija uspjeli predvidjeti nekoliko važnih vojnih i političkih poteza. Prvi sustavni prikaz metode napisao je Bernard Berelson 1952. godine, a analizu sadržaja opisao je kao objektivan, sustavan i kvantitativan opis onoga što je u komunikaciji izravno vidljivo, odnosno njezina manifestnog sadržaja. Ta je definicija kasnije proširena i na skrivene, latentne aspekte sadržaja.
 
-- customer support.
+Računala su se u analizi teksta počela koristiti krajem 1950-ih godina, uglavnom za brojanje riječi jer su se istraživači nadali da će stroj biti objektivniji od ljudskih kodera. Prva računalna analiza sadržaja vjerojatno je ona iz 1958. godine u kojoj je obrađeno oko 4000 narodnih priča, a veliki korak naprijed bio je sustav General Inquirer iz 1966. godine koji se temeljio na rječniku relevantnih riječi. Oduševljenje računalima ipak je do 1980-ih splasnulo. Usporedno se u drugoj polovini 20. stoljeća razvila i kvalitativna analiza teksta kao odgovor na kvantitativne analize čiji su se rezultati činili površnima. Ona se oslanja na hermeneutiku iz humanističkih znanosti, naglašava skrivena značenja teksta i promatra tekst kao kulturni proizvod, a zbog čega traži pažljivo čitanje stručnjaka koji poznaju povijesni i društveni kontekst teksta. Kvalitativne analize uglavnom su se radile ručno, a računala su od sredine 1980-ih pomagala tek u prepisivanju i organiziranju tekstova. Iz te su potrebe nastali i programi za računalno potpomognutu kvalitativnu analizu, poput programa NVivo i ATLAS.ti.
 
-## `tidytext`
+Obrada prirodnoga jezika razvijala se zajedno s umjetnom inteligencijom, a rad na strojnom prevođenju počeo je čak i nešto ranije. Poznata demonstracija prevođenja koju su Georgetown i IBM izveli 1954. godine starija je od samog izraza umjetna inteligencija koji je nastao 1956. godine. Povijest obrade jezika može se grubo podijeliti u četiri razdoblja. U prvom razdoblju, od 1950. do 1969. godine, istraživanja su se bavila strojnim prevođenjem, ali se o strukturi jezika i o strojnom učenju znalo vrlo malo pa su sustavi prevodili gotovo riječ po riječ. U drugom razdoblju, od 1970. do 1992. godine, nastali su sustavi koji su već dobro baratali gramatikom i odnosima u rečenici, ali su svi bili ručno izgrađeni i temeljili su se na pravilima koja su napisali ljudi. U trećem razdoblju, od 1993. do 2012. godine, digitalnog teksta bilo je sve više pa su istraživači razvijali modele strojnog učenja koji su učili iz velikih količina teksta, uglavnom brojanjem. Četvrto razdoblje, od 2013. godine, donijelo je duboko učenje i neuronske mreže, u kojima se riječi i rečenice prikazuju kao točke u prostoru s mnogo dimenzija, a od 2018. godine modeli uče sami iz golemih količina teksta bez ručnog označavanja.
 
-**`tidytext`** je paket u R-u koji implementira princip *tidy data* u analizu teksta. Omogućuje organizaciju tekstualnih podataka u tablični format čime se olakšava primjena metoda analize i vizualizacije. On koristi principe *tidy data* gdje su redci riječi ili tokeni, a stupci metapodaci (npr. dokumenti, učestalost) pri čemu podržava standardne predobradbene korake poput uklanjanja zaustavnih riječi, implementtira tf-idf i analize sentimenta te ima široku integraciju s ostalim R paketima poput `quanteda` i `ggplot2` za napredne analize i vizualizacije.
+U tom je razvoju bilo i nekoliko prijelomnih točaka. Od sredine 1960-ih do ranih 1990-ih prevladavali su pristupi temeljeni na simbolima i pravilima, nakon čega se područje vratilo statističkim modelima i neuronskim mrežama. To je razdoblje vrhunac doseglo 2017. godine kada je predstavljena arhitektura **transformera**. Sljedeća prijelomna točka dogodila se 2019. godine jer je do tada za svaki zadatak trebalo istrenirati poseban model na ručno označenim podacima, a od tada je dovoljno jezičnom modelu zadatak opisati riječima, u obliku **upita** (eng. *prompt*). Obrada jezika tako se okrenula od tumačenja teksta prema njegovu stvaranju, a iz toga je nastalo novo područje, **generativna umjetna inteligencija**.
 
-R za tekstualna analiza koristi razne pakete od kojih su najvažniji:
+Ove dvije tradicije susrele su se u **računalnim društvenim znanostima** (eng. *computational social science*), polju koje pomoću novih izvora podataka i računalnih metoda odgovara na pitanja o društvu i koje je nastalo na sjecištu nekoliko društvenih disciplina. Sociologija je u to polje ušla nešto sporije od nekih drugih disciplina. Dok su politička znanost i psihologija ranije počele koristiti računalne metode, sociolozi, osobito sociolozi kulture, primjenjivali su ih na pitanja o tumačenju i značenju, pri čemu se nisu slagali o tome kakvu bi ulogu računalo trebalo imati u mjerenju značenja. Zanimljivo je da je nedavni zamah računalne analize teksta u sociologiji došao iz kvalitativnije tradicije, iako sociologija ima dugu tradiciju kvantitativne računalne analize. Prijelomni trenutak bio je poseban broj časopisa *Poetics* iz 2013. godine koji je sociolozima približio tematske modele. Od tada se računalne metode koriste uz vrlo različite pristupe, od mrežne analize i sustavnog kodiranja do hermeneutike i utemeljene teorije, a budući da računalo omogućuje da se tekstovi i prebroje i pažljivo pročitaju, razlika između kvantitativnog i kvalitativnog pristupa sve se više smanjuje. S vremenom se promijenilo i ono što se od istraživanja očekuje. Rani radovi uglavnom su pokazivali što nove metode mogu pa im je bilo važnije dokazati snagu alata nego riješiti teorijski problem. Danas veliki korpus ili nova metoda više nisu dovoljni sami po sebi, a sve više istraživanja računalnu analizu teksta koristi kako bi odgovorilo na važna teorijska pitanja. Računalne metode tako više nisu cilj, nego sredstvo.
 
-- **`tm` (Text Mining)** - klasični paket za tekstualnu analizu koji uključuje alate za čišćenje i analizu teksta,
+## Polja i pojmovi
 
-- **`tidytext`** - omogućuje analizu teksta pomoću principa *tidy data* (uređeni podaci),
+Analizom teksta bavi se nekoliko disciplina, od kojih svaka ima svoj naziv, svoje ciljeve i svoje alate. Ti se nazivi često koriste kao da znače isto, no iza njih stoje različiti pogledi na to čemu analiza teksta služi. Te je razlike važno razumjeti jer o njima ovisi kako se metode razvijaju i prema čemu se procjenjuje jesu li dobre.
 
-- **`text2vec`** - fokusiran na učinkovito vektoriziranje teksta i modeliranje,
+**Obrada prirodnoga jezika** (eng. *natural language processing*, **NLP**) skup je metoda kojima se ljudski jezik čini dostupnim računalima. Ona razvija algoritme i načine prikazivanja jezika u računalu s ciljem da računala dobiju nove mogućnosti, poput izvlačenja informacija iz teksta, prevođenja, odgovaranja na pitanja ili vođenja razgovora. Znanje o jeziku pritom može biti vrlo korisno, ali uspjeh se ipak mjeri time koliko dobro sustav obavlja svoj zadatak. Obrada jezika danas se uvelike oslanja na strojno učenje koje omogućuje da se složeni programi izgrade iz primjera, umjesto da se pišu pravilo po pravilo, pa se velik dio današnje obrade jezika može smatrati primijenjenim strojnim učenjem. Obrada jezika ujedno je i važan dio umjetne inteligencije jer je jezik jedno od glavnih obilježja ljudske inteligencije pa se sustav koji ne bi znao komunicirati riječima teško mogao smatrati potpunim. S razvojem velikih jezičnih modela obrada jezika postala je i samo središte suvremene umjetne inteligencije.
 
-- **`quanteda`** - brz i fleksibilan alat za analizu teksta i vizualizaciju te
+Mnogi skupovi i časopisi o obradi jezika nose naziv **računalna lingvistika**, zbog čega se ta dva izraza često koriste kao sinonimi. Među njima ipak postoji razlika u usmjerenju jer je za lingvistiku jezik predmet proučavanja, a računalne metode samo joj pomažu, kao što pomažu i biologiji ili astronomiji. Zato se računalna lingvistika katkad odvaja od obrade jezika kao područje koje računalo koristi kako bi odgovorilo na pitanja o samom jeziku, primjerice o tome kako se jezik mijenja kroz vrijeme.
 
-- **`topicmodels`** - specijaliziran za modeliranje tema.
+**Rudarenje teksta** (eng. *text mining*) označava primjenu tehnika rudarenja podataka na tekst, osobito razvrstavanja i grupiranja. Granica između rudarenja teksta i obrade jezika nije oštra, a razlika je uglavnom u tome što rudarenje teksta manje zanima struktura jezika, a više brzi algoritmi koji mogu obraditi velike količine podataka. U sociološkoj literaturi ovaj se izraz često koristi i kao opći naziv za računalne metode analize teksta.
 
-![](pictures_and_graphs/data analysis.png){fig-align="center"}
+**Analiza sadržaja** (eng. *content analysis*) istraživačka je tehnika kojom se iz tekstova donose ponovljivi i valjani zaključci o kontekstima u kojima se ti tekstovi koriste. Ona ima dugu tradiciju u društvenim znanostima, a u sociologiji je jedna od temeljnih metoda koja se često koristi uz etnografiju, intervjue ili povijesnu usporedbu i primjenjuje se od medijskih studija do sociologije kulture i političke sociologije. Kad se u analizi sadržaja koristi računalo, govorimo o **računalno potpomognutoj analizi sadržaja** (eng. *computer-assisted content analysis*).
+
+Pristup teksta kao podatka naglašava da se društvene znanosti tekstom bave s drugačijim ciljem od računalnih znanosti. Gotovo svi algoritmi koje koriste društveni znanstvenici razvijeni su u računalnim znanostima, ali računalne znanstvenike često zanimaju tražilice, sustavi preporuka ili standardni jezični zadaci, dok društveni znanstvenici tekst koriste kako bi doznali nešto o pojavama koje proučavaju. Zato preuzimanje postupaka iz računalnih znanosti bez promišljanja može dovesti do neželjenih posljedica. Razlike između računalnih i društvenih znanstvenika ipak nisu velike jer se radi o razlikama u perspektivi, a ne o dubokom jazu među disciplinama. Društveni znanstvenici češće istražuju korpuse metodama koje ne traže unaprijed zadane kategorije, dok računalni znanstvenici češće koriste metode koje uče iz označenih primjera. Društvene znanstvenike zanimaju uzroci i statistička značajnost, a računalne rezultati i točnost predviđanja. Uz to, računalni znanstvenici više razvijaju nove modele, dok društveni znanstvenici radije do kraja iskoriste modele koje već poznaju.
+
+Šire polje u kojem se ti pristupi susreću jesu već spomenute **računalne društvene znanosti**. Obrada jezika važna je i u **digitalnoj humanistici** (eng. *digital humanities*), a u oba su polja osobito korisni razvrstavanje teksta, grupiranje, izvlačenje informacija i tematski modeli. Digitalna humanistika i društvene znanosti služe se sličnim alatima, ali digitalne humaniste često zanima sam tekst koji proučavaju, dok društvene znanstvenike tekst obično zanima kao pokazatelj nekog šireg procesa.
+
+## Jezik kao predmet obrade
+
+Prije nego što pogledamo kako se tekst pretvara u brojeve, vrijedi se zapitati zašto je to uopće teško. Ljudi jezik koriste svakodnevno i bez napora pa se može činiti da bi i računalu to trebalo biti lako, no jezik ima niz svojstava zbog kojih ga je vrlo teško obraditi.
+
+### Zašto je jezik težak
+
+Ni lingvisti ne znaju točno kako nastaje neki tekst, a značenje rečenice može se potpuno promijeniti kad joj dodamo samo jednu riječ ili je stavimo u drugi kontekst. Dobar je primjer poznata engleska šala *Time flies like an arrow. Fruit flies like a banana.* Prva rečenica znači da vrijeme leti kao strijela, dok druga, iako na prvi pogled izgleda isto, znači da voćne mušice vole bananu. Šala počiva upravo na tome što izraz *flies like* u drugoj rečenici odjednom dobiva posve drugo značenje.
+
+Osim višeznačnosti i ovisnosti o kontekstu, jezik ima i neka formalna svojstva koja otežavaju njegovu obradu:
+
+- Jezik se **sastoji od zasebnih jedinica**. Dok se slika ili zvuk mijenjaju postupno, tekst je sastavljen od zasebnih simbola, a značenje nastaje njihovim kombiniranjem. To je osobito važno kad računalo treba proizvesti tekst, primjerice prijevod ili sažetak, jer se dobrom rješenju ne može postupno približavati.
+
+- Riječi **neprestano nastaju**, a pritom se nekoliko riječi pojavljuje vrlo često, dok se golem broj riječi pojavljuje vrlo rijetko, a što opisuje Zipfov zakon. Zato se sustav za obradu jezika stalno susreće s riječima koje nikad prije nije vidio.
+
+- Jezik je **rekurzivan** jer se riječi spajaju u izraze, a izrazi se istim pravilima spajaju u sve veće izraze pa mogu nastati izrazi proizvoljne duljine. Tekst zato izgleda kao obični niz riječi, ali njegovo značenje ovisi o skrivenoj hijerarhijskoj strukturi.
+
+Za razumijevanje jezika često su potrebni i znanje o svijetu i zaključivanje. Pogledajmo rečenicu *The trophy doesn't fit into the brown suitcase because it is too [small/large].* Ako je posljednja riječ *small*, zamjenica *it* odnosi se na kovčeg, a ako je posljednja riječ *large*, odnosi se na trofej. To možemo zaključiti samo ako razmišljamo o tome što u što može stati što pokazuje da se razumijevanje jezika ne može odvojiti od znanja i zaključivanja.
+
+### Jezične razine
+
+Jezik se može promatrati na nekoliko razina, a svaka od njih donosi svoje izazove.
+
+Najjednostavnijom jedinicom jezika čini se **riječ**. Iako definirati riječ djeluje potpuno intuitivno, ostaje otvorenim što bi sve bila riječ, odnosno jesu li interpunkcijski znakovi riječi, jesu li riječi poštapalice poput *ovaj* ili *hm*, je li *New York* jedna riječ ili dvije i slično. U kontekstu obrade taksta, ono što ćemo smatrati riječju, zapravo ovisi o konkretnom zadatku.
+
+Riječi imaju i dijelove koji sami nešto znače. Najmanji takav dio naziva se **morfem**. Engleska riječ *cats*, primjerice, ima dva morfema, *cat* i nastavak *-s* koji označava množinu. Morfemi se dijele na **korijene**, koji nose glavno značenje riječi, i **afikse**, koji tom značenju nešto dodaju. Neki afiksi imaju gramatičku ulogu jer označavaju, primjerice, množinu ili prošlo vrijeme pa ih nazivamo **fleksijskima**, dok drugi tvore nove riječi, često drugačije vrste, pa ih nazivamo **derivacijskima**. Tako od engleske imenice *care* nastaje pridjev *careful*, a od njega prilog *carefully*. Posebnu skupinu čine **klitike** koje se u rečenici ponašaju kao riječi, ali su skraćene i pripojene drugoj riječi, kao engleski *'ve* u *I've*.
+
+Jezici se razlikuju po tome koliko morfema ima prosječna riječ i koliko ih je lako razdvojiti. U **izolacijskim** jezicima, poput vijetnamskog, riječ najčešće ima samo jedan morfem, dok u **polisintetskim** jezicima jedna riječ može imati toliko morfema da odgovara cijeloj engleskoj rečenici. U **aglutinativnim** jezicima, poput turskog, morfemi imaju jasne granice, a u **fuzijskim** jezicima, poput ruskog, jedan nastavak može istodobno izražavati nekoliko gramatičkih kategorija. Za računalnu obradu to je vrlo važno jer je, što jezik ima više oblika iste riječi, teže koristiti riječi kao jedinice obrade. U hrvatskom su, primjerice, *kuća*, *kuće*, *kući*, *kuću* i *kućom* oblici iste riječi, ali ih računalo koje ne zna ništa o morfologiji vidi kao pet različitih riječi.
+
+Na višoj razini nalazi se **sintaktička struktura** koja opisuje gramatičke odnose među riječima, primjerice to da glagol ima subjekt i objekt. Određivanje tih odnosa naziva se raščlanjivanje i jedan je od najstarijih zadataka obrade jezika. Tekst o istoj osobi pritom može govoriti na mnogo načina. U rečenici *Victoria Chen, CFO of Megabucks Banking, saw her pay jump to $2.3 million, as the 38-year-old became the company's president* izrazi *Victoria Chen*, *CFO of Megabucks Banking*, *her* i *the 38-year-old* odnose se na istu osobu, a za takve izraze kažemo da su **koreferentni**. Konačno, u razgovoru ljudi nastoje razumjeti jedni druge, što se naziva uspostavljanjem **zajedničkog polazišta** i zato sugovorniku pokazuju kad ga ne razumiju. Ako nas netko u sobi s dvije kutije zamoli da mu dodamo kutiju, pitat ćemo ga „Koju?”.
+
+Na početku razvoja obrade jezika prepoznavanje takvih struktura bilo je nužan korak prema razumijevanju teksta. Danas to više nije njihova glavna uloga, ali one su i dalje korisne, primjerice u društvenim znanostima. U jednom je istraživanju raščlanjivanjem političkih govora proučavano kako američki političari govore o različitim skupinama imigranata pa se pokazalo da ih katkad opisuju kao ljude koji doprinose društvu, riječima poput *hardworking* ili *contribute*, a katkad govore o njihovu isključivanju, riječima poput *deport* ili *reject*.
+
+Uz to, jezik nije jedan. Svaki je tekst netko proizveo, na određenom jeziku, u određeno vrijeme, na određenom mjestu i s određenom svrhom. Jezici imaju inačice koje se razlikuju po regijama ili društvenim skupinama, a ljudi u istoj rečenici često miješaju dva jezika, što se naziva **prebacivanje kodova**. Tekstovi pripadaju i različitim **žanrovima**, od novinskih vijesti do liječničkih bilješki i saborskih rasprava, na njih utječu dob, spol i socioekonomski položaj autora, a jezik se mijenja i kroz vrijeme. Zato je pri radu s nekim korpusom važno znati tko je tekstove proizveo, u kojem kontekstu i s kojom svrhom. Najbolje je kad autor korpusa napiše njegov opis u kojem navodi zašto je korpus prikupljen, kako su tekstovi nastali, tko su autori, kako su podaci obrađeni i smiju li se slobodno koristiti. Treba imati na umu i to da se algoritmi za obradu jezika najčešće razvijaju i testiraju samo na engleskom, a kad se razvijaju i za druge jezike, to su obično službeni jezici velikih i bogatih zemalja. To je važno i za društvene znanosti jer gotovi alati, poput rječnika za mjerenje određenih pojmova, često postoje samo na nekoliko jezika.
+
+### Značenje nije u tekstu
+
+Do sada smo jezik promatrali kao sustav, no za analizu teksta u društvenim znanostima jednako je važno pitanje odakle tekstu značenje. Moglo bi se pomisliti da je značenje sadržano u tekstu i da ga treba samo izvući. Takvo je shvaćanje dugo pratilo analizu sadržaja pa se poruka zamišljala kao posuda u kojoj se nalazi značenje i to obično samo jedno. Tekst se, međutim, razlikuje od fizičkih pojava jer ima smisao za ljude koji ga čitaju, a ne samo za istraživača, zbog čega analiza ne može ostati na slovima i znakovima, nego mora gledati kako ljudi tekstove koriste. Iz toga proizlazi nekoliko važnih svojstava tekstova:
+
+1. Tekst **nema svojstva neovisna o čitatelju** jer bez čitatelja nema teksta, bez tumača nema poruke, a bez promatrača nema podataka. Značenje tekstu, dakle, uvijek netko donosi.
+
+2. Tekst **nema samo jedno značenje** jer se isti tekst može čitati na mnogo načina, primjerice brojanjem riječi, analizom metafora ili psihološkim, sociološkim i političkim tumačenjem, a sva ta tumačenja mogu biti valjana iako se razlikuju.
+
+3. Ljudi **ne moraju tekst razumjeti na isti način** jer se rijetko svi slažu oko toga što neki tekst znači, a kad bismo analizirali samo ono oko čega se svi slažu, ostale bi nam samo nevažne stvari.
+
+4. Značenje **govori o nečemu izvan teksta** jer nas tekstovi obavještavaju, izazivaju osjećaje i potiču na djelovanje, zbog čega analiza mora gledati dalje od samog teksta.
+
+5. Značenje **ovisi o kontekstu** pa će, primjerice, psihoterapeut i lingvist isti razgovor čitati različito, a kad odaberemo kontekst, broj mogućih tumačenja postaje manji.
+
+6. Iz teksta se **zaključuje o onome što ne vidimo izravno** pa se analiza teksta uvijek sastoji od zaključivanja iz dostupnih tekstova o odabranom kontekstu.
+
+Za računalnu analizu teksta to ima važne posljedice. Računalo može s tekstom izvoditi vrlo složene operacije, ali sve one ostaju unutar onoga što su programeri zamislili pa računalo bez ljudi koji čitaju i zaključuju ne može doći do ičega izvan teksta koji obrađuje. Svaki program koji analizira riječi u sebi nosi neku zamisao o tome kako ljudi čitaju, a zbog čega je čitanje u osnovi kvalitativno, čak i kad je njegov rezultat neki broj.
+
+## Temeljni pojmovi
+
+Računalo može raditi samo s brojevima pa tekst prije analize treba pretvoriti u brojeve. To nije jedan korak, nego niz odluka, a svaka od njih određuje što ćemo u analizi vidjeti, a što izgubiti. Zato u ovom odjeljku uvodimo temeljne pojmove koji se koriste u tom procesu i na koje ćemo se oslanjati kroz cijeli udžbenik.
+
+### Korpus i dokument
+
+**Korpus** (eng. *corpus*) zbirka je dokumenata koje analiziramo. Izgradnja korpusa prvi je korak svake analize teksta, a odluke donesene u tom koraku utječu na sve što slijedi. Hoće li neki korpus biti koristan, ovisi o istraživačkom pitanju i o populaciji koju istraživač želi proučavati. Objave na Twitteru, primjerice, nisu dobar izvor ako želimo doznati što Amerikanci misle o klimatskim promjenama jer platformu koristi tek manji dio stanovništva, a o klimatskim promjenama piše još manje ljudi. Ista platforma ipak može biti vrlo dobar izvor ako proučavamo kako političari komuniciraju sa svojim biračima ili kako aktivisti pokušavaju usmjeriti javnu raspravu. Zato je dobro da istraživač, ako mu je pitanje jasno, prije prikupljanja tekstova odredi što točno želi izmjeriti i na koju se populaciju to odnosi. Korpus koji je pristran ili nepotpun ne mora se odmah odbaciti, ali istraživač mora znati zašto je korpus nepotpun i što to znači za rezultate te to jasno reći čitateljima.
+
+**Dokument** je jedinica analize, a to može biti objava na društvenoj mreži, govor, priopćenje za medije, rečenica, odlomak ili bilo koja druga jedinica teksta. Odabir jedinice analize prvi je korak pretvaranja teksta u brojeve i ovisi o istraživačkom pitanju. Dobar je primjer istraživanje autorstva *Federalističkih spisa*, jedno od najranijih kvantitativnih istraživanja teksta, u kojem su istraživači tekstove podijelili u dijelove od oko 200 riječi kako bi mogli otkriti i dijelove koje su unutar istog spisa napisali različiti autori.
+
+### Riječi, tokeni i tipovi
+
+Kad brojimo riječi u tekstu, možemo ih brojati na dva načina. Pogledajmo ovu rečenicu:
+
+> They picnicked by the pool, then lay back on the grass and looked at the stars.
+
+Ako ne brojimo interpunkciju, rečenica ima 16 riječi, ali različitih riječi ima samo 14 jer se riječ *the* pojavljuje tri puta. Različite riječi u korpusu nazivaju se **tipovi riječi** (eng. *word types*), dok se svako pojedino pojavljivanje riječi u tekstu naziva **pojavnica** (eng. *word instance*). Svi tipovi zajedno čine **rječnik** ili **vokabular** (eng. *vocabulary*) pa naša rečenica ima 16 pojavnica i 14 tipova.
+
+Broj pojavnica i broj tipova povezani su na zanimljiv način jer u većem korpusu uvijek ima i više različitih riječi. Shakespeareova djela, primjerice, sadrže oko 29 tisuća različitih riječi na ukupno 884 tisuće riječi, dok korpus Google n-grama sadrži 13 milijuna različitih riječi na bilijun riječi, iako su u obzir uzete samo riječi koje se pojavljuju barem 40 puta. Taj odnos opisuje **Herdanov zakon**, koji se naziva i **Heapsov zakon**.
+
+$$|V| = kN^{\beta}$$
+
+U formuli je $|V|$ broj tipova, a $N$ broj pojavnica, dok su $k$ i $\beta$ pozitivne konstante, a pri čemu je $\beta$ veći od 0 i manji od 1. Vrijednost $\beta$ ovisi o veličini i žanru korpusa i najčešće iznosi između 0,44 i 0,56, što pojednostavljeno znači da rječnik raste nešto brže od drugog korijena duljine teksta. Pritom se razlikuju dvije vrste riječi. **Funkcijske riječi** su gramatičke riječi, poput engleskih *a* i *of*, kojih u jeziku ima ograničen broj pa njihov broj ne raste u nedogled. **Sadržajne riječi** su imenice, pridjevi i glagoli koji govore o ljudima, mjestima i događajima, a njihov broj, osobito broj imena i stručnih naziva, raste bez kraja. To što riječi neprestano nastaju problem je za svaki računalni model jer njegov rječnik nikad neće obuhvatiti sve riječi koje se mogu pojaviti pa će se stalno susretati s nepoznatim riječima, odnosno riječima koje nikad prije nije vidio.
+
+### Tokenizacija
+
+**Tokenizacija** (eng. *tokenization*) označava dijeljenje teksta na tokene i prvi je korak obrade jezika. Tokeni mogu biti riječi, morfemi ili znakovi, a svaka od tih mogućnosti ima svoje nedostatke. Riječi i morfemi imaju prilično stalno značenje, ali ih je teško točno definirati, dok je znakove lako definirati, ali su premali da bi nosili značenje. Jedinstven način tokenizacije važan je i zbog ponovljivosti jer se istraživači koji se drže istih pravila mogu složiti i oko jednostavnih pitanja, poput toga koliko je neki tekst dug ili je li *New York* jedan token ili dva.
+
+U društvenim znanostima tokeni su najčešće riječi, a pojedinačne riječi nazivaju se **unigrami**. Ako želimo sačuvati dio redoslijeda riječi, možemo koristiti **bigrame**, odnosno parove riječi, ili **trigrame**, odnosno trojke riječi, pa tako možemo razlikovati *White House* od bijele boje i od kuće. Općenito se niz od $n$ riječi naziva **n-gram**.
+
+Suvremeni jezični modeli tokenizaciji pristupaju drugačije. Kako bi riješili problem nepoznatih riječi, koriste i jedinice manje od riječi, takozvane **podriječi** (eng. *subwords*) koje mogu biti bilo koji niz slova ili dio riječi koji nešto znači, poput nastavka *-er*. Tako se svaka nepoznata riječ može složiti od poznatih dijelova pa model koji nikad nije vidio riječ *lower* može tu riječ rastaviti na *low* i *er* koje već poznaje.
+
+Najpoznatiji postupak za to naziva se **kodiranje parova bajtova** (eng. *byte-pair encoding*, **BPE**). Postupak počinje rječnikom koji sadrži samo pojedinačne znakove, a zatim se u korpusu traže dva znaka koja se najčešće pojavljuju jedan uz drugoga. Ta se dva znaka spajaju u novi token koji se dodaje u rječnik, a svako njihovo pojavljivanje u korpusu zamjenjuje se novim tokenom. Postupak se ponavlja onoliko puta koliko smo unaprijed odredili. Zamislimo korpus od deset znakova s rječnikom od pet znakova: A, B, C, D i E.
+
+```
+A B D C A B E C A B
+```
+
+Najčešći par susjednih znakova je A B pa ga spajamo u novi token AB.
+
+```
+AB D C AB E C AB
+```
+
+Rječnik sada ima šest tokena, a korpus je dug sedam tokena. Najčešći par sada je C AB, pa ga spajamo u CAB.
+
+```
+AB D CAB E CAB
+```
+
+U stvarnoj primjeni ovaj se postupak ponavlja desetke tisuća puta na vrlo velikom korpusu, pa nastaju veliki rječnici. Većina riječi tada postaje zaseban token, a samo se rijetke i nepoznate riječi dijele na više dijelova. To ipak vrijedi uglavnom za engleski. Budući da u podacima na kojima se treniraju veliki jezični modeli engleski jako prevladava, višejezični modeli većinu tokena troše na engleski, a riječi drugih jezika dijele na kraće dijelove. U jednom primjeru engleska rečenica ima 19 tokena, dok ista rečenica na španjolskom, sa 16 riječi, ima čak 33 tokena. Kod jezika za koje postoji manje podataka riječi se mogu raspasti i na pojedinačna slova, zbog čega model takve jezike lošije razumije, a njegovo je treniranje skuplje.
+
+### Smanjivanje složenosti
+
+Jezik je složen, ali za analizu nam ne treba sva njegova složenost. Zato pri pretvaranju teksta u brojeve nastojimo zadržati ono što će metode analize koristiti, a odbaciti ono što je nevažno, sporedno ili previše složeno za statistički model. Uobičajeni postupak ima četiri koraka:
+
+1. odabir jedinice analize;
+
+2. tokenizacija;
+
+3. smanjivanje složenosti koje uključuje:
+
+  - pretvaranje svih slova u mala,
+
+  - uklanjanje interpunkcije,
+
+  - uklanjanje zaustavnih riječi,
+
+  - svođenje različitih oblika riječi na isti oblik (lematizacija ili korjenovanje),
+
+  - uklanjanje prečestih i prerijetkih riječi;
+
+4. stvaranje matrice dokumenata i značajki.
+
+Velika slova i interpunkcija obično se uklanjaju, iako je interpunkcija katkad važna jer točke i zarezi pokazuju gdje završava rečenica ili misao, a upitnici, uskličnici i navodnici govore nešto i o značenju. Zato veliki jezični modeli interpunkcijske znakove obično tretiraju kao zasebne riječi. **Zaustavne riječi** (eng. *stop words*) vrlo su česte riječi koje same ne nose značenje, nego uglavnom imaju gramatičku ulogu, a riječ je o funkcijskim riječima o kojima smo već govorili.
+
+**Korjenovanje** (eng. *stemming*) skraćuje riječi tako da im odbacuje završetke i tako smanjuje broj različitih riječi u tekstu. Riječi koje znače istu stvar svode se pritom na isti korijen pa engleske riječi *family*, *families*, *families'* i *familial* postaju *famili*. Korjenovanje je zapravo pojednostavljena **lematizacija** (eng. *lemmatization*) koja riječ svodi na njezin osnovni oblik, lemu, i pritom koristi rječnik i kontekst pa može otkriti da je *good* osnovni oblik riječi *better* i *best*. Korjenovanje je mnogo grublje, ali i mnogo brže, a čini se da je za većinu primjena razlika u rezultatima mala. Riječi koje se u korpusu pojavljuju samo jednom ili dvaput obično se uklanjaju jer ne pomažu razlikovati dokumente. Uobičajeno se uklanjaju riječi koje se pojavljuju u manje od 1 % ili u više od 99 % dokumenata, iako te granice treba prilagoditi raznolikosti rječnika, duljini dokumenata i veličini korpusa.
+
+Svaki od ovih koraka znači gubitak informacija, a koje su informacije nevažne, ovisi o istraživačkom pitanju. Najbolji primjer za to opet su *Federalistički spisi*. Istraživače nije zanimalo o čemu spisi govore, nego kakvim su stilom napisani, pa su koristili samo zaustavne riječi, odnosno upravo one riječi koje se inače odbacuju. Pokazalo se da Hamilton i Madison riječi poput *upon*, *by* i *to* koriste različito često, a model koji se temeljio na tim riječima sve je sporne spise pripisao Madisonu. Odluke u predobradi mogu, dakle, bitno promijeniti rezultate jer različiti načini pripreme istih podataka mogu dati vrlo različite rezultate. Zato istraživač treba promišljeno donositi te odluke i jasno ih opisati.
+
+### Vreća riječi i matrica dokumenata i značajki
+
+Najveći i najneobičniji korak u pretvaranju teksta u brojeve je odbacivanje redoslijeda riječi, nakon kojeg dokument promatramo kao **vreću riječi** (eng. *bag of words*). Zamisao je jednostavna jer svaki dokument opisujemo samo time koliko se puta u njemu pojavljuje svaka riječ, kao da smo sve riječi ubacili u vreću i protresli je pa se više ne zna kojim su redom stajale. Lako je smisliti rečenice kojima redoslijed riječi potpuno mijenja značenje, ali su u stvarnim tekstovima takve rečenice rijetke, a popis riječi koje se pojavljuju u tekstu često je dovoljan da se dozna o čemu tekst govori. Mnogima se čini da se ovim postupkom gubi previše informacija, no istraživanja dosljedno pokazuju da je ovakav jednostavan prikaz teksta dovoljan da se otkriju zanimljiva svojstva tekstova.
+
+Mosteller i Wallace, autori istraživanja *Federalističkih spisa*, vreću riječi napravili su doslovno od papira jer je krajem 1950-ih brojanje riječi bilo mukotrpan posao. Riječi iz spisa tipkali su na dugu papirnatu traku, svaku riječ u zaseban redak, a traku su zatim škarama rezali na listiće, tako da je na svakom listiću bila jedna riječ. Kad bi tijekom brojanja netko otvorio vrata, listići bi se razletjeli po sobi.
+
+Nakon opisanih koraka svaki je dokument prikazan kao niz brojeva, a svaki broj govori koliko se puta određena riječ pojavljuje u tom dokumentu. Takav niz brojeva naziva se **vektor**, a kad vektore svih dokumenata složimo jedan ispod drugoga, dobivamo **matricu dokumenata i pojmova** (eng. *document-term matrix*, **DTM**) koja se naziva i **matrica dokumenata i značajki** (eng. *document-feature matrix*, **DFM**). Svaki redak matrice odgovara jednom dokumentu, a svaki stupac jednom obilježju kojim opisujemo dokumente. Obilježja su najčešće riječi, ali mogu biti i n-grami, leme ili nešto drugo.
+
+Pogledajmo jednostavan primjer s dvije rečenice iz govora o stanju nacije dvojice američkih predsjednika u kojima se spominje riječ *manufacturing* i od kojih ćemo svaku promatrati kao zaseban dokument.
+
+> "It is undoubtedly in the power of Congress seriously to affect the agricultural and manufacturing interests of France by the passage of laws relating to her trade with the United States."
+
+> "And this Congress should make sure that no foreign company has an advantage over American manufacturing when it comes to accessing financing or new markets like Russia."
+
+```{r}
+#| message: false
+#| echo: false
+library(tidyverse)
+library(tidytext)
+
+# Dva dokumenta
+dokumenti <- tibble(
+  dokument = c("Jackson, 1831", "Obama, 2012"),
+  tekst = c(
+    "It is undoubtedly in the power of Congress seriously to affect the agricultural and manufacturing interests of France by the passage of laws relating to her trade with the United States.",
+    "And this Congress should make sure that no foreign company has an advantage over American manufacturing when it comes to accessing financing or new markets like Russia."
+  )
+)
+
+# Tokenizacija
+tokeni <- dokumenti |>
+  unnest_tokens(word, tekst)
+
+# Broj tokena i tipova u svakom dokumentu
+tokeni |>
+  group_by(dokument) |>
+  summarise(tokeni = n(), tipovi = n_distinct(word))
+
+# Matrica dokumenata i pojmova bez zaustavnih riječi
+tokeni |>
+  anti_join(stop_words, by = "word") |>
+  count(dokument, word) |>
+  cast_dtm(document = dokument, term = word, value = n) |>
+  as.matrix()
+```
+
+Jacksonova rečenica ima 31 token, ali samo 25 tipova jer se neke riječi, poput *the* i *of*, ponavljaju, dok Obamina rečenica ima 27 tokena i 27 tipova jer se u njoj nijedna riječ ne ponavlja. Nakon uklanjanja zaustavnih riječi matrica ima 20 stupaca, a samo se dvije riječi, *congress* i *manufacturing*, pojavljuju u obje rečenice. Sve ostale riječi pojavljuju se samo u jednoj rečenici pa u retku druge rečenice imaju vrijednost nula.
+
+Ovaj primjer pokazuje važno svojstvo matrice dokumenata i pojmova. Budući da se većina riječi pojavljuje u malom broju dokumenata, većina vrijednosti u matrici jednaka je nuli, a to se svojstvo naziva **rijetkost** (eng. *sparsity*). Ako analiziramo umjeren broj dokumenata bez posebno stručnog rječnika, matrica će obično imati između tri i pet tisuća stupaca i sastojat će se uglavnom od nula. Kad podaci imaju mnogo stupaca i malo vrijednosti različitih od nule, model lako nauči i slučajne obrasce koji postoje samo u tim podacima, što se naziva **prenaučenost** (eng. *overfitting*), pa istraživači zato najprije smanjuju broj stupaca i rijetkost podataka.
+
+Primjer pokazuje i koliko su odluke u predobradi važne. Popis zaustavnih riječi koji smo koristili uklonio je očekivane riječi poput *the* i *of*, ali i riječi *states*, *interests* i *new*, pa je od *United States* ostala samo riječ *united*. Za neka istraživanja takav gubitak nije važan, dok bi za druga mogao biti presudan.
+
+Opisani postupak samo je jedan od mogućih načina prikazivanja teksta brojevima i može se prilagoditi istraživanju. Umjesto broja pojavljivanja možemo, primjerice, bilježiti samo pojavljuje li se riječ u dokumentu, možemo zadržati neke zaustavne riječi ili koristiti samo dio riječi, a riječima možemo dati i veću težinu ako su rijetke u zbirci, što se naziva **tf-idf** (eng. *term frequency - inverse document frequency*). Katkad je potreban i posve drugačiji pristup. U istraživanju sporazuma između američkih domorodaca i američke vlade redoslijed riječi bio je važan za razumijevanje pregovora o zemlji pa su se umjesto riječi koristili kratki nizovi slova koji su mogli obuhvaćati i više riječi.
+
+### Model vektorskog prostora i sličnost
+
+Matricu dokumenata i značajki možemo zamisliti i na drugi način. U **modelu vektorskog prostora** (eng. *vector space model*) svaki je redak matrice vektor u prostoru s mnogo dimenzija pri čemu svaka riječ odgovara jednoj dimenziji. Tako na tekstove možemo primijeniti matematiku vektora, a osobito je korisno to što tada možemo izmjeriti koliko su dva dokumenta slična. Sličnost dokumenata važna je za gotovo sve metode analize teksta jer metode otkrivanja grupiraju dokumente tako da su dokumenti u istoj skupini što sličniji, dok metode mjerenja dokumentu dodjeljuju oznaku prema označenim dokumentima kojima je najsličniji.
+
+Sličnost se često mjeri **kosinusnom sličnošću** (eng. *cosine similarity*), odnosno kosinusom kuta između dva vektora. Budući da kut između vektora ne ovisi o njihovoj duljini, nego samo o njihovu smjeru, kosinusna sličnost ne ovisi o tome koliko su dokumenti dugi. Kad su vrijednosti u vektorima brojevi pojavljivanja riječi, kosinusna sličnost kreće se od 0 do 1, pri čemu 0 znači da dokumenti nemaju ništa zajedničko, a 1 da su najsličniji što mogu biti.
+
+Vratimo se *Federalističkim spisima* i pogledajmo samo tri riječi koje se u svim Hamiltonovim spisima pojavljuju 859, 102 i 374 puta, u Madisonovim spisima 474, 17 i 7 puta, a u jednom spornom spisu 15, 2 i 0 puta. Ako sličnost izmjerimo jednostavnim umnoškom vektora, čini se da je sporni spis sličniji Hamiltonu (13089) nego Madisonu (7144). To je, međutim, samo posljedica toga što je Hamilton napisao mnogo više spisa pa su njegovi brojevi mnogo veći. Kosinusna sličnost ne ovisi o duljini vektora pa daje drugačiji rezultat jer sličnost spornog spisa s Hamiltonom iznosi 0,918, a s Madisonom 0,995. Sporni je spis, dakle, mnogo sličniji Madisonovu načinu pisanja.
+
+Vreća riječi i model vektorskog prostora imaju ipak jedno važno ograničenje jer su za njih sve riječi jednako različite, pa su *cat* i *kitten* jednako udaljene kao *cat* i *ecclesiastical*. Kako se to ograničenje može prevladati, vidjet ćemo u sljedećem odjeljku.
+
+Na kraju, treba naglasiti da pretvaranje teksta u brojeve nije tehnički korak koji se jednom napravi i zaboravi, nego odluka koja ovisi o istraživačkom pitanju. Ne postoji jedan ispravan način prikazivanja teksta koji bi odgovarao svim pitanjima. Katkad istraživača zanima samo jedna riječ pa mu je dovoljno znati pojavljuje li se ta riječ u tekstu, katkad želi koristiti gotovo sve riječi osim čestih riječi poput *the* i *and*, a katkad ga zanimaju upravo te česte riječi ili mora znati u kojem se kontekstu neka riječ pojavljuje. Zato je dobro odabrati najjednostavniji prikaz teksta koji sadrži dovoljno informacija za ono što želimo izmjeriti. Uz vreću riječi postoje i složeniji načini prikazivanja teksta, poput **vektorskih reprezentacija riječi** (eng. *word embeddings*) koje iz velikih zbirki tekstova uče da su neke riječi sličnije od drugih, ili postupaka obrade jezika koji iz teksta izvlače i druge informacije, primjerice vrstu riječi, imena osoba, mjesta i organizacija ili sintaktičku strukturu rečenice.
+
+## Kako računalo „čita” tekst
+
+Do sada smo tekst pretvarali u brojeve tako što smo brojali riječi, no kad danas razgovaramo s jezičnim modelom, čini se da on radi mnogo više od brojanja jer odgovara na pitanja, prevodi, sažima i piše. Kako bismo razumjeli kako je to moguće, moramo odgovoriti na tri pitanja, a to su kako se može opisati značenje riječi, kako se jezik može prikazati vjerojatnostima i kako iz toga nastaju današnji veliki jezični modeli.
+
+### Tri pogleda na značenje
+
+Značenje riječi, izraza ili rečenice prema Eisensteinu se može opisati na najmanje tri načina.
+
+Prvi je **relacijski pogled** koji značenje opisuje odnosima među riječima. Novinar je, primjerice, jedno od zanimanja, voditeljica vijesti posebna je vrsta novinara, a novinar se bavi novinarstvom koje je najčešće vrsta pisanja. Na takvim se odnosima temelje semantičke mreže poput WordNeta koje bilježe kako su riječi međusobno povezane. Snagu ovog pogleda dobro pokazuje primjer *Umashanthi interviewed Ana. She works for the college newspaper.* Na pitanje tko radi za studentske novine odgovorit ćemo da je to Umashanthi jer riječ *novinar*, iako se uopće ne spominje, povezuje intervju i novine. Relacijski pogled ipak je teško prenijeti u računalo jer nije jasno koje sve riječi treba povezati, primjerice jesu li novinar i reporter ista stvar ili ih treba razlikovati.
+
+Drugi je **kompozicijski pogled** koji polazi od toga da se značenje riječi gradi od značenja njezinih dijelova. Engleski nastavak *-s* označava množinu pa *journalists* znači više novinara, a novinar je onaj tko radi u novinama. To se naziva **načelo kompozicionalnosti** i vrijedi i za veće jedinice, od izraza i rečenica do cijelih tekstova. Mnoge riječi ipak nemaju dijelove iz kojih bi se moglo izvesti njihovo značenje, poput *whale* ili *blubber*, a izrazi poput *kick the bucket* (umrijeti) znače nešto posve drugo od zbroja svojih riječi.
+
+Treći je **distribucijski pogled** koji značenje riječi opisuje kontekstima u kojima se riječ pojavljuje. Riječ *blubber* (kitova mast), primjerice, pojavljuje se u rečenicama o tome da je služila kao gorivo, da se vadila iz velikih riba ili da se koristila kao gnojivo, a takvi je konteksti povezuju s riječima koje se pojavljuju u sličnim rečenicama, poput *fat*, *pelts* ili *barnacles*. Prednost je ovog pogleda u tome što značenje možemo učiti samo iz tekstova, bez ručnog označavanja i bez stručnjaka, pa se njime može obuhvatiti golem broj jezičnih pojava. Njegov je nedostatak nepreciznost jer je *blubber* u jednom smislu sličan masti, a u drugom krznu, a ovaj nam pogled ne govori zašto se te riječi pojavljuju u istim kontekstima.
+
+Sva tri pogleda pomažu nam razumjeti značenje, ali svaki traži drugačije načine prikazivanja i drugačije algoritme. Budući da je temelj suvremene obrade jezika postao upravo distribucijski pogled, na njega ćemo se usredotočiti.
+
+### Distribucijska hipoteza i vektorske reprezentacije
+
+Mladi odrasli govornici američkog engleskog znaju, prema različitim procjenama, između 30000 i 100000 riječi, što znači da bi djeca do dvadesete godine svaki dan morala naučiti sedam do deset novih riječi. Istraživanja pokazuju da većinu riječi učimo usput i to ne jednu po jednu i odvojeno od drugih. U nekim razdobljima rječnik djeteta raste čak brže nego što se u tekstovima pojavljuju nove riječi, a to znači da svaki put kad pročitamo neku riječ, bolje razumijemo i druge riječi koje su s njom povezane.
+
+To se slaže s teorijom iz 1950-ih godina koja se naziva **distribucijska hipoteza** (eng. *distributional hypothesis*). Prema njoj se dio značenja riječi može naučiti samo iz tekstova koje čitamo tijekom života i to iz veza riječi s riječima uz koje se pojavljuju pa dvije riječi koje se pojavljuju u vrlo sličnim kontekstima, odnosno okružene sličnim riječima, vjerojatno imaju i slično značenje. Zamislimo da ne znamo što znači engleska riječ *difficult* i da naiđemo na ove dvije rečenice.
+
+> It was difficult to make it up the steep hill.
+
+> What a difficult decision!
+
+Zamislimo i da smo prije već vidjeli slične rečenice s riječju *hard*.
+
+> I found climbing the steep hill hard.
+
+> It was a very hard decision.
+
+Budući da se riječ *difficult* pojavljuje uz iste riječi kao i *hard*, odnosno uz strmo brdo i odluku, možemo zaključiti da *difficult* znači nešto slično kao *hard*. Ideja koju danas nazivamo vektorskim reprezentacijama pojavila se 1950-ih istodobno u nekoliko područja. Psiholozi su predložili da se značenje riječi prikaže kao točka u prostoru, a sličnost riječi kao udaljenost između točaka, lingvisti poput Zelliga Harrisa i Martina Joosa tvrdili su da je značenje riječi povezano s njezinim kontekstom, a u računalnim znanostima istraživači tražilica počeli su riječi prikazivati vektorima.
+
+**Vektorska reprezentacija** (eng. *embedding*) način je na koji neuronska mreža prikazuje značenje. Riječ je o vektoru, odnosno popisu brojeva, kojim se prikazuje značenje tokena, izraza ili rečenice u kontekstu, a obično ga zamišljamo kao točku u prostoru s mnogo dimenzija. Ovako, primjerice, izgleda jedan vektor s 50 dimenzija:
+
+```
+[0.2638 -0.3183 -1.095 1.330 0.2476 0.04531 -0.3950 -0.5210 -0.01679 0.3317
+ -0.5325 0.4326 1.230 -0.3696 0.1598 -0.43 -0.2976 0.76 0.7125 -0.8567
+ -0.07695 -1.028 0.933 0.2496 -0.1398 1.031 -0.1580 0.8051 0.5053 -0.5055
+ 1.123 -0.4508 -0.2755 1.353 0.355 0.3940 -1.121 0.02792 0.5758 -0.6361
+ -0.5350 -0.08018 -0.7802 -1.159 1.031 0.9433 0.02638 -0.9683 0.5449 -0.16479]
+```
+
+Pojedini brojevi u vektoru sami po sebi ne znače ništa, nego je važan položaj točke u prostoru u odnosu na druge točke. Riječi sličnog značenja nalaze se blizu jedna drugoj pa se sličnost značenja može izmjeriti kao udaljenost između točaka. To znači da se riječi koje se pojavljuju u sličnim kontekstima nalaze blizu jedna drugoj pa će *cat* i *kitten*, koje su u vreći riječi jednako udaljene kao *cat* i bilo koja druga riječ, ovdje biti blizu.
+
+Vektorske reprezentacije osobito su dobre u hvatanju složenih veza među riječima i kulturnih nijansi značenja u velikim korpusima. U već spomenutom istraživanju društvene klase riječi iz milijuna knjiga prikazane su kao vektori s 300 dimenzija, a iz tih su vektora istraživači izgradili dimenzije društvene klase, poput imućnosti ili statusa, i pratili kako se riječi na njima pomiču kroz vrijeme. Pokazalo se, primjerice, da je obrazovanje početkom 20. stoljeća bilo povezano s imućnošću preko profinjenosti, dok je do 1990-ih ta veza postala izravna. Vektorske reprezentacije tako hvataju kulturne asocijacije iz tekstova koje odražavaju uvjerenja autora, a preko njih i širu kulturu. Pitanje zašto ih uopće hvataju i samo je zanimljivo sociološko pitanje jer nam odgovor na njega može reći nešto o tome kako ljudi kroz jezik usvajaju kulturu.
+
+### Jezik kao vjerojatnost
+
+Drugi temelj suvremenih jezičnih modela je ideja da se jezik može opisati vjerojatnostima. Ta se ideja može objasniti jednostavnom igrom koja se naziva Shannonova igra. Odaberemo kratak odlomak teksta, a druga osoba pogađa njegove riječi jednu po jednu, slijeva nadesno. Ako pogodi, kažemo joj da je pogodila, a ako ne pogodi, kažemo joj točnu riječ, nakon čega ona pogađa sljedeću. U izvornoj igri Shannon nije pogađao riječi, nego slova, a igra je pokazala da je neke dijelove jezika lako predvidjeti, dok je druge teško. Igrač, naime, najčešće griješi na početku riječi i na mjestima na kojima se tekst može nastaviti na mnogo načina, primjerice nakon pridjeva.
+
+Iz te igre proizlazi i definicija **jezičnog modela** (eng. *language model*), računalnog sustava koji predviđa sljedeću riječ na temelju prethodnih riječi tako što za zadani početak teksta svakoj mogućoj sljedećoj riječi dodjeljuje neku vjerojatnost. Nakon niza *so long and thanks for*, primjerice, vjerojatno će slijediti *all* ili *everything*, dok je malo vjerojatno da će slijediti *of* ili *wasn't*. Jezični model može dodijeliti vjerojatnost i cijeloj rečenici pa će rečenici *all of a sudden I notice three guys standing on the sidewalk* dodijeliti mnogo veću vjerojatnost nego istim riječima pomiješanim bez reda, poput *on guys all I of notice sidewalk three a sudden standing the*.
+
+Najjednostavniji način računanja tih vjerojatnosti bio bi uzeti vrlo velik korpus i prebrojiti koliko puta nekoj rečenici slijedi određena riječ. Takvo brojanje ipak ne funkcionira za cijele rečenice, čak ni kad bismo imali cijeli internet jer je jezik kreativan i nove rečenice nastaju stalno pa se većina rečenica nikad prije nije pojavila. Zato se uvodi pojednostavnjenje pa umjesto cijelog prethodnog teksta gledamo samo nekoliko posljednjih riječi. Bigramski model sljedeću riječ predviđa samo na temelju prethodne riječi, trigramski model na temelju dviju prethodnih riječi, a n-gramski model na temelju $n-1$ prethodnih riječi. Pretpostavka da sljedeća riječ ovisi samo o nekoliko prethodnih riječi naziva se **Markovljeva pretpostavka**.
+
+N-gramski modeli najjednostavniji su jezični modeli, ali imaju mnoge praktične primjene. Mogu pomoći u ispravljanju pogrešaka jer je *There are* vjerojatnije od *Their are*, ali i u prepoznavanju govora jer je *I will be back soonish* vjerojatnije od *I will be bassoon dish*. Vjerojatnosti pojavljivanja riječi korištene su i u društvenim znanostima, primjerice u istraživanju u kojem se mjerila dvosmislenost znanstvenih radova, a pri čemu je značenje riječi to dvosmislenije što se u istom kontekstu pojavljuje više riječi sličnog značenja. Pokazalo se da su citati radova s dvosmislenijim jezikom manje raspršeni što upućuje na to da dvosmislenost potiče znanstvena otkrića.
+
+### Neuronske mreže i transformeri
+
+Suvremeni jezični modeli spajaju dvije velike ideje, a to su **neuronske mreže**, sustavi strojnog učenja koji uče iz podataka, i vektorske reprezentacije kojima se unutar mreže prikazuje značenje tokena i pojmova.
+
+Neuronske mreže svoje ime duguju povijesti jer su nastale iz pojednostavljenog matematičkog modela ljudskog neurona iz 1940-ih godina, iako današnje neuronske mreže s biologijom više nemaju mnogo veze. Neuronska mreža zapravo je mreža malih računalnih jedinica od kojih svaka prima niz brojeva, množi ih određenim brojevima koji se nazivaju težine i kao rezultat daje jedan broj. Posebnost je neuronskih mreža u tome što postoji vrlo učinkovit način da se njihove težine nauče iz podataka, a taj se postupak naziva **gradijentni spust**. Budući da je neuronska mreža potpuno određena svojim težinama, razlikujemo **modele otvorenih težina** kod kojih autori objavljuju sve težine pa svatko može pokrenuti model na svom računalu, i **zatvorene modele** čije težine nisu dostupne pa se model može koristiti samo putem mrežne stranice, aplikacije ili programskog sučelja.
+
+Od 2018. godine u obradi jezika prevladava neuronska mreža koja se naziva **transformer**. Ona je izvorno razvijena za strojno prevođenje, ali se brzo pokazala korisnom za gotovo sve zadatke. Glavna ideja transformera je **pažnja** (eng. *attention*), a što znači da model, kad računa prikaz neke riječi, ne gleda samo tu riječ, nego i sve ostale riječi u tekstu te za svaku od njih procjenjuje koliko je važna za riječ koju upravo obrađuje. Prikaz riječi tada je kombinacija prikaza drugih riječi, pri čemu važnije riječi imaju veću težinu. Tehnički gledano, model za svaku riječ računa tri vektora, upit, ključ i vrijednost, a upit jedne riječi uspoređuje se s ključevima svih drugih riječi kako bi se izračunalo koliko pažnje model posvećuje kojoj riječi. Ovaj se postupak ponavlja kroz mnogo slojeva mreže. Zato transformeri dobro hvataju različite kontekste u kojima se ista riječ pojavljuje i bolje razumiju nijanse značenja od jednostavnijih vektorskih reprezentacija, a ista riječ u transformeru nema uvijek isti vektor jer njezin vektor ovisi o rečenici u kojoj se nalazi.
+
+Nije nimalo očito da se iz mnoštva jednostavnih izračuna može razviti nešto složeno pa na prvi pogled transformer izgleda kao stroj koji samo pamti statističke veze među riječima. No kad je model vrlo velik i vježba predviđanje na golemoj količini teksta, on otkriva velik dio strukture ljudskog jezika pa su istraživanja pokazala da takvi modeli uče gramatičku strukturu rečenica i pamte mnoge činjenice o svijetu jer im sve to pomaže da bolje predviđaju riječi. Istraživanja **interpretabilnosti** (eng. *interpretability*) koja proučavaju što se događa unutar modela, pokazala su, primjerice, da neki dijelovi mehanizma pažnje prate gramatičke odnose pa izravni objekt usmjerava pažnju na svoj glagol.
+
+### Veliki jezični modeli
+
+**Veliki jezični model** (eng. *large language model*, **LLM**) jezični je model izgrađen od neuronskih mreža, najčešće transformera, a velik je u dva smisla. Njegova neuronska mreža ima mnogo slojeva i mnogo **parametara**, a treniran je na golemoj količini teksta. Parametar je jedan broj koji model uči i koristi u izračunima, a model Llama 3.1 405B, primjerice, ima 405 milijardi parametara i treniran je na više od 15 bilijuna tokena. Koliko će model biti dobar uglavnom ovisi o veličini modela, količini teksta na kojem je treniran i količini računalne snage utrošene na treniranje, a odnosi između tih triju čimbenika i kvalitete modela nazivaju se zakoni skaliranja.
+
+Današnji veliki jezični modeli predviđaju riječi slijeva nadesno na temelju prethodnih riječi pa se nazivaju **autoregresivni jezični modeli**. Model koji zna predviđati tekst zna ga i pisati jer odabere riječ prema vjerojatnostima, doda je tekstu, ponovno izračuna vjerojatnosti, odabere sljedeću riječ i tako dalje, a pritom može uzeti u obzir i vrlo dug prethodni tekst.
+
+Pokazuje se da veliki jezični modeli samo učenjem predviđanja riječi stječu golemo znanje. To se dobro vidi iz rečenica u kojima model mora predvidjeti posljednju riječ:
+
+- Iz rečenice *With roses, dahlias, and peonies, I was surrounded by* **flowers** model uči da su ruže, dalije i božuri vrste cvijeća.
+
+- Iz rečenice *The room wasn't just big it was* **enormous** model uči da *enormous* znači isto što i *big*, samo jače.
+
+- Iz rečenice *The square root of 4 is* **2** model uči matematiku.
+
+- Iz rečenice *The author of "A Room of One's Own" is* **Virginia Woolf** model uči činjenice o svijetu, primjerice tko je napisao koju knjigu.
+
+- Iz rečenice *The professor said that* **he** model, ako često vidi takve rečenice, može naučiti da su profesori uvijek muškarci, a takve asocijacije mogu dovesti do toga da se model nepravedno odnosi prema ljudima.
+
+Posljednji je primjer osobito važan za društvene znanosti jer pokazuje da model uči sve što je u podacima pa i stereotipe i pristranosti. Isto svojstvo zbog kojeg vektorske reprezentacije mogu otkriti kulturne asocijacije u tekstovima znači, dakle, i da te asocijacije prenose dalje.
+
+Učenje predviđanjem riječi u golemom korpusu naziva se **predtreniranje** (eng. *pretraining*), a riječ je zapravo o Shannonovoj igri s računalom. Model čita milijarde tokena i pokušava predvidjeti svaku sljedeću riječ, a kad pogriješi, ispravljamo ga i mijenjamo težine u njegovoj mreži tako da sljedeći put s većom vjerojatnošću pogodi točnu riječ. Usput model uči i vektorske reprezentacije riječi koje sve bolje opisuju značenje riječi u kontekstu. Takav način učenja naziva se i **samonadzirano učenje** (eng. *self-supervised learning*) jer model ne treba ljude da mu označe podatke, nego zadatke stvara sam iz teksta, primjerice tako da pogađa sljedeću riječ ili riječ koja je iz teksta izostavljena. Ponavljajući takve zadatke milijarde puta, model skuplja opće znanje o jeziku i svijetu.
+
+Predtreniranje je samo prva od četiri faze treniranja suvremenih jezičnih modela. Njegov je rezultat **osnovni model** (eng. *base model*), koji zna predviđati i pisati tekst, ali ne zna slijediti upute. Zato slijedi **prilagodba uputama** (eng. *instruction tuning*) u kojoj model na zbirci uputa i odgovora uči odgovarati na pitanja, pisati kod ili prevoditi. Bez te faze osnovni model na uputu da na francuski prevede *The small dog* može jednostavno nastaviti tekst rečenicom *The small dog crossed the road*. Nakon toga slijedi **usklađivanje s preferencijama** (eng. *preference alignment*) u kojem model uči davati odgovore koje ljudi više vole kako bi bio korisniji i manje štetan. Podaci za to obično sadrže uputu i dva odgovora od kojih je jedan bolji, pa model uči davati bolji odgovor, a izbjegavati lošiji. Posljednja je faza **učenje potkrepljenjem za zaključivanje** (eng. *RL for reasoning*) u kojoj se model dodatno trenira na zadacima koji traže više koraka razmišljanja i imaju jasan točan odgovor, poput matematičkih ili logičkih zadataka.
+
+Otvoreni jezični modeli uglavnom se treniraju na tekstovima prikupljenima s cijelog interneta uz pažljivije odabrane izvore poput Wikipedije ili knjiga, a ti se tekstovi prije treniranja filtriraju prema kvaliteti i sigurnosti. Korištenje takvih podataka otvara etička i pravna pitanja jer je velik dio tekstova zaštićen autorskim pravom, a podaci sadrže i privatne informacije. Osim toga, većinu tekstova napisali su autori iz SAD-a i drugih razvijenih zemalja pa model češće zastupa njihova gledišta i teme. Ni filtriranje nije neutralno jer programi koji uklanjaju uvredljive tekstove često pogrešno uklanjaju i posve obične tekstove, primjerice one pisane dijalektima manjinskih skupina.
+
+Kad modelu postavimo pitanje, on radi isto što je radio i tijekom treniranja, odnosno predviđa tokene. Tekst koji mu dajemo naziva se **upit** (eng. *prompt*), a model najprije generira najvjerojatniju riječ nakon upita, zatim sljedeću riječ nakon upita i te riječi i tako dalje, što se naziva **uvjetno generiranje** (eng. *conditional generation*). Takvo generiranje daje odgovore na pitanja zato što je model treniran na mnoštvu tekstova u kojima nakon pitanja slijedi odgovor pa je odgovor vrlo vjerojatan nastavak pitanja. Ako modelu damo niz *Q: Who wrote "The Origin of Species"? A:*, dobar jezični model najveću će vjerojatnost dodijeliti riječi *Charles*, a kad tu riječ doda tekstu, najvjerojatnija sljedeća riječ bit će *Darwin*.
+
+Kad korisnik u prozor za razgovor upiše pitanje, događa se sljedeće:
+
+1. Sastavlja se upit, a ispred korisnikova teksta dodaje se **sistemski upit** (eng. *system prompt*), uputa koju korisnik ne vidi, a koja određuje ulogu i ponašanje modela.
+
+2. Tekst se tokenizira, a svaki token dobiva svoj redni broj.
+
+3. Svaki se token zamjenjuje svojom vektorskom reprezentacijom.
+
+4. Niz vektora prolazi kroz slojeve neuronske mreže.
+
+5. Na izlazu se dobivaju vjerojatnosti svih mogućih sljedećih tokena.
+
+6. Odabire se jedan token, i to najvjerojatniji ili neki manje vjerojatan, ovisno o postavci.
+
+7. Odabrani token dodaje se tekstu, a postupak se vraća na četvrti korak.
+
+8. Generiranje se zaustavlja kad model generira poseban token koji označava kraj odgovora.
+
+Za složenije zadatke u upit se često dodaje nekoliko riješenih primjera pa se takav upit naziva **upit s nekoliko primjera** (eng. *few-shot prompting*), dok se upit koji sadrži samo uputu naziva **upit bez primjera** (eng. *zero-shot prompting*). Primjeri pomažu modelu da obavi i zadatke koje prije nije rješavao, a pritom se težine modela ne mijenjaju, nego se mijenja samo tekst koji model ima pred sobom. Zato sve što je model iz primjera „naučio” nestaje kad razgovor završi, a takvo se učenje naziva **učenje u kontekstu** (eng. *in-context learning*). Jezični modeli mogu biti i **agenti**, odnosno modeli koji mogu sami djelovati tako što koriste druge programe, poput tražilice, kalendara ili baze podataka, a načelo je i tada isto jer su pozivi tih programa samo još jedna vrsta tokena koje model generira.
+
+Sve to predstavlja veliku promjenu u načinu na koji se obrada jezika koristi. Do 2019. godine za svaki je zadatak trebalo ručno označiti podatke i na njima istrenirati poseban model, a od 2018. do 2020. godine veliki predtrenirani modeli najčešće su se prilagođavali zadatku dodatnim treniranjem na malom broju označenih primjera, što se naziva **fino podešavanje** (eng. *fine-tuning*). Najveći modeli, međutim, mogu dobro obaviti nove zadatke i bez dodatnog treniranja, samo na temelju opisa zadatka ili nekoliko primjera u upitu. Modeli koji se treniraju na golemim količinama podataka i zatim lako prilagođavaju različitim zadacima nazivaju se zato **temeljni modeli** (eng. *foundation models*).
+
+### Razumiju li modeli jezik?
+
+Kad govorimo o jezičnim modelima, često koristimo riječi koje inače opisuju ljude pa kažemo da model *uči*, *zaboravlja*, *odgovara*, *zna* ili *razmišlja*. Pripisivanje ljudskih osobina strojevima, životinjama ili predmetima naziva se antropomorfizam, a tako ljudi oduvijek govore o strojevima. Kod jezičnih modela to ipak može zavarati jer riječi poput *razumjeti* ili *namjeravati* sugeriraju da model ima namjere kakve zapravo nema pa takve riječi treba shvaćati samo kao zgodan način izražavanja.
+
+Pitanje razumiju li modeli ono što rade ili samo vješto slažu riječi bez razumijevanja i dalje je otvoreno. U lingvistici i filozofiji jezika prevladava **denotacijska semantika** prema kojoj je značenje riječi ono na što se riječ odnosi u svijetu, dok se suvremena obrada jezika oslanja na **distribucijsku semantiku** prema kojoj je značenje riječi opis konteksta u kojima se riječ pojavljuje. Prema trećem gledištu značenje nastaje iz mreže veza između riječi i drugih stvari, bilo predmeta u svijetu, bilo drugih riječi. Uzmimo indijski glazbeni instrument *shehnai*. Tko ga je držao u rukama, zna što ta riječ znači, a tko ga je i čuo kako svira, zna još više. Ali i tko ga nikad nije vidio, nego je samo pročitao nekoliko rečenica u kojima se spominje, zna da je to glazbalo nalik na sviralu, a možda zna i neke kulturne veze te riječi koje ne zna onaj tko ga je samo držao u rukama. Ako značenje shvatimo kao takvu mrežu veza, jezični modeli doista uče značenja, iako je njihovo znanje o riječima i svijetu često nepotpuno pa bi ga trebalo nadopuniti i drugim vrstama podataka, primjerice slikama i zvukom.
+
+Kakav god bio odgovor na to pitanje, modeli imaju poznate nedostatke. Mogu **halucinirati**, odnosno tvrditi nešto što nije točno i čak izmišljati ljude i činjenice, mogu biti pretjerano samouvjereni i govoriti vrlo sigurno i kad nisu u pravu, a mogu biti i ulizički, odnosno pretjerano se slagati s korisnikom. Uz to, mogu ponavljati stereotipe i diskriminirati, a obično lošije rade na svim jezicima osim engleskog.
+
+Za društvene znanosti iz toga proizlaze dvije stvari. Jezični modeli i njihove vektorske reprezentacije nude nove i moćne načine mjerenja značenja, ali budući da model ne zna što radi ni zašto, odgovornost za smisao analize ostaje na istraživaču. Time se vraćamo na ono što smo rekli ranije, a to je da računalo radi u svijetu svojih korisnika, ali taj svijet ne razumije.
+
+## Što istraživač radi s tekstom
+
+Vidjeli smo kako se tekst pretvara u brojeve i što se događa ispod površine, a ostaje pitanje čemu sve to služi u istraživanju. Metode analize teksta mogu se razvrstati na mnogo načina, primjerice prema tome kako se model trenira, ali društvenom je znanstveniku korisnije razvrstati ih prema zadacima koje pomažu obaviti jer o zadatku ovisi koju ćemo metodu odabrati, kako ćemo tumačiti njezine rezultate i kako ćemo ih provjeriti.
+
+Istraživanje u društvenim znanostima može se podijeliti na nekoliko temeljnih zadataka. Prvi je otkrivanje, odnosno stvaranje novih pojmova i novih načina organiziranja svijeta. U toj fazi istraživač oblikuje istraživačko pitanje i odlučuje što želi mjeriti. Ako proučavamo objave na društvenim mrežama, možemo se, primjerice, zapitati zanimaju li nas njihove teme, ton, čitljivost ili uljudnost ili postoji neka važna dimenzija na koju nismo ni pomislili. Analiza teksta pritom pomaže tako što predlaže nove načine organiziranja tekstova jer može otkriti skupine sličnih tekstova ili os na kojoj su slični tekstovi blizu jedan drugome.
+
+Drugi je zadatak mjerenje, odnosno povezivanje pojmova s podacima kojim doznajemo koliko je neki pojam zastupljen u stvarnom svijetu. Možemo, primjerice, izmjeriti koliko se zakona odnosi na pojedina područja politike ili koliko su negativni predizborni oglasi. Mjerenje je temelj opisivanja, važnog cilja istraživanja koji se u društvenim znanostima često podcjenjuje. Treći je zadatak zaključivanje koje obuhvaća predviđanje i uzročno zaključivanje. Predviđanjem na temelju onoga što znamo danas pokušavamo reći što će se dogoditi sutra, a uzročnim zaključivanjem pokušavamo doznati kako će se svijet promijeniti ako u njemu nešto promijenimo.
+
+Istraživanje ne mora proći kroz sve faze da bi bilo korisno jer može biti vrijedno i istraživanje koje samo predlaže nov način gledanja na neku pojavu ili novu mjeru za poznat pojam kao i istraživanje koje s postojećim pojmovima i mjerama procjenjuje važan uzročni učinak. Faze se ne moraju slijediti ni ovim redom jer pokušaj zaključivanja može pokazati da nam treba bolja mjera ili posve novo pitanje.
+
+Kako ti zadaci izgledaju u praksi pokazuje istraživanje kineske cenzure društvenih mreža. Istraživači su isprva htjeli razviti alate za automatsku analizu teksta na kineskom pa su preuzeli milijune objava s više od 1400 društvenih mreža. Kad su se kasnije vratili na izvorne stranice kako bi bolje razumjeli kontekst objava, primijetili su da su mnoge objave nestale, a na njihovu je mjestu stajala obavijest da je sadržaj uklonjen. Tako su slučajno došli do novog pitanja o tome što kineska vlast cenzurira, a to je bila faza otkrivanja. Istraživači su objave najprije podijelili prema temama za koje su mislili da su različito osjetljive, ali teme nisu objašnjavale cenzuru pa su je zatim pratili kroz vrijeme i primijetili da je mnogo češća kod objava o prosvjedima i drugim oblicima kolektivnog djelovanja. Uslijedilo je mjerenje u kojem su istraživači pronašli 87 događaja o kojima se naglo počelo mnogo pisati i ručno odredili koji su od njih povezani s kolektivnim djelovanjem. Uz to su ručno označili uzorak objava prema tome kritiziraju li vlast ili je podržavaju, a pomoću tih su oznaka računalnom metodom procijenili udio kritičnih objava u cijeloj zbirci. Na kraju je slijedilo zaključivanje koje je pokazalo da su objave o kolektivnom djelovanju cenzurirane u golemom broju, dok cenzura nije ovisila o tome kritizira li objava vlast. Kineskoj vlasti, dakle, nije bio cilj suzbiti kritiku, nego spriječiti masovne prosvjede, a istraživači su taj nalaz kasnije potvrdili i eksperimentom.
+
+### Karta metoda
+
+Metode analize teksta mogu se prikazati kao karta, ovisno o tome što istraživač želi postići. Nakon prikupljanja i pripreme dokumenata istraživač ima dva glavna puta jer tekstove može **razvrstavati** (eng. *classification*) ili ih **skalirati** (eng. *scaling*).
+
+```{mermaid}
+%%| fig-cap: "Karta metoda analize teksta (prilagođeno prema Grimmer i Stewart, 2013)"
+flowchart TD
+  A[Prikupljanje dokumenata] --> B[Predobrada]
+  B --> C[Istraživački cilj]
+  C --> D[Razvrstavanje]
+  C --> E[Skaliranje]
+  D --> F[Poznate kategorije]
+  D --> G[Nepoznate kategorije]
+  F --> H[Metode temeljene na rječnicima]
+  F --> I[Nadzirane metode]
+  G --> J[Potpuno automatizirano grupiranje]
+  G --> K[Računalno potpomognuto grupiranje]
+  J --> L[Modeli s jednim članstvom]
+  J --> M[Modeli s mješovitim članstvom<br/>npr. tematski modeli]
+  E --> N[Nadzirano skaliranje<br/>npr. Wordscores]
+  E --> O[Nenadzirano skaliranje<br/>npr. Wordfish]
+```
+
+Razvrstavanje tekstova u kategorije najčešća je primjena analize sadržaja, a istraživače može zanimati, primjerice, jesu li predizborni oglasi pozitivni ili negativni, odnosi li se zakon na okoliš ili na nešto drugo ili su izjave neke države ratoborne ili miroljubive. Kad su kategorije unaprijed poznate, koriste se dvije vrste metoda. **Metode temeljene na rječnicima** (eng. *dictionary methods*) broje ključne riječi i prema tome koliko se često u tekstu pojavljuju riječi povezane s nekom kategorijom određuju koliko je ta kategorija u tekstu prisutna. Rječnik je pritom popis riječi povezanih s nekim pojmom, a istraživač može koristiti gotov, već provjeren rječnik ili izraditi vlastiti za svoje istraživanje. Gotovi rječnici često su ipak vezani uz područje za koje su izrađeni pa se riječi poput *tax* ili *cost* u općim rječnicima obično smatraju negativnima, iako u financijskim tekstovima nemaju negativno značenje. **Nadzirane metode** (eng. *supervised methods*) ručno kodiranje prenose na računalo. Ljudi najprije razvrstaju dio dokumenata u unaprijed određene kategorije, a na tim dokumentima, koji čine **skup za treniranje**, uči računalni model koji zatim razvrstava sve ostale dokumente. Tako se, primjerice, ručno kodiranje 2000 tekstova može proširiti na dva milijuna poruka koje su kupci ostavili prodavačima na internetskim tržištima pa se na temelju toga mogu proučavati motivi zbog kojih ljudi takve poruke pišu.
+
+Katkad kategorije nije lako unaprijed odrediti, primjerice ako želimo doznati o čemu se raspravljalo u američkom Senatu 1887. godine, a teškoća je i u tome što se čak i mali broj tekstova može organizirati na golem broj načina. U takvim slučajevima koriste se **nenadzirane metode** (eng. *unsupervised methods*) koje ne traže unaprijed zadane kategorije, nego ih same procjenjuju na temelju svojstava tekstova i istodobno im pridružuju dokumente. U sociologiji se najčešće koriste **tematski modeli** (eng. *topic models*) od kojih je najpoznatiji LDA koji svaki tekst promatra kao mješavinu tema, a svaku temu kao mješavinu riječi. Jedno je takvo istraživanje analiziralo 8000 novinskih članaka o državnoj potpori umjetnosti u SAD-u između 1986. i 1997. godine i pokazalo da ta tema isprva nije bila sporna, ali da je nakon promjena u Kongresu postala mjesto oštrih kulturnih sukoba oko financiranja umjetnosti.
+
+Tekstovi se mogu koristiti i za smještanje aktera na ideološku os. Budući da gotovo svi politički akteri govore, metoda koja bi ih na temelju njihovih tekstova smjestila u politički prostor omogućila bi provjeru nekih od najvažnijih teorija politike. Nadzirano skaliranje, poput metode Wordscores, aktere smješta na temelju tekstova čiji je položaj već poznat, dok nenadzirano skaliranje, poput metode Wordfish, polazi od pretpostavke o tome kako ideologija utječe na izbor riječi. Obje metode pritom pretpostavljaju da ideologija određuje o čemu akteri govore, a ta je pretpostavka vrlo jaka. U sociologiji je skaliranje korišteno, primjerice, za smještanje 8737 sažetaka socioloških radova na os od kvantitativne do kvalitativne metodologije.
+
+Karti metoda mogu se dodati još dvije skupine pristupa. Prvu čine **semantička i mrežna analiza teksta** koje u tekstu prepoznaju društvene aktere i ono što oni čine. Semantička analiza u rečenicama traži trojke koje se sastoje od subjekta, radnje i objekta, dok mrežna analiza riječi promatra kao čvorove u mreži, a odnose među njima kao veze. Jedno je takvo istraživanje analiziralo 1332 novinska članka o 392 linča u američkoj saveznoj državi Georgiji između 1875. i 1930. godine i pokazalo u kojoj su mjeri Afroamerikanci bili žrtve rulje i organa reda te kako je rulja vršila pritisak na organe reda. Drugu skupinu čine **jezične reprezentacije**, a pomoću kojih možemo uhvatiti razlike u jeziku različitih aktera i složena značenja u tekstu. U jednom je istraživanju, primjerice, više od deset milijuna e-poruka unutar jedne organizacije prikazano vektorima, a mjerenjem udaljenosti između poruka koje zaposlenik prima i šalje izmjereno je koliko se on uklopio u kulturu organizacije.
+
+Najnoviji dodatak karti su **duboko učenje** i **transformeri** koji bi mogli dodatno približiti kvalitetu računalnih metoda kvaliteti stručnih analitičara. U jednom su istraživanju, primjerice, istraživači htjeli izmjeriti koliko se u govorima američkih predsjedničkih kandidata pojavljuju populizam, nacionalizam i autoritarizam pa su ručno kodirali uzorak odlomaka i na njemu fino podesili predtrenirani jezični model koji je zatim mogao prepoznati takve okvire i kad su bili višeznačni, nejasni i rijetki. Otkako postoje upiti, jezičnom se modelu zadatak može zadati i samo opisom ili s nekoliko primjera, bez treniranja posebnog modela.
+
+Metode se prema Nelsonu mogu razvrstati i jednostavnije u tri skupine. **Leksičke tehnike** rade na razini riječi, od običnog brojanja riječi i izraza do mjera koje pronalaze riječi po kojima se tekstovi razlikuju ili mreža riječi koje se pojavljuju blizu jedna drugoj. **Računalno razvrstavanje teksta** koristi strojno učenje, i to tako da tekstove razvrstava u unaprijed određene kategorije, što je nadzirano učenje, ili u kategorije koje računalo samo pronađe, što je nenadzirano učenje. **Tehnike obrade prirodnoga jezika** u analizu uključuju strukturu jezika, kontekst riječi i njihova obilježja, primjerice vrstu riječi.
+
+Metoda ima mnogo i postaju sve složenije pa je teško odabrati pravu, a česta je pogreška u računalnim istraživanjima upravo to da metoda ne odgovara pitanju. Pri odabiru može pomoći jedno grubo pravilo prema kojem nenadzirane metode odgovaraju **induktivnom** istraživanju u kojem pojmovi tek trebaju izroniti iz tekstova, dok nadzirane metode odgovaraju **deduktivnom** istraživanju u kojem želimo izmjeriti unaprijed određene kategorije, osobito ako su u korpusu rijetke. To pravilo ipak treba uzeti s oprezom jer rezultat nenadzirane metode može postati ulaz u nadziranu analizu pa nadzirane i nenadzirane metode nisu suparnice, nego se međusobno nadopunjuju. Ako imamo unaprijed određene kategorije i dokumente koje u njih treba razvrstati, koristit ćemo nadziranu metodu, a ako takvih kategorija nemamo, pomoći će nam nenadzirana metoda, pri čemu nam nadzirana metoda nikad neće predložiti nove kategorije.
+
+Na većinu istraživačkih pitanja ne može se odgovoriti samo jednom metodom, pa obično treba povezati više metoda u jedan tijek rada. Pri tome se često briše granica između indukcije i dedukcije jer se istraživač kreće naprijed i natrag između istraživanja podataka, formaliziranja i tumačenja, zbog čega je takav način rada bliži **abduktivnoj logici istraživanja**. Cilj nije samo pogledati iste podatke iz više kutova, nego izgraditi tijek rada u kojem svaka metoda obavlja svoj dio posla, a njezin rezultat postaje ulaz za sljedeći korak.
+
+### Dvije tradicije
+
+Analiza teksta u društvenim znanostima dugo je bila podijeljena na kvantitativne i kvalitativne pristupe. Računalna analiza teksta na prvi pogled pripada kvantitativnoj strani jer broji, mjeri i modelira, ali upravo ona povezuje te dvije tradicije.
+
+U sociologiji se mogu razlikovati dva glavna pristupa analizi sadržaja. Prvi je **pristup kodiranja** u kojem se tekst rastavlja na dijelove, a ti se dijelovi razvrstavaju u kategorije. Istraživač najprije izrađuje knjigu kodova, odnosno popis kategorija s uputama kako ih prepoznati, a te se kodove tijekom rada dorađuje kako bi bolje odgovarali podacima. Istraživač zatim obučava pomoćnike da tekstove kodiraju prema tim kategorijama, a koliko se koderi međusobno slažu, mjeri se posebnim mjerama pouzdanosti. Drugi je **interpretativni pristup** u kojem se tekst tumači kao cjelina.
+
+Oba pristupa imaju svoje slabosti. Kod kodiranja je već stvaranje kategorija subjektivno jer su istraživači, kao i svi ljudi, skloni vidjeti ono što očekuju, pa kategorije koje se temelje na pretpostavkama o tekstu mogu, ali i ne moraju odgovarati tekstu. Kodiranje je i teško ponoviti jer je teško i istu osobu navesti da isti tekst dvaput kodira jednako, a kamoli novi tim kodera. Osim toga, kodiranje oduzima mnogo vremena pa se može provesti samo na malom broju tekstova ili na uzorku. Humanistički pristup, s druge strane, tekst ne rastavlja na dijelove, nego ga promatra kao cjelinu, a neki njegovi zagovornici smatraju da kodiranje nikako ne može biti znanstveno jer skriva upravo ono što bi trebalo objasniti. Nije, međutim, jasno kako bi se humanistička tumačenja mogla provjeriti ili ponoviti.
+
+Računalna analiza teksta ponovno je otvorila staro sociološko pitanje o tome može li se značenje teksta sažeti u kategorije koje se mogu brojati i koje odgovaraju stvarnim društvenim pojavama ili se značenje može razumjeti samo cjelovito, pažljivim čitanjem i tumačenjem u povijesnom i kulturnom kontekstu. Većina socioloških radova s računalnom analizom teksta zauzima srednji položaj jer polazi od toga da su tekstovi društveno situirani i puni nijansi, ali da u njima ima i nekih „objektivnih” istina o društvu iz kojih možemo zaključivati. Neki istraživači pritom smatraju da teme koje pronađu tematski modeli odgovaraju stvarnim okvirima, narativima ili diskursima u tekstu, dok drugi smatraju da te teme ne odražavaju „stvarne” pojave, nego istraživaču samo pomažu da tekstove čita pažljivije i s manje pristranosti.
+
+Može se dovesti u pitanje i sama podjela na kvantitativnu i kvalitativnu analizu jer je svako čitanje u osnovi kvalitativno, čak i kad neka obilježja teksta kasnije pretvorimo u brojeve, a ni to što računala goleme količine teksta obrađuju vrlo brzo ne mijenja kvalitativnu narav onoga što rade. Cilj je analize teksta, naime, i sam kvalitativan jer želimo doznati što tekstovi znače pa metode analize teksta premošćuju jaz između kvantitativnog i kvalitativnog.
+
+### Računalna utemeljena teorija
+
+Jedan od najrazrađenijih načina povezivanja dviju tradicija je **računalna utemeljena teorija** (eng. *computational grounded theory*) koja se nadovezuje na **utemeljenu teoriju** (eng. *grounded theory*). U utemeljenoj teoriji kategorije i teme ne zadaju se unaprijed, nego postupno izranjaju iz podataka, a istraživač na kraju dolazi do teorije koja proizlazi iz podataka, ali ih i nadilazi. Sociolozi tu metodu dugo koriste za istraživanja iz kojih nastaju nove teorije, ali ona ima i svoje slabosti. Dok kodira i tumači podatke, istraživač neprestano donosi prosudbe u koje unosi svoje stavove i osobnost zbog čega je utemeljenu teoriju teško provjeriti i ponoviti, a uz to se ne može primijeniti ni na velike količine podataka.
+
+Računalna utemeljena teorija spaja ljudsko znanje i sposobnost tumačenja s računalnom brzinom i sposobnošću prepoznavanja obrazaca, a sastoji se od tri koraka:
+
+1. U prvom koraku, **otkrivanju obrazaca** (eng. *pattern detection*), računalo složene tekstove svodi na jednostavnije popise ili mreže riječi iz kojih istraživač može uočiti obrasce u tekstovima. Za to se koriste leksičke tehnike, primjerice mjere koje pronalaze riječi po kojima se tekstovi razlikuju, kao i nenadzirane metode poput tematskih modela.
+
+2. U drugom koraku, **doradi obrazaca** (eng. *pattern refinement*), istraživač se vraća tekstovima i pažljivo ih čita, a u izboru tekstova vode ga rezultati prvog koraka. Tako provjerava jesu li obrasci uvjerljivi, dodaje tumačenje i po potrebi mijenja obrasce.
+
+3. U trećem koraku, **potvrdi obrazaca** (eng. *pattern confirmation*), istraživač drugim računalnim tehnikama provjerava vrijede li obrasci u cijelom korpusu.
+
+Prva dva koraka mogu se ponavljati koliko god je potrebno, a mogu pokazati i da treba prikupiti još podataka ili drugačije podatke.
+
+Kako to izgleda u praksi, pokazuje istraživanje ženskih pokreta u SAD-u. U literaturi se obično tvrdilo da se politika drugog vala ženskog pokreta, od 1964. do ranih 1980-ih, razlikovala od politike prvog vala, od ranog 19. stoljeća do 1920. godine. Istraživačica je zato prikupila tekstove ženskih organizacija iz oba vala u Chicagu i New Yorku, gradovima koji su obilježili glavne rasprave unutar svakog vala.
+
+U prvom je koraku istraživačica koristila dvije tehnike, od kojih je prva bila **razlika udjela** (eng. *difference of proportions*) koja uspoređuje koliko je neka riječ česta u jednom tekstu, a koliko u drugom. Zamislimo dva dokumenta od po 750 riječi. Riječ *about* pojavljuje se u prvom dokumentu 100 puta, što je 13,3 % riječi, a u drugom 95 puta, što je 12,7 % riječi, pa je razlika udjela 0,6. Riječ *suffrage* pojavljuje se u prvom dokumentu 50 puta (6,7 %), a u drugom pet puta (0,7 %), pa je razlika udjela 6,0. Iako je riječ *about* češća u oba dokumenta, ona ne razlikuje jedan dokument od drugoga, dok je rjeđa riječ *suffrage* upravo ona koja je karakteristična za prvi dokument. Druga tehnika bio je strukturni tematski model pa je istraživačica izradila modele s 20, 30, 40 i 50 tema i pregledala najvažnije riječi u svakom od njih. Model s 20 tema spajao je u jednu temu pitanja koja ne pripadaju zajedno, primjerice održavanje automobila i spolno prenosive bolesti, dok je model s 50 tema stvarao više tema o istom pitanju pa je odabrala model s 40 tema čije su teme bile dovoljno različite, a ipak dovoljno široke. Kad je pogledala popise riječi, vidjela je da su riječi karakteristične za New York često apstraktne i općenite, poput *history*, *liberation* i *feminist*, dok su riječi karakteristične za Chicago bile konkretne i određene, poput *abortion*, *Nixon*, *hospital* i *school*. Taj obrazac nije primijetila dok je tekstove čitala rečenicu po rečenicu, nego tek kad su riječi bile izdvojene iz teksta i složene u popise. Obrazac je pritom upućivao na suprotno od onoga što se dotad mislilo jer su organizacije unutar istog grada bile slične i u različitim valovima, dok su se organizacije iz različitih gradova razlikovale i unutar istog vala.
+
+U drugom se koraku istraživačica vratila tekstovima. Budući da tematski model za svaki dokument pokazuje koliko u njemu ima koje teme, za svaku je temu mogla pronaći dokumente koji je najbolje predstavljaju pa je pročitala po deset takvih dokumenata za svaku od dvanaest najčešćih tema, kao i neke dokumente za ostale teme. Čitanjem je utvrdila da su žene u Chicagu u oba vala politici pristupale na sličan način jer su prepoznavale konkretne potrebe žena u svojoj zajednici, poput čuvanja djece ili pravnog savjetovanja, a zatim su te potrebe zadovoljavale same ili su tražile da ih zadovolji država. Žene u New Yorku više su, s druge strane, opisivale iskustva pojedinih žena kako bi iz njih izvodile općenite tvrdnje o društvenim strukturama. Budući da ju je u čitanju vodio model, mogla je izračunati i koliko su njezini primjeri reprezentativni. U jednom dokumentu organizacije Hull House iz Chicaga, koji je govorio o javnim ustanovama nastalima iz njezinih usluga, 98 % riječi pripadalo je temi javnih ustanova, a toj je temi pripadalo 28 % svih riječi koje je ta organizacija napisala. Čitanje je otkrilo i novi obrazac jer su tekstovi iz New Yorka češće spominjali pojedince, a tekstovi iz Chicaga organizacije i ustanove.
+
+U trećem je koraku istraživačica oba obrasca provjerila na cijelom korpusu. Kako bi provjerila jesu li tekstovi iz New Yorka općenitiji, koristila je WordNet u kojem svaka imenica ima niz sve općenitijih riječi kojima pripada, takozvanih hiperonima. Riječ *furniture*, primjerice, ima sedam hiperonima, a riječ *chair* devet, pa je *chair* određenija riječ, a tekstovi iz New Yorka pokazali su se u prosjeku za 1,1 % općenitijima. Zatim je koristila bazu u kojoj su ljudi za gotovo 40000 engleskih riječi ocijenili koliko su konkretne, a tekstovi iz New Yorka bili su u prosjeku za 6 % apstraktniji. Razlike su bile manje nego između izrazito apstraktnog i izrazito konkretnog teksta, ali su bile u očekivanom smjeru i statistički značajne. Drugi je obrazac provjerila prepoznavanjem imenovanih entiteta, postupkom koji u tekstu pronalazi imena osoba, organizacija i mjesta. Pokazalo se da su organizacije iz New Yorka spominjale više osoba nego organizacija i to 2775 osoba i 1799 organizacija, dok su organizacije iz Chicaga spominjale više organizacija nego osoba i to 5567 organizacija i 3421 osobu.
+
+Na kraju je istraživačica mogla oblikovati teorijski zaključak o dvje različite **političke logike**. Ženske organizacije u Chicagu u oba su vala polazile od toga da se društvo mijenja kroz ustanove i državu pa su društvenu promjenu tražile kroz kratkoročne ciljeve koji donose konkretna poboljšanja u životima žena. Organizacije u New Yorku polazile su, s druge strane, od toga da se društvo mijenja kroz pojedince pa su društvenu promjenu tražile kroz izgradnju solidarnosti, izvodeći iz iskustava pojedinih žena općenite tvrdnje. Politički modeli nastali u prvom valu nisu, dakle, nestali kad je pokret oslabio, nego su vodili organizacije i u drugom valu.
+
+Ovaj primjer pokazuje zašto je računalna utemeljena teorija zanimljiva. Njezin računalni dio otkriva obrasce koje ljudi možda ne bi primijetili, a rezultati se mogu odmah ponoviti i primijeniti i na vrlo velike količine teksta, dok njezin interpretativni dio računalne rezultate pretvara u sociološki smislene pojmove. Budući da omogućuje i izračun koliko je neki obrazac čest u korpusu, ovaj se pristup može smatrati čak i valjanijim od tradicionalne utemeljene teorije u kojoj čitatelj mora vjerovati istraživaču da su njegovi primjeri reprezentativni. Računalna utemeljena teorija može se primijeniti na svaki kvalitativni tekst, od prepisanih govora i intervjua do odgovora na otvorena anketna pitanja i etnografskih bilješki.
+
+Rezultati dobiveni iz korpusa mogu se povezati i s izvorima izvan korpusa, a takav se pristup naziva **proširena računalna metoda slučaja** (eng. *extended computational case method*). U njemu istraživač ne kombinira samo računalne metode i blisko čitanje, nego rezultate iz korpusa uspoređuje i s drugim podacima, primjerice s intervjuima ili s etnografskim istraživanjem pa se korpus ne promatra kao zatvoren svijet, nego kao proizvod društvene prakse koji treba usporediti s drugim izvorima.
+
+## Tijek istraživanja i ograničenja
+
+Istraživanje s analizom teksta prolazi kroz uglavnom iste faze kao i svako drugo empirijsko istraživanje. Ono počinje istraživačkim pitanjem, nakon kojeg slijede izgradnja korpusa, odabir jedinica analize i pretvaranje teksta u brojeve, a zatim se primjenjuju metode kojima se u tekstu mjere pojmovi važni za istraživanje te se na kraju traže obrasci i povezuju s drugim varijablama.
+
+```{mermaid}
+flowchart LR
+  A[Istraživačko pitanje] --> B[Izgradnja korpusa]
+  B --> C[Predobrada i reprezentacija]
+  C --> D[Primjena metoda]
+  D --> E[Provjera]
+  E --> F[Tumačenje]
+  F -.-> A
+  E -.-> C
+  D -.-> B
+```
+
+Istraživanje s tekstom ipak rijetko teče ravno od početka do kraja jer se ponavlja i nadograđuje, a otkriće u jednoj fazi često vraća istraživača u neku od prethodnih. Budući da svaka odluka ovisi o odlukama donesenima prije nje, rijetko je moguće reći je li neka odluka sama po sebi dobra ili loša pa istraživač mora jasno opisati sve korake i učiniti dostupnima svoj kod i podatke.
+
+Pri tome treba paziti na nekoliko glavnih ograničenja.
+
+- Korpus **nije neutralan** jer svaki korpus nastaje odlukama koje imaju i vrijednosnu stranu. Ljudi se razlikuju po tome koliko pišu i objavljuju, a ustanove i države utječu na to koji se tekstovi čuvaju i koji su dostupni pa korpus može krivo predstavljati populaciju. Kad proučavamo tekstove, zato često zapravo proučavamo samo one koji su ih napisali.
+
+- Računalne metode **trebaju dovoljno riječi** da bi dobro radile pa je dulje tekstove, poput novinskih članaka ili stranačkih programa, lakše analizirati od kratkih, poput odgovora na otvorena anketna pitanja.
+
+- Kad podaci imaju mnogo varijabli, a malo vrijednosti različitih od nule, model lako nauči obrasce koji vrijede samo za te podatke pa podatke zbog te **prenaučenosti** treba podijeliti na dio za učenje i dio za provjeru.
+
+- Modeli su podložni **algoritamskoj pristranosti** jer su ih osmislili ljudi i uče iz tekstova koje su napisali ljudi pa preuzimaju i ljudske pristranosti. Sustavi za otkrivanje govora mržnje, primjerice, mogu iz ručno kodiranih podataka preuzeti pristranosti i diskriminirati upravo skupine koje su trebali štititi.
+
+- Alati i resursi za analizu teksta **najrazvijeniji su za engleski**, dok su za druge jezike često ograničeni ili ih uopće nema.
+
+- **Više podataka ne znači više znanja** jer velike količine podataka i složene metode same po sebi ne jamče uspjeh pa istraživači ne smiju zaboraviti ono što su društvene znanosti naučile radeći s malim količinama podataka.

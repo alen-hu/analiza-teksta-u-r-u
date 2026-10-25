@@ -1,6 +1,6 @@
 ---
-title: "Tekstualni nizovi"
-description: "Tekstualni nizovi osnovna su jedinica svake tekstualne analize u R-u i temelj na kojem počiva sav daljnji rad s tekstom. Riječ je o slijedu znakova, poput slova, brojki, razmaka i interpunkcije, kojim se u R-u pohranjuje tekst. Bilo da je riječ o romanima, novinskim člancima ili objavama na društvenim mrežama, tekst je prije analize gotovo uvijek potrebno očistiti, prilagoditi i preoblikovati, a sve se te operacije izvode upravo na nizovima. Stoga je za rad s tekstom ključno poznavati načine stvaranja i oblikovanja nizova, pretraživanja, dijeljenja, zamjene i spajanja njihovih dijelova te mjerenja udaljenosti među njima."
+title: "Znakovni nizovi"
+description: "Znakovni nizovi osnovna su jedinica svake tekstualne analize u R-u i temelj na kojem počiva sav daljnji rad s tekstom. Riječ je o slijedu znakova, poput slova, brojki, razmaka i interpunkcije, kojim se u R-u pohranjuje tekst. Bilo da je riječ o romanima, novinskim člancima ili objavama na društvenim mrežama, tekst je prije analize gotovo uvijek potrebno očistiti, prilagoditi i preoblikovati, a sve se te operacije izvode upravo na nizovima. Stoga je za rad s tekstom ključno poznavati načine stvaranja i oblikovanja nizova, pretraživanja, dijeljenja, zamjene i spajanja njihovih dijelova te mjerenja udaljenosti među njima."
 number-sections: true
 title-block-banner: "#8B475D"
 title-block-banner-color: "white"
@@ -14,16 +14,16 @@ library(glue)
 library(stringdist)
 ```
 
-**Tekstualni niz** (engl. *string*) je slijed znakova koji služi za pohranu tekstualnih podataka i rad s njima. Takav niz može sadržavati slova, brojke, razmake, interpunkciju i druge znakove. U R-u se tekstualni nizovi pohranjuju kao podaci tipa `character`, a zapisuju se unutar dvostrukih ili jednostrukih navodnika.
+**Znakovni niz** (engl. *string*) je slijed znakova koji služi za pohranu tekstualnih podataka i rad s njima. Takav niz može sadržavati slova, brojke, razmake, interpunkciju i druge znakove. U R-u se znakovni nizovi pohranjuju kao podaci tipa `character`, a zapisuju se unutar dvostrukih ili jednostrukih navodnika.
 
-Iako osnovni R sadrži vlastite funkcije za rad s tekstom (npr. `paste()`, `grepl()` ili `gsub()`), u praksi se najčešće koristi paket `stringr` koji je dio `tidyverse` skupa paketa. `stringr` je izgrađen na paketu `stringi` koji nudi opsežan skup alata za gotovo sve što bismo ikada mogli raditi s nizovima. Za razliku od njega, `stringr` obuhvaća samo najbitnije i najčešće operacije potrebne u radu s tekstom, a zbog čega je jednostavniji i intuitivniji za korištenje. Prednost `stringr`-a je dosljedna sintaksa, odnosno to da sve njegove funkcije počinju prefiksom `str_` (npr. `str_detect()`, `str_replace()`, `str_length()`), a tekstualni niz uvijek je prvi argument što olakšava njihovo povezivanje operatorom `|>`.
+Iako osnovni R sadrži vlastite funkcije za rad s tekstom (npr. `paste()`, `grepl()` ili `gsub()`), u praksi se najčešće koristi paket `stringr` koji je dio `tidyverse` skupa paketa. `stringr` je izgrađen na paketu `stringi` koji nudi opsežan skup alata za gotovo sve što bismo ikada mogli raditi s nizovima. Za razliku od njega, `stringr` obuhvaća samo najbitnije i najčešće operacije potrebne u radu s tekstom, a zbog čega je jednostavniji i intuitivniji za korištenje. Prednost `stringr`-a je dosljedna sintaksa, odnosno to da sve njegove funkcije počinju prefiksom `str_` (npr. `str_detect()`, `str_replace()`, `str_length()`), a znakovni niz uvijek je prvi argument što olakšava njihovo povezivanje operatorom `|>`.
 
-U R-u se tekstualni nizovi stvaraju tako da se tekst stavi unutar dvostrukih (`"..."`) ili jednostrukih (`'...'`) navodnika. Dobiveni niz najčešće se operatorom `<-` pridružuje nekoj varijabli kako bismo ga poslije mogli koristiti. Obje vrste navodnika funkcioniraju jednako, no preporučuje se korištenje dvostrukih navodnika, dok su jednostruki navodnici korisni kada sam tekst sadrži dvostruke navodnike.
+U R-u se znakovni nizovi stvaraju tako da se tekst stavi unutar dvostrukih (`"..."`) ili jednostrukih (`'...'`) navodnika. Dobiveni niz najčešće se operatorom `<-` pridružuje nekoj varijabli kako bismo ga poslije mogli koristiti. Obje vrste navodnika funkcioniraju jednako, no preporučuje se korištenje dvostrukih navodnika, dok su jednostruki navodnici korisni kada sam tekst sadrži dvostruke navodnike.
 
-Definirajmo za početak jednu rečenicu kao tekstualni niz:
+Definirajmo za početak jednu rečenicu kao znakovni niz:
 
 ```{r}
-# Definiranje rečenice kao tekstualni niz
+# Definiranje rečenice kao znakovni niz
 sentence_one <- "To Miss Hermione Jean Granger, I leave my copy of The Tales of Beedle the Bard, in the hope that she will find it entertaining and instructive."
 
 # Pregled
@@ -33,7 +33,7 @@ sentence_one
 Ipak, ako sam tekst sadrži dvostruke navodnike, R će navodnik iz teksta protumačiti kao početak ili kraj niza, a ne kao dio teksta. Taj se problem može izbjeći tako da se niz omeđi jednostrukim navodnicima, a čime se dvostruki navodnici unutar njega čitaju kao obični znakovi.
 
 ```{r}
-# Definiranje rečenice s navodnicima kao tekstualni niz
+# Definiranje rečenice s navodnicima kao znakovni niz
 sentence_two <- '"And as for this book" said Hermione, "The Tales of Beedle the Bard... I have never even heard of them."'
 
 # Pregled
@@ -45,7 +45,7 @@ Vidljivo je pritom da R nizove ispisuje na različite načine. U slučaju vektor
 Isto tako, ako želimo tekst koji sadrži oba oblika navodnika pretvoriti u niz, dvostruke navodnike iz teksta moramo pretvoriti u `\"` kako oni ne bi bili prepoznati kao početak i kraj niza.
 
 ```{r}
-# Definiranje četvrtog paragrafa kao tekstualni niz
+# Definiranje četvrtog paragrafa kao znakovni niz
 sentence_three <- "\"Well, exactly,\" said Hermione, now flicking through the The Tales of Beedle the Bard. \"If these things are important enough to pass on right under the nose of the Ministry, you'd think he'd have let us know why... unless he thought it was obvious?\""
 
 # Pregled
@@ -54,7 +54,7 @@ sentence_three
 
 Općenito, niz bi uvijek trebalo najprije omeđiti dvostrukim navodnicima, a jednostruke koristiti samo ako tekst sadrži dvostruke navodnike. Tek ako tekst sadrži i dvostruke i jednostruke navodnike, dvostruke navodnike unutar teksta označavamo s `\"`.
 
-Više tekstualnih nizova moguće je funkcijom `c()` objediniti u vektor nizova, bilo da ih navedemo izravno ili preko varijabli u koje su spremljeni.
+Više nizova moguće je funkcijom `c()` objediniti u vektor nizova, bilo da ih navedemo izravno ili preko varijabli u koje su spremljeni.
 
 ```{r}
 # Definiranje prvog niza
@@ -93,7 +93,7 @@ writeLines(hp_paragraph)
 writeLines(hp_sentences, sep = " @@@@@ ")
 ```
 
-Prednost funkcije `writeLines()` je u tome da ispisuje tekst u originalnom obliku bez navodnika koji su dodani u prvotnom načinu formiranja tekstualnih nizova.
+Prednost funkcije `writeLines()` je u tome da ispisuje tekst u originalnom obliku bez navodnika koji su dodani u prvotnom načinu formiranja znakovnih nizova.
 
 ## Escape sekvence
 
@@ -123,9 +123,9 @@ Unicode je standard koji svakom znaku i brojnim simbolima i emojijima dodjeljuje
 writeLines("Hello!\n\U1F44B")
 ```
 
-## Numeričke vrijednosti kao tekstualni niz
+## Numeričke vrijednosti kao znakovni niz
 
-Nizovi se često koriste i za izvještavanje o numeričkim rezultatima. Primjerice, neku vrijednost možemo htjeti prikazati kao tekstualni niz s određenim brojem znamenki.
+Nizovi se često koriste i za izvještavanje o numeričkim rezultatima. Primjerice, neku vrijednost možemo htjeti prikazati kao znakovni niz s određenim brojem znamenki.
 
 ```{r}
 # Pridruživanje vrijednosti varijabli
@@ -135,7 +135,7 @@ number <- 13.652378540037642375
 number
 ```
 
-U R-u postoji nekoliko funkcija za pretvaranje i formatiranje numeričkih vrijednosti u tekstualne nizove. Prva je `as.character()` koja broj pretvara u niz bez mogućnosti formatiranja. Broj se pritom zapisuje s najviše 15 značajnih znamenki pa se vrijednosti s više znamenki ipak zaokružuju. Druga je `format()` kojom argumentom `digits` određujemo broj znamenki. Treća je `formatC()` koja daje najveću kontrolu nad zapisom jer uz odgovarajući format ispisuje točno zadani broj decimalnih mjesta.
+U R-u postoji nekoliko funkcija za pretvaranje i formatiranje numeričkih vrijednosti u znakovne nizove. Prva je `as.character()` koja broj pretvara u niz bez mogućnosti formatiranja. Broj se pritom zapisuje s najviše 15 značajnih znamenki pa se vrijednosti s više znamenki ipak zaokružuju. Druga je `format()` kojom argumentom `digits` određujemo broj znamenki. Treća je `formatC()` koja daje najveću kontrolu nad zapisom jer uz odgovarajući format ispisuje točno zadani broj decimalnih mjesta.
 
 ```{r}
 # Pretvaranje broja u niz
@@ -298,7 +298,7 @@ str_replace_all(
 
 ### Stvaranje nizova s podacima
 
-Još je jedna važna operacija u radu s tekstualnim nizovima stvaranje novih nizova od podataka u R-u. Jedna od funkcija za to je `paste()` iz osnovnog R-a koja spaja dva ili više niza. Ipak, za složenija spajanja praktičnije je koristiti funkciju `glue()` iz paketa `glue`. Taj se paket instalira zajedno s `tidyverse`-om, ali se ne učitava automatski naredbom `library(tidyverse)` pa ga treba zasebno učitati.
+Još je jedna važna operacija u radu sa znakovnim nizovima stvaranje novih nizova od podataka u R-u. Jedna od funkcija za to je `paste()` iz osnovnog R-a koja spaja dva ili više niza. Ipak, za složenija spajanja praktičnije je koristiti funkciju `glue()` iz paketa `glue`. Taj se paket instalira zajedno s `tidyverse`-om, ali se ne učitava automatski naredbom `library(tidyverse)` pa ga treba zasebno učitati.
 
 Funkcija `glue()` je praktičnija jer se njome lakše stvaraju nizovi kada treba spojiti mnogo varijabli i teksta. Niz se zapisuje unutar navodnika, a sve što stavimo unutar vitičastih zagrada (`{}`) funkcija tumači kao R kod, izvršava ga i rezultat umeće u niz. Unutar vitičastih zagrada možemo, dakle, navesti gotovo sve što se može pretvoriti u niz, varijablu, niz ili izraz, primjerice računsku operaciju čiji će se rezultat izračunati i pretvoriti u niz.
 

@@ -1,3 +1,0 @@
-# JEZIK, ETIKA I UMJETNA INTELIGENCIJA {.unnumbered}
-
-Završni dio obrađuje nestrukturirane podatke i vizualizacije teksta.
