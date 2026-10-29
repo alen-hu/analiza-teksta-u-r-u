@@ -8,7 +8,7 @@
 
 <meta name="description" content="Riječi koje se u tekstu pojavljuju najčešće rijetko su one koje o njemu govore najviše. Učestalost riječi u jeziku podliježe pravilnosti poznatoj kao Zipfov zakon, a prema kojem se malobrojne riječi pojavljuju iznimno često, a velika većina tek rijetko. Zato samo brojanje riječi ne govori koje su riječi za neki tekst doista važne. Odgovor na to pitanje daje mjera tf-idf koja učestalost riječi u jednom tekstu uspoređuje s njezinom prisutnošću u ostalim tekstovima i tako izdvaja riječi po kojima se pojedini tekst razlikuje od ostalih.">
 
-<title>12&nbsp; Analiza učestalosti riječi – Analiza teksta u R-u</title>
+<title>11&nbsp; Analiza učestalosti riječi – Analiza teksta u R-u</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./4_1_deskriptivna_analiza_teksta.html">OPISIVANJE TEKSTA</a></li><li class="breadcrumb-item"><a href="./4_2_analiza_ucestalosti_riječi.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./4_1_deskriptivna_analiza_teksta.html">OPISIVANJE TEKSTA</a></li><li class="breadcrumb-item"><a href="./4_2_analiza_ucestalosti_riječi.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -181,8 +181,8 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./4_1_deskriptivna_analiza_teksta.html">OPISIVANJE TEKSTA</a></li><li class="breadcrumb-item"><a href="./4_2_analiza_ucestalosti_riječi.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></a></li></ol></nav>
-      <h1 class="title"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></h1>
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./4_1_deskriptivna_analiza_teksta.html">OPISIVANJE TEKSTA</a></li><li class="breadcrumb-item"><a href="./4_2_analiza_ucestalosti_riječi.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></h1>
                   <div>
         <div class="description">
           Riječi koje se u tekstu pojavljuju najčešće rijetko su one koje o njemu govore najviše. Učestalost riječi u jeziku podliježe pravilnosti poznatoj kao Zipfov zakon, a prema kojem se malobrojne riječi pojavljuju iznimno često, a velika većina tek rijetko. Zato samo brojanje riječi ne govori koje su riječi za neki tekst doista važne. Odgovor na to pitanje daje mjera tf-idf koja učestalost riječi u jednom tekstu uspoređuje s njezinom prisutnošću u ostalim tekstovima i tako izdvaja riječi po kojima se pojedini tekst razlikuje od ostalih.
@@ -281,32 +281,26 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_1_prikupljanje_tekstova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Prikupljanje tekstova</span></span></a>
+  <a href="./3_1_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_2_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  <a href="./3_2_pretpostavke_za_analizu_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_3_pretpostavke_za_analizu_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span></a>
+  <a href="./3_3_lingvisticka_obrada_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_4_lingvisticka_obrada_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./3_5_rad_s_neurednim_podacima.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
+  <a href="./3_4_rad_s_neurednim_podacima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,31 +317,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_1_deskriptivna_analiza_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_2_analiza_ucestalosti_riječi.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_3_odnosi_medu_rijecima.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_4_stil_i_slozenost_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Stil i složenost teksta: stilometrija, čitljivost i leksička raznolikost</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Stil i složenost teksta: stilometrija, čitljivost i leksička raznolikost</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_5_vizualizacije_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
   </div>
 </li>
       </ul>
@@ -364,19 +358,19 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5_1_slicnosti_tekstova_i_grupiranje.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5_2_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5_3_strukturno_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span></a>
   </div>
 </li>
       </ul>
@@ -393,31 +387,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_1_analiza_pomocu_rjecnika.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Analiza pomoću rječnika</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Analiza pomoću rječnika</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_2_analiza_sentimenata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_3_rucno_kodiranje_i_pouzdanost.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Ručno kodiranje i pouzdanost</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ručno kodiranje i pouzdanost</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_4_nadzirano_strojno_ucenje.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Nadzirano strojno učenje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Nadzirano strojno učenje</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_5_skaliranje_tekstova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Skaliranje tekstova</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Skaliranje tekstova</span></span></a>
   </div>
 </li>
       </ul>
@@ -434,25 +428,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./7_1_vektorske_reprezentacije_rijeci_i_dokumenata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Vektorske reprezentacije riječi i dokumenata</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Vektorske reprezentacije riječi i dokumenata</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./7_2_transformeri_i_veliki_jezicni_modeli.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Transformeri i veliki jezični modeli</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Transformeri i veliki jezični modeli</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./7_3_tematsko_modeliranje_pomocu_vektorskih_reprezentacija.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Tematsko modeliranje pomoću vektorskih reprezentacija</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Tematsko modeliranje pomoću vektorskih reprezentacija</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./7_4_semanticko_pretrazivanje_i_generiranje_potpomognuto_pretrazivanjem.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Semantičko pretraživanje i generiranje potpomognuto pretraživanjem (RAG)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Semantičko pretraživanje i generiranje potpomognuto pretraživanjem (RAG)</span></span></a>
   </div>
 </li>
       </ul>
@@ -469,19 +463,19 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./8_1_analiza_teksta_na_hrvatskom_jeziku.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Analiza teksta na hrvatskom jeziku</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Analiza teksta na hrvatskom jeziku</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./8_2_etika_pravni_okvir_i_istrazivačka_praksa.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Etika, pravni okvir i istraživačka praksa</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Etika, pravni okvir i istraživačka praksa</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./8_3_obrada_prirodnoga_jezika_i_umjetna_inteligencija.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Obrada prirodnoga jezika i umjetna inteligencija</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Obrada prirodnoga jezika i umjetna inteligencija</span></span></a>
   </div>
 </li>
       </ul>
@@ -498,7 +492,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./9_1_cjelovita_studija_slucaja.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Cjelovita studija slučaja</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Cjelovita studija slučaja</span></span></a>
   </div>
 </li>
       </ul>
@@ -519,8 +513,8 @@ window.Quarto = {
     <h2 id="toc-title">Sadržaj poglavlja</h2>
    
   <ul>
-  <li><a href="#zipfov-zakon" id="toc-zipfov-zakon" class="nav-link active" data-scroll-target="#zipfov-zakon"><span class="header-section-number">12.1</span> Zipfov zakon</a></li>
-  <li><a href="#tf-idf-analiza" id="toc-tf-idf-analiza" class="nav-link" data-scroll-target="#tf-idf-analiza"><span class="header-section-number">12.2</span> tf-idf analiza</a></li>
+  <li><a href="#zipfov-zakon" id="toc-zipfov-zakon" class="nav-link active" data-scroll-target="#zipfov-zakon"><span class="header-section-number">11.1</span> Zipfov zakon</a></li>
+  <li><a href="#tf-idf-analiza" id="toc-tf-idf-analiza" class="nav-link" data-scroll-target="#tf-idf-analiza"><span class="header-section-number">11.2</span> tf-idf analiza</a></li>
   </ul>
 <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
     </div>
@@ -532,8 +526,8 @@ window.Quarto = {
 
 
 <p>U prethodnom smo poglavlju učestalost riječi analizirali brojanjem, odnosno računanjem koliko se puta pojedina riječ pojavljuje u tekstu i koliki je njezin udio u ukupnom broju riječi. Takva analiza govori koje su riječi česte, ali ne i koje su važne. Veći broj pojavljivanja ne znači nužno da je riječ važnija za sadržaj teksta. U ovom ćemo poglavlju najprije pogledati kako je učestalost riječi u tekstu raspoređena, a zatim upoznati mjeru koja pokušava izdvojiti riječi koje su za pojedini tekst doista karakteristične.</p>
-<section id="zipfov-zakon" class="level2" data-number="12.1">
-<h2 data-number="12.1" class="anchored" data-anchor-id="zipfov-zakon"><span class="header-section-number">12.1</span> Zipfov zakon</h2>
+<section id="zipfov-zakon" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="zipfov-zakon"><span class="header-section-number">11.1</span> Zipfov zakon</h2>
 <p>Raspodjela učestalosti riječi u jeziku slijedi pravilnost poznatu kao <strong>Zipfov zakon</strong>, nazvan prema američkom lingvistu Georgeu Zipfu. Prema tom zakonu, učestalost riječi obrnuto je proporcionalna njezinu rangu, odnosno mjestu na popisu riječi poredanih od najčešće prema najrjeđoj. Drugim riječima, druga najčešća riječ pojavljuje se otprilike upola rjeđe od najčešće, treća otprilike trećinu toliko često i tako dalje. Matematički se to može zapisati ovako:</p>
 <p><span class="math inline">\(\text{Učestalost riječi} \propto \frac{1}{\text{rang riječi}}\)</span></p>
 <p>Primjerice, ako se u nekom velikom tekstu najčešća riječ pojavljuje 10000 puta, druga najčešća pojavit će se otprilike 5000 puta, a treća otprilike 3333 puta. Posljedica je da malobrojne riječi, uglavnom zaustavne riječi poput <em>the</em>, <em>and</em> ili <em>of</em>, čine velik dio svakog teksta, dok se velika većina riječi pojavljuje tek nekoliko puta ili samo jednom.</p>
@@ -726,8 +720,8 @@ Coefficients:
 </div>
 <p>Ovakva se analiza može proširiti i na usporedbu različitih autora ili bilo kojih drugih zbirki tekstova, a zahvaljujući urednom obliku podataka provodi se istim postupkom.</p>
 </section>
-<section id="tf-idf-analiza" class="level2" data-number="12.2">
-<h2 data-number="12.2" class="anchored" data-anchor-id="tf-idf-analiza"><span class="header-section-number">12.2</span> tf-idf analiza</h2>
+<section id="tf-idf-analiza" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="tf-idf-analiza"><span class="header-section-number">11.2</span> tf-idf analiza</h2>
 <p>Zipfov zakon pokazuje da su najčešće riječi u tekstu uglavnom one koje o njegovu sadržaju govore najmanje, no, slijedeći prikazani zakon, ostaje pronaći riječi koje su za neki tekst doista važne. Dva su takva pristupa u analizi učestalosti riječi.</p>
 <p>Jedan je pristup <strong>učestalost pojma</strong> (engl. <em>term frequency</em>, <strong>tf</strong>), odnosno relativna učestalost riječi u dokumentu koju smo računali i u prethodnom poglavlju. Što se riječ češće pojavljuje u dokumentu, to je vjerojatnije da je za njega važna. No mnoge su riječi česte u svim dokumentima pa ne govore ništa o tome po čemu se pojedini dokument razlikuje od ostalih.</p>
 <p>Drugi je pristup <strong>inverzna učestalost dokumenata</strong> (engl. <em>inverse document frequency</em>, <strong>idf</strong>). Ona pokazuje u koliko se dokumenata u zbirci riječ pojavljuje. Pritom riječ koja se pojavljuje u svim dokumentima dobiva idf 0, a što je u manje dokumenata, to joj je idf veći. Računa se kao prirodni logaritam omjera ukupnog broja dokumenata i broja dokumenata koji sadrže riječ:</p>
@@ -1209,12 +1203,12 @@ Coefficients:
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./4_1_deskriptivna_analiza_teksta.html" class="pagination-link" aria-label="Deskriptivna analiza teksta">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./4_3_odnosi_medu_rijecima.html" class="pagination-link" aria-label="Odnosi među riječima">
-        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

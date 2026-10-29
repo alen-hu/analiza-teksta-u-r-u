@@ -8,7 +8,7 @@
 
 <meta name="description" content="Kad čitamo zbirku tekstova, gotovo nesvjesno prepoznajemo o kojim temama govore i koji tekstovi pripadaju zajedno. Tematsko modeliranje pokušava to isto učiniti računalno, bez unaprijed zadanih kategorija na način da iz samih riječi i njihova zajedničkog pojavljivanja otkriva skupine riječi koje tvore teme te pokazuje u kojoj se mjeri svaka tema pojavljuje u pojedinom tekstu. Rezultat nije gotov odgovor, nego prijedlog koji istraživač mora protumačiti i provjeriti jer model ne zna što teme znače, nego samo koje se riječi pojavljuju zajedno.">
 
-<title>17&nbsp; Tematsko modeliranje – Analiza teksta u R-u</title>
+<title>16&nbsp; Tematsko modeliranje – Analiza teksta u R-u</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5_1_slicnosti_tekstova_i_grupiranje.html">OTKRIVANJE STRUKTURA U TEKSTU</a></li><li class="breadcrumb-item"><a href="./5_2_tematsko_modeliranje.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5_1_slicnosti_tekstova_i_grupiranje.html">OTKRIVANJE STRUKTURA U TEKSTU</a></li><li class="breadcrumb-item"><a href="./5_2_tematsko_modeliranje.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -181,8 +181,8 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5_1_slicnosti_tekstova_i_grupiranje.html">OTKRIVANJE STRUKTURA U TEKSTU</a></li><li class="breadcrumb-item"><a href="./5_2_tematsko_modeliranje.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></a></li></ol></nav>
-      <h1 class="title"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></h1>
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./5_1_slicnosti_tekstova_i_grupiranje.html">OTKRIVANJE STRUKTURA U TEKSTU</a></li><li class="breadcrumb-item"><a href="./5_2_tematsko_modeliranje.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></h1>
                   <div>
         <div class="description">
           Kad čitamo zbirku tekstova, gotovo nesvjesno prepoznajemo o kojim temama govore i koji tekstovi pripadaju zajedno. Tematsko modeliranje pokušava to isto učiniti računalno, bez unaprijed zadanih kategorija na način da iz samih riječi i njihova zajedničkog pojavljivanja otkriva skupine riječi koje tvore teme te pokazuje u kojoj se mjeri svaka tema pojavljuje u pojedinom tekstu. Rezultat nije gotov odgovor, nego prijedlog koji istraživač mora protumačiti i provjeriti jer model ne zna što teme znače, nego samo koje se riječi pojavljuju zajedno.
@@ -281,32 +281,26 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_1_prikupljanje_tekstova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Prikupljanje tekstova</span></span></a>
+  <a href="./3_1_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_2_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  <a href="./3_2_pretpostavke_za_analizu_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_3_pretpostavke_za_analizu_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span></a>
+  <a href="./3_3_lingvisticka_obrada_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_4_lingvisticka_obrada_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./3_5_rad_s_neurednim_podacima.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
+  <a href="./3_4_rad_s_neurednim_podacima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,31 +317,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_1_deskriptivna_analiza_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_2_analiza_ucestalosti_riječi.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_3_odnosi_medu_rijecima.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_4_stil_i_slozenost_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Stil i složenost teksta: stilometrija, čitljivost i leksička raznolikost</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Stil i složenost teksta: stilometrija, čitljivost i leksička raznolikost</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./4_5_vizualizacije_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
   </div>
 </li>
       </ul>
@@ -364,19 +358,19 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5_1_slicnosti_tekstova_i_grupiranje.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5_2_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./5_3_strukturno_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span></a>
   </div>
 </li>
       </ul>
@@ -393,31 +387,31 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_1_analiza_pomocu_rjecnika.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Analiza pomoću rječnika</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Analiza pomoću rječnika</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_2_analiza_sentimenata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_3_rucno_kodiranje_i_pouzdanost.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Ručno kodiranje i pouzdanost</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ručno kodiranje i pouzdanost</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_4_nadzirano_strojno_ucenje.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Nadzirano strojno učenje</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Nadzirano strojno učenje</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./6_5_skaliranje_tekstova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Skaliranje tekstova</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Skaliranje tekstova</span></span></a>
   </div>
 </li>
       </ul>
@@ -434,25 +428,25 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./7_1_vektorske_reprezentacije_rijeci_i_dokumenata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Vektorske reprezentacije riječi i dokumenata</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Vektorske reprezentacije riječi i dokumenata</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./7_2_transformeri_i_veliki_jezicni_modeli.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Transformeri i veliki jezični modeli</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Transformeri i veliki jezični modeli</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./7_3_tematsko_modeliranje_pomocu_vektorskih_reprezentacija.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Tematsko modeliranje pomoću vektorskih reprezentacija</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Tematsko modeliranje pomoću vektorskih reprezentacija</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./7_4_semanticko_pretrazivanje_i_generiranje_potpomognuto_pretrazivanjem.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Semantičko pretraživanje i generiranje potpomognuto pretraživanjem (RAG)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Semantičko pretraživanje i generiranje potpomognuto pretraživanjem (RAG)</span></span></a>
   </div>
 </li>
       </ul>
@@ -469,19 +463,19 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./8_1_analiza_teksta_na_hrvatskom_jeziku.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Analiza teksta na hrvatskom jeziku</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Analiza teksta na hrvatskom jeziku</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./8_2_etika_pravni_okvir_i_istrazivačka_praksa.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Etika, pravni okvir i istraživačka praksa</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Etika, pravni okvir i istraživačka praksa</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./8_3_obrada_prirodnoga_jezika_i_umjetna_inteligencija.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Obrada prirodnoga jezika i umjetna inteligencija</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Obrada prirodnoga jezika i umjetna inteligencija</span></span></a>
   </div>
 </li>
       </ul>
@@ -498,7 +492,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./9_1_cjelovita_studija_slucaja.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Cjelovita studija slučaja</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Cjelovita studija slučaja</span></span></a>
   </div>
 </li>
       </ul>
@@ -519,10 +513,10 @@ window.Quarto = {
     <h2 id="toc-title">Sadržaj poglavlja</h2>
    
   <ul>
-  <li><a href="#vjerojatnosti-riječi-po-temama" id="toc-vjerojatnosti-riječi-po-temama" class="nav-link active" data-scroll-target="#vjerojatnosti-riječi-po-temama"><span class="header-section-number">17.1</span> Vjerojatnosti riječi po temama</a></li>
-  <li><a href="#vjerojatnosti-tema-po-dokumentima" id="toc-vjerojatnosti-tema-po-dokumentima" class="nav-link" data-scroll-target="#vjerojatnosti-tema-po-dokumentima"><span class="header-section-number">17.2</span> Vjerojatnosti tema po dokumentima</a>
+  <li><a href="#vjerojatnosti-riječi-po-temama" id="toc-vjerojatnosti-riječi-po-temama" class="nav-link active" data-scroll-target="#vjerojatnosti-riječi-po-temama"><span class="header-section-number">16.1</span> Vjerojatnosti riječi po temama</a></li>
+  <li><a href="#vjerojatnosti-tema-po-dokumentima" id="toc-vjerojatnosti-tema-po-dokumentima" class="nav-link" data-scroll-target="#vjerojatnosti-tema-po-dokumentima"><span class="header-section-number">16.2</span> Vjerojatnosti tema po dokumentima</a>
   <ul class="collapse">
-  <li><a href="#koliko-dobro-teme-odgovaraju-bajkama" id="toc-koliko-dobro-teme-odgovaraju-bajkama" class="nav-link" data-scroll-target="#koliko-dobro-teme-odgovaraju-bajkama"><span class="header-section-number">17.2.1</span> Koliko dobro teme odgovaraju bajkama</a></li>
+  <li><a href="#koliko-dobro-teme-odgovaraju-bajkama" id="toc-koliko-dobro-teme-odgovaraju-bajkama" class="nav-link" data-scroll-target="#koliko-dobro-teme-odgovaraju-bajkama"><span class="header-section-number">16.2.1</span> Koliko dobro teme odgovaraju bajkama</a></li>
   </ul></li>
   </ul>
 <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
@@ -590,8 +584,8 @@ Weighting          : term frequency (tf)</code></pre>
 </div>
 </div>
 <p>Ispis pokazuje samo da je procijenjen model s pet tema metodom VEM. Sam model sadrži mnogo informacija, a za njihovo izdvajanje koristimo funkciju <code>tidy()</code> iz paketa <code>tidytext</code> koja ih pretvara u uredan oblik. Ostatak analize uključuje istraživanje i tumačenje modela.</p>
-<section id="vjerojatnosti-riječi-po-temama" class="level2" data-number="17.1">
-<h2 data-number="17.1" class="anchored" data-anchor-id="vjerojatnosti-riječi-po-temama"><span class="header-section-number">17.1</span> Vjerojatnosti riječi po temama</h2>
+<section id="vjerojatnosti-riječi-po-temama" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="vjerojatnosti-riječi-po-temama"><span class="header-section-number">16.1</span> Vjerojatnosti riječi po temama</h2>
 <p>Vjerojatnost da se pojedina riječ pojavi u pojedinoj temi označava se slovom beta <span class="math inline">\(\beta\)</span>. Izdvajamo je funkcijom <code>tidy()</code> s argumentom <code>matrix = "beta"</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vjerojatnosti riječi po temama</span></span>
@@ -652,8 +646,8 @@ Weighting          : term frequency (tf)</code></pre>
 <p>Model, dakle, nije pet tema u potpunosti poistovjetio s pet bajki. Djelomično je to posljedica kratkoće bajki i odlomaka, a djelomično toga što bajke dijele dio rječnika, primjerice riječi <em>wand</em>, <em>magic</em> i <em>wizard</em> koje pojavljuju se u više tema. Bajka <em>The Tale of the Three Brothers</em>, najkraća od pet bajki, nije dobila vlastitu temu, nego su njezine riječi raspoređene u teme 1 i 2.</p>
 <p>Neke se riječi pojavljuju u više tema. To je prednost tematskog modeliranja pred metodama koje dokumente strogo razvrstavaju u jednu skupinu jer se i u prirodnom jeziku iste riječi koriste u različitim temama.</p>
 </section>
-<section id="vjerojatnosti-tema-po-dokumentima" class="level2" data-number="17.2">
-<h2 data-number="17.2" class="anchored" data-anchor-id="vjerojatnosti-tema-po-dokumentima"><span class="header-section-number">17.2</span> Vjerojatnosti tema po dokumentima</h2>
+<section id="vjerojatnosti-tema-po-dokumentima" class="level2" data-number="16.2">
+<h2 data-number="16.2" class="anchored" data-anchor-id="vjerojatnosti-tema-po-dokumentima"><span class="header-section-number">16.2</span> Vjerojatnosti tema po dokumentima</h2>
 <p>Osim što svaku temu procjenjuje kao mješavinu riječi, LDA svaki dokument procjenjuje kao mješavinu tema. Udio pojedine teme u pojedinom dokumentu označava se slovom gama (<span class="math inline">\(\gamma\)</span>), a izdvajamo ga funkcijom <code>tidy()</code> s argumentom <code>matrix = "gamma"</code>. Funkcijom <code>separate()</code> oznaku dokumenta ponovno dijelimo na naziv bajke i redni broj odlomka. Znak <code>|</code> u regularnim izrazima ima posebno značenje pa ga u argumentu <code>sep</code> pišemo kao <code>"\\|"</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Udjeli tema po odlomcima</span></span>
@@ -708,8 +702,8 @@ Weighting          : term frequency (tf)</code></pre>
 <p>Vrijednosti game uglavnom su ili vrlo blizu 0 ili vrlo blizu 1. To znači da model gotovo svaki odlomak pripisuje uglavnom jednoj temi, a ne mješavini više tema što je očekivano kod tako kratkih dokumenata. Zato kutije na dijagramu izgledaju neobično. Kutija koja se proteže od 0 do 1, s medijanom blizu 0, znači da je ta tema prevladavajuća u manjem dijelu odlomaka bajke (između četvrtine i polovine), dok je u ostalima gotovo nema.</p>
 <p>Dijagram potvrđuje ono što smo vidjeli na najvjerojatnijim riječima tema. Bajka <em>Babbitty Rabbitty and Her Cackling Stumps</em> najjasnije je povezana s jednom temom jer medijan game za temu 3 iznosi oko 0,93 pa je u većini njezinih odlomaka upravo ta tema prevladavajuća. Bajka <em>The Warlock’s Hairy Heart</em> povezana je ponajprije s temom 5, ali nešto slabije (medijan oko 0,2) pa je ta tema prevladavajuća u manjem dijelu njezinih odlomaka. Ostale su bajke podijeljene između dvije teme. Odlomci bajki <em>The Wizard and the Hopping Pot</em> i <em>The Tale of the Three Brothers</em> raspoređeni su između tema 1 i 2, a pri čemu je kod bajke <em>The Tale of the Three Brothers</em> tema 1 nešto izraženija (medijan oko 0,6). Odlomci bajke <em>The Fountain of Fair Fortune</em> raspoređeni su između tema 4 i 5.</p>
 <p>Model je, dakle, dvije bajke, <em>The Wizard and the Hopping Pot</em> i <em>The Tale of the Three Brothers</em>, spojio u isti par tema, a bajke <em>The Fountain of Fair Fortune</em> i <em>The Warlock’s Hairy Heart</em> dijele temu 5. Točke izvan kutija pokazuju pojedinačne odlomke koje je model pripisao temi neuobičajenoj za njihovu bajku.</p>
-<section id="koliko-dobro-teme-odgovaraju-bajkama" class="level3" data-number="17.2.1">
-<h3 data-number="17.2.1" class="anchored" data-anchor-id="koliko-dobro-teme-odgovaraju-bajkama"><span class="header-section-number">17.2.1</span> Koliko dobro teme odgovaraju bajkama</h3>
+<section id="koliko-dobro-teme-odgovaraju-bajkama" class="level3" data-number="16.2.1">
+<h3 data-number="16.2.1" class="anchored" data-anchor-id="koliko-dobro-teme-odgovaraju-bajkama"><span class="header-section-number">16.2.1</span> Koliko dobro teme odgovaraju bajkama</h3>
 <p>Na kraju možemo provjeriti koliko je odlomaka model „ispravno” razvrstao. Postupak je sljedeći:</p>
 <ol type="1">
 <li><p>Za svaki odlomak funkcijom <code>slice_max()</code> izdvajamo temu s najvećom gamom, odnosno temu koja u njemu prevladava.</p></li>
@@ -1165,12 +1159,12 @@ Weighting          : term frequency (tf)</code></pre>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./5_1_slicnosti_tekstova_i_grupiranje.html" class="pagination-link" aria-label="Sličnost tekstova i grupiranje">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./5_3_strukturno_tematsko_modeliranje.html" class="pagination-link" aria-label="Strukturno tematsko modeliranje">
-        <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

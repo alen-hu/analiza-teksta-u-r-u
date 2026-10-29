@@ -29,11 +29,10 @@ book:
         - 2_2_regularni_izrazi.qmd
     - part: "OD IZVORA DO PODATAKA"
       chapters:
-        - 3_1_prikupljanje_tekstova.qmd
-        - 3_2_ucitavanje_i_oblikovanje_podataka.qmd
-        - 3_3_pretpostavke_za_analizu_teksta.qmd
-        - 3_4_lingvisticka_obrada_teksta.qmd
-        - 3_5_rad_s_neurednim_podacima.qmd
+        - 3_1_ucitavanje_i_oblikovanje_podataka.qmd
+        - 3_2_pretpostavke_za_analizu_teksta.qmd
+        - 3_3_lingvisticka_obrada_teksta.qmd
+        - 3_4_rad_s_neurednim_podacima.qmd
     - part: "OPISIVANJE TEKSTA"
       chapters:
         - 4_1_deskriptivna_analiza_teksta.qmd
