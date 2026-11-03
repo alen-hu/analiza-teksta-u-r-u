@@ -13,8 +13,8 @@ library(igraph)
 library(ggraph)
 library(widyr)
 
-tToBtB_df <- readRDS("data_pictures_and_graphs/tToBtB_df.rds")
-tToBtB_bigram <- readRDS("data_pictures_and_graphs/tToBtB_bigram.rds")
+tToBtB_df <- readRDS("data/tToBtB_df.rds")
+tToBtB_bigram <- readRDS("data/tToBtB_bigram.rds")
 ```
 
 U dosadašnjim smo analizama riječi promatrali kao zasebne jedinice. Mnoge se analize teksta, međutim, temelje na odnosima među riječima, odnosno na analizi riječi obično slijede neke druge riječi i koje se riječi pojavljuju zajedno u istom dijelu teksta. U ovom ćemo poglavlju takve odnose izračunati i prikazati. Za to ćemo, uz pakete koje već poznajemo, koristiti još tri paketa:

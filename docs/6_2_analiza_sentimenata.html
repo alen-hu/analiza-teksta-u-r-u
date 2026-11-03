@@ -252,8 +252,8 @@ background: #8B475D;
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_1_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  <a href="./3_1_ucitavanje_tekstualnih_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -637,20 +637,20 @@ background: #8B475D;
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(nrc_joy, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 25 × 2
+<pre><code># A tibble: 63 × 2
    word          n
    &lt;chr&gt;     &lt;int&gt;
- 1 garden        6
- 2 sun           6
- 3 enchanted     3
- 4 fortune       3
- 5 happy         3
- 6 pay           3
- 7 delighted     2
- 8 found         2
- 9 lover         2
-10 magical       2
-# ℹ 15 more rows</code></pre>
+ 1 love         10
+ 2 fortune       8
+ 3 garden        6
+ 4 magical       6
+ 5 sun           6
+ 6 enchanted     4
+ 7 found         4
+ 8 pay           4
+ 9 beauty        3
+10 delighted     3
+# ℹ 53 more rows</code></pre>
 </div>
 </div>
 <p>U bajci <em>The Fountain of Fair Fortune</em> pojavljuje se 25 različitih riječi koje leksikon <code>nrc</code> svrstava u kategoriju radosti. Najčešće su <em>garden</em> i <em>sun</em> (po 6 pojavljivanja), a slijede <em>enchanted</em>, <em>fortune</em>, <em>happy</em> i <em>pay</em> (po 3) te <em>delighted</em>, <em>found</em>, <em>lover</em> i <em>magical</em> (po 2). Neke od njih, poput <em>happy</em>, <em>delighted</em> ili <em>lover</em>, doista izražavaju radost. Za druge to vrijedi tek uvjetno, primjerice <em>garden</em> i <em>sun</em> koje su u bajci ponajprije mjesto i doba dana, a <em>fortune</em> se većinom pojavljuje kao dio naziva fontane. Riječ <em>pay</em> u kategoriju radosti svrstana je prema jednom od svojih značenja (nagrada, isplata) koje ne mora odgovarati značenju u tekstu. Ovaj primjer dobro pokazuje glavno ograničenje analize sentimenata pomoću leksikona, da je oznaka sentimenta pridružena riječi, a ne njezinu značenju u konkretnom tekstu. Zato rezultate uvijek treba provjeriti pregledom riječi koje su im najviše pridonijele.</p>
@@ -685,20 +685,20 @@ background: #8B475D;
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>tToBtB_bing_word_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 277 × 3
+<pre><code># A tibble: 473 × 3
    word    sentiment     n
    &lt;chr&gt;   &lt;chr&gt;     &lt;int&gt;
- 1 death   negative     20
- 2 magic   positive     17
- 3 magical positive     12
- 4 fell    negative     10
- 5 gold    positive     10
- 6 foolish negative      9
- 7 stump   negative      9
- 8 dead    negative      6
- 9 majesty positive      6
-10 loud    negative      5
-# ℹ 267 more rows</code></pre>
+ 1 magic   positive     42
+ 2 death   negative     39
+ 3 magical positive     25
+ 4 love    positive     12
+ 5 stump   negative     12
+ 6 dead    negative     11
+ 7 foolish negative     11
+ 8 fell    negative     10
+ 9 gold    positive     10
+10 fair    positive      8
+# ℹ 463 more rows</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bing_word_counts <span class="sc">|&gt;</span></span>
@@ -743,20 +743,20 @@ background: #8B475D;
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>tToBtB_sentiment</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 60 × 5
+<pre><code># A tibble: 82 × 5
    fairy_tale                       index negative positive sentiment
    &lt;chr&gt;                            &lt;dbl&gt;    &lt;int&gt;    &lt;int&gt;     &lt;int&gt;
  1 1_the_wizard_and_the_hopping_pot     0        3       13        10
  2 1_the_wizard_and_the_hopping_pot     1        4        3        -1
- 3 1_the_wizard_and_the_hopping_pot     3        8        3        -5
- 4 1_the_wizard_and_the_hopping_pot     4        2        0        -2
- 5 1_the_wizard_and_the_hopping_pot     5        2        2         0
- 6 1_the_wizard_and_the_hopping_pot     6        2        0        -2
- 7 1_the_wizard_and_the_hopping_pot     7        6        0        -6
- 8 1_the_wizard_and_the_hopping_pot     8        7        7         0
- 9 1_the_wizard_and_the_hopping_pot     9        0        1         1
-10 2_the_fountain_of_fair_fortune       0        1        7         6
-# ℹ 50 more rows</code></pre>
+ 3 1_the_wizard_and_the_hopping_pot     2        1        0        -1
+ 4 1_the_wizard_and_the_hopping_pot     3        8        3        -5
+ 5 1_the_wizard_and_the_hopping_pot     4        2        0        -2
+ 6 1_the_wizard_and_the_hopping_pot     5        2        2         0
+ 7 1_the_wizard_and_the_hopping_pot     6        2        1        -1
+ 8 1_the_wizard_and_the_hopping_pot     7        6        0        -6
+ 9 1_the_wizard_and_the_hopping_pot     8        7        7         0
+10 1_the_wizard_and_the_hopping_pot     9        0        1         1
+# ℹ 72 more rows</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tToBtB_sentiment, <span class="fu">aes</span>(<span class="at">x =</span> index, <span class="at">y =</span> sentiment, <span class="at">fill =</span> fairy_tale)) <span class="sc">+</span></span>
@@ -830,14 +830,13 @@ background: #8B475D;
 <span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(ratio, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
 <span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 5
+<pre><code># A tibble: 4 × 5
   fairy_tale                             paragraph_no negative_words words ratio
   &lt;chr&gt;                                         &lt;int&gt;          &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
-1 1_the_wizard_and_the_hopping_pot                 13              2    11 0.182
+1 1_the_wizard_and_the_hopping_pot                 36              3    12 0.25 
 2 2_the_fountain_of_fair_fortune                   37              5    10 0.5  
-3 3_the_warlocks_hairy_heart                        9              5    16 0.312
-4 4_babbitty_rabbitty_and_her_cackling_…           47              6    21 0.286
-5 5_the_tale_of_the_three_brothers                 12              6    17 0.353</code></pre>
+3 4_babbitty_rabbitty_and_her_cackling_…           47              6    21 0.286
+4 5_the_tale_of_the_three_brothers                 12              6    17 0.353</code></pre>
 </div>
 </div>
 <p>Rezultat sadrži sljedeće stupce:</p>
@@ -863,20 +862,20 @@ background: #8B475D;
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>tToBtB_sentences</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 316 × 4
+<pre><code># A tibble: 511 × 4
     line fairy_tale                       paragraph_no sentence                 
    &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;                    
- 1    20 1_the_wizard_and_the_hopping_pot            1 "there was once a kindly…
- 2    20 1_the_wizard_and_the_hopping_pot            1 "rather than reveal the …
- 3    20 1_the_wizard_and_the_hopping_pot            1 "from miles around peopl…
- 4    21 1_the_wizard_and_the_hopping_pot            2 "this well-beloved wizar…
- 5    21 1_the_wizard_and_the_hopping_pot            2 "this son was of a very …
- 6    21 1_the_wizard_and_the_hopping_pot            2 "those who could not wor…
- 7    22 1_the_wizard_and_the_hopping_pot            3 "upon the father's death…
- 8    22 1_the_wizard_and_the_hopping_pot            3 "he opened it, hoping fo…
- 9    22 1_the_wizard_and_the_hopping_pot            3 "a fragment of parchment…
-10    23 1_the_wizard_and_the_hopping_pot            4 "the son cursed his fath…
-# ℹ 306 more rows</code></pre>
+ 1    20 1_the_wizard_and_the_hopping_pot            1 there was once a kindly …
+ 2    20 1_the_wizard_and_the_hopping_pot            1 rather than reveal the t…
+ 3    20 1_the_wizard_and_the_hopping_pot            1 from miles around people…
+ 4    21 1_the_wizard_and_the_hopping_pot            2 this well-beloved wizard…
+ 5    21 1_the_wizard_and_the_hopping_pot            2 this son was of a very d…
+ 6    21 1_the_wizard_and_the_hopping_pot            2 those who could not work…
+ 7    22 1_the_wizard_and_the_hopping_pot            3 upon the father's death,…
+ 8    22 1_the_wizard_and_the_hopping_pot            3 he opened it, hoping for…
+ 9    22 1_the_wizard_and_the_hopping_pot            3 a fragment of parchment …
+10    22 1_the_wizard_and_the_hopping_pot            3 �                        
+# ℹ 501 more rows</code></pre>
 </div>
 </div>
 <p>Tekst se može podijeliti i na veće cjeline, primjerice na poglavlja, argumentom <code>token = "regex"</code> i regularnim izrazom koji prepoznaje naslove poglavlja. U našem je primjeru tekst već podijeljen na bajke i odlomke, pa to nije potrebno.</p>
@@ -891,20 +890,20 @@ background: #8B475D;
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word1 <span class="sc">==</span> <span class="st">"not"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word1, word2, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 21 × 3
-   word1 word2       n
-   &lt;chr&gt; &lt;chr&gt;   &lt;int&gt;
- 1 not   all         2
- 2 not   let         2
- 3 not   sleep       2
- 4 not   a           1
- 5 not   believe     1
- 6 not   even        1
- 7 not   fail        1
- 8 not   fear        1
- 9 not   know        1
-10 not   mourn       1
-# ℹ 11 more rows</code></pre>
+<pre><code># A tibble: 35 × 3
+   word1 word2     n
+   &lt;chr&gt; &lt;chr&gt; &lt;int&gt;
+ 1 not   be        4
+ 2 not   a         3
+ 3 not   only      3
+ 4 not   all       2
+ 5 not   even      2
+ 6 not   know      2
+ 7 not   let       2
+ 8 not   sleep     2
+ 9 not   to        2
+10 not   truly     2
+# ℹ 25 more rows</code></pre>
 </div>
 </div>
 <p>Riječima koje slijede iza negacije možemo pridružiti sentiment iz leksikona <code>AFINN</code> i vidjeti koje od njih imaju sentiment, a analiza ih broji u pogrešnom smjeru.</p>
@@ -921,14 +920,16 @@ background: #8B475D;
 <span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>tToBtB_not_words</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 3
+<pre><code># A tibble: 7 × 3
   word2   value     n
   &lt;chr&gt;   &lt;dbl&gt; &lt;int&gt;
 1 fail       -2     1
 2 fear       -2     1
 3 mourn      -2     1
-4 trouble    -2     1
-5 trust       1     1</code></pre>
+4 share       1     1
+5 trouble    -2     1
+6 trust       1     1
+7 wish        1     1</code></pre>
 </div>
 </div>
 <p>Riječi kojima prethodi <em>not</em> i koje imaju ocjenu u leksikonu <code>AFINN</code> u bajkama je samo pet i svaka se pojavljuje samo jednom. Četiri su negativne: <em>fail</em>, <em>fear</em>, <em>mourn</em> i <em>trouble</em>, sve s ocjenom -2. Jedna je pozitivna, <em>trust</em>, s ocjenom 1. Negacija u bajkama, dakle, nije česta pa njezin utjecaj na ukupan sentiment nije velik. Ipak, sve su te riječi u analizi pojedinačnih riječi ubrojene u pogrešnom smjeru, <em>not fear</em> ili <em>not mourn</em> izražavaju olakšanje, a ne strah ili tugu, dok <em>not trust</em> izražava nepovjerenje.</p>
@@ -967,18 +968,21 @@ background: #8B475D;
 <span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>tToBtB_negated_words</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 9 × 4
-  word1 word2    value     n
-  &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;int&gt;
-1 never fallen      -2     1
-2 no    hope         2     1
-3 no    obstacle    -2     1
-4 no    true         2     1
-5 not   fail        -2     1
-6 not   fear        -2     1
-7 not   mourn       -2     1
-8 not   trouble     -2     1
-9 not   trust        1     1</code></pre>
+<pre><code># A tibble: 12 × 4
+   word1 word2    value     n
+   &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;int&gt;
+ 1 never fallen      -2     1
+ 2 no    doubt       -1     1
+ 3 no    hope         2     1
+ 4 no    obstacle    -2     1
+ 5 no    true         2     1
+ 6 not   fail        -2     1
+ 7 not   fear        -2     1
+ 8 not   mourn       -2     1
+ 9 not   share        1     1
+10 not   trouble     -2     1
+11 not   trust        1     1
+12 not   wish         1     1</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafički prikaz</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>tToBtB_negated_words <span class="sc">|&gt;</span></span>

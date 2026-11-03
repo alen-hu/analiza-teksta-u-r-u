@@ -281,8 +281,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_1_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  <a href="./3_1_ucitavanje_tekstualnih_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -552,10 +552,10 @@ window.Quarto = {
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>tToBtB_dtm</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;&lt;DocumentTermMatrix (documents: 175, terms: 1076)&gt;&gt;
-Non-/sparse entries: 2250/186050
+<pre><code>&lt;&lt;DocumentTermMatrix (documents: 238, terms: 1811)&gt;&gt;
+Non-/sparse entries: 3918/427100
 Sparsity           : 99%
-Maximal term length: 13
+Maximal term length: 15
 Weighting          : term frequency (tf)</code></pre>
 </div>
 </div>
@@ -594,20 +594,20 @@ Weighting          : term frequency (tf)</code></pre>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>tToBtB_topics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5,380 × 3
+<pre><code># A tibble: 9,055 × 3
    topic term          beta
    &lt;int&gt; &lt;chr&gt;        &lt;dbl&gt;
- 1     1 antidote 2.44e-  3
- 2     2 antidote 1.96e-190
- 3     3 antidote 7.73e-191
- 4     4 antidote 3.07e-192
- 5     5 antidote 1.05e-187
- 6     1 benefit  2.44e-  3
- 7     2 benefit  3.60e-174
- 8     3 benefit  3.18e- 17
- 9     4 benefit  1.87e-  3
-10     5 benefit  3.28e-174
-# ℹ 5,370 more rows</code></pre>
+ 1     1 antidote 4.19e-215
+ 2     2 antidote 8.68e-212
+ 3     3 antidote 1.01e-  3
+ 4     4 antidote 5.25e-221
+ 5     5 antidote 8.15e-219
+ 6     1 benefit  5.08e-208
+ 7     2 benefit  3.35e-206
+ 8     3 benefit  2.02e-  3
+ 9     4 benefit  4.92e-213
+10     5 benefit  1.08e-  3
+# ℹ 9,045 more rows</code></pre>
 </div>
 </div>
 <p>Rezultat ima oblik <strong>jedna tema po pojmu po retku</strong>, odnosno, za svaku kombinaciju teme i riječi navedena je vjerojatnost da se ta lema pojavi u toj temi. Tablica zato ima 5380 redaka, koliko je i kombinacija pet tema i 1076 lema (5 × 1 076). Vrijednosti su zapisane u znanstvenom zapisu u kojem <code>e-3</code> znači „pomnoženo s 10 na minus treću”. Tako <code>2.44e-3</code> iznosi 0,00244, a <code>1.96e-190</code> broj je s 189 nula iza decimalnog zareza, odnosno praktički nula.</p>
@@ -665,20 +665,20 @@ Weighting          : term frequency (tf)</code></pre>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>tToBtB_documents</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 875 × 4
-   fairy_tale                       paragraph_no topic   gamma
-   &lt;chr&gt;                                   &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;
- 1 1_the_wizard_and_the_hopping_pot            1     1 0.995  
- 2 1_the_wizard_and_the_hopping_pot           10     1 0.994  
- 3 1_the_wizard_and_the_hopping_pot           11     1 0.994  
- 4 1_the_wizard_and_the_hopping_pot           12     1 0.0167 
- 5 1_the_wizard_and_the_hopping_pot           13     1 0.00326
- 6 1_the_wizard_and_the_hopping_pot           14     1 0.972  
- 7 1_the_wizard_and_the_hopping_pot           15     1 0.00190
- 8 1_the_wizard_and_the_hopping_pot           16     1 0.133  
- 9 1_the_wizard_and_the_hopping_pot           17     1 0.863  
-10 1_the_wizard_and_the_hopping_pot           18     1 0.00591
-# ℹ 865 more rows</code></pre>
+<pre><code># A tibble: 1,190 × 4
+   fairy_tale                       paragraph_no topic    gamma
+   &lt;chr&gt;                                   &lt;int&gt; &lt;int&gt;    &lt;dbl&gt;
+ 1 1_the_wizard_and_the_hopping_pot            1     1 0.000993
+ 2 1_the_wizard_and_the_hopping_pot           10     1 0.00125 
+ 3 1_the_wizard_and_the_hopping_pot           11     1 0.401   
+ 4 1_the_wizard_and_the_hopping_pot           12     1 0.0135  
+ 5 1_the_wizard_and_the_hopping_pot           13     1 0.00260 
+ 6 1_the_wizard_and_the_hopping_pot           14     1 0.00562 
+ 7 1_the_wizard_and_the_hopping_pot           15     1 0.00151 
+ 8 1_the_wizard_and_the_hopping_pot           16     1 0.00205 
+ 9 1_the_wizard_and_the_hopping_pot           17     1 0.00316 
+10 1_the_wizard_and_the_hopping_pot           18     1 0.00405 
+# ℹ 1,180 more rows</code></pre>
 </div>
 </div>
 <p>Vrijednosti game kreću se od 0 do 1 i za svaki se dokument zbrajaju na 1. Vrijednost blizu 1 znači da se odlomak gotovo u potpunosti sastoji od riječi iz te teme, a vrijednost blizu 0 da te teme u odlomku gotovo nema.</p>
@@ -736,14 +736,13 @@ Weighting          : term frequency (tf)</code></pre>
 <span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
 <span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 5
+<pre><code># A tibble: 4 × 5
   fairy_tale                                  consensus paragraphs correct share
   &lt;chr&gt;                                           &lt;int&gt;      &lt;int&gt;   &lt;int&gt; &lt;dbl&gt;
-1 1_the_wizard_and_the_hopping_pot                    2         28      13 0.464
-2 2_the_fountain_of_fair_fortune                      4         48      20 0.417
-3 3_the_warlocks_hairy_heart                          5         32      14 0.438
-4 4_babbitty_rabbitty_and_her_cackling_stumps         3         53      33 0.623
-5 5_the_tale_of_the_three_brothers                    1         14       7 0.5  </code></pre>
+1 1_the_wizard_and_the_hopping_pot                    3         40      20 0.5  
+2 2_the_fountain_of_fair_fortune                      3        101      33 0.327
+3 4_babbitty_rabbitty_and_her_cackling_stumps         5         61      50 0.820
+4 5_the_tale_of_the_three_brothers                    2         36      15 0.417</code></pre>
 </div>
 </div>
 <p>Svaka je bajka dobila drugu temu kao prevladavajuću, <em>The Wizard and the Hopping Pot</em> temu 2, <em>The Fountain of Fair Fortune</em> temu 4, <em>The Warlock’s Hairy Heart</em> temu 5, <em>Babbitty Rabbitty and Her Cackling Stumps</em> temu 3, a <em>The Tale of the Three Brothers</em> temu 1. U tom smislu model je pet tema doista povezao s pet bajki. Udio odlomaka koji pripadaju temi svoje bajke, međutim, nije velik. Najveći je kod bajke <em>Babbitty Rabbitty and Her Cackling Stumps</em> u kojoj je temi 3 pripisano 33 od 53 odlomka (62 %), a najmanji kod bajke <em>The Fountain of Fair Fortune</em> u kojoj je temi 4 pripisano 20 od 48 odlomaka (42 %). Kod ostalih bajki udio je između 44 i 50 %.</p>

@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hr" xml:lang="hr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Svaka analiza teksta počinje dovođenjem teksta u R, a taj se korak lako podcijeni. Tekstovi dolaze iz različitih izvora i u različitim oblicima pa se jedni nalaze u datotekama na našem računalu, drugi na internetskim stranicama, a treći u bazama podataka koje svoj sadržaj nude preko programskih sučelja. Za svaki od tih izvora postoje drugačiji alati, ali i drugačija pravila o tome što smijemo preuzeti i kako to učiniti a da ne opteretimo tuđe poslužitelje i ne povrijedimo tuđa prava.">
+
+<title>6&nbsp; Učitavanje tekstualnih podataka – Analiza teksta u R-u</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./3_2_pretpostavke_za_analizu_teksta.html" rel="next">
+<link href="./2_2_regularni_izrazi.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ed937027807105842f1b8e9a1d8c8bec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
+
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></h1>
+                  <div>
+        <div class="description">
+          Svaka analiza teksta počinje dovođenjem teksta u R, a taj se korak lako podcijeni. Tekstovi dolaze iz različitih izvora i u različitim oblicima pa se jedni nalaze u datotekama na našem računalu, drugi na internetskim stranicama, a treći u bazama podataka koje svoj sadržaj nude preko programskih sučelja. Za svaki od tih izvora postoje drugačiji alati, ali i drugačija pravila o tome što smijemo preuzeti i kako to učiniti a da ne opteretimo tuđe poslužitelje i ne povrijedimo tuđa prava.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Analiza teksta u R-u</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/alen-hu" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Predgovor</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">UVOD U OBRADU PRIRODNOG JEZIKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_1_tekst_kao_podatak.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Tekst kao podatak: temelji analize teksta i obrade prirodnoga jezika</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Primjena analize teksta u znanstvenim istraživanjima</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">RAD S TEKSTOM U R-U</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_1_znakovni_nizovi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Znakovni nizovi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_2_regularni_izrazi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regularni izrazi</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">OD IZVORA DO PODATAKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_1_ucitavanje_tekstualnih_podataka.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_2_pretpostavke_za_analizu_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_3_lingvisticka_obrada_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_4_rad_s_neurednim_podacima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">OPISIVANJE TEKSTA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_1_deskriptivna_analiza_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_2_analiza_ucestalosti_riječi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_3_odnosi_medu_rijecima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_4_stil_i_slozenost_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Stil i složenost teksta: stilometrija, čitljivost i leksička raznolikost</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_5_vizualizacije_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">OTKRIVANJE STRUKTURA U TEKSTU</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_1_slicnosti_tekstova_i_grupiranje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_2_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_3_strukturno_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">MJERENJE POMOĆU TEKSTA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_1_analiza_pomocu_rjecnika.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Analiza pomoću rječnika</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_2_analiza_sentimenata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_3_rucno_kodiranje_i_pouzdanost.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ručno kodiranje i pouzdanost</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_4_nadzirano_strojno_ucenje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Nadzirano strojno učenje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_5_skaliranje_tekstova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Skaliranje tekstova</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">MODERNA OBRADA PRIRODNOGA JEZIKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_1_vektorske_reprezentacije_rijeci_i_dokumenata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Vektorske reprezentacije riječi i dokumenata</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_2_transformeri_i_veliki_jezicni_modeli.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Transformeri i veliki jezični modeli</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_3_tematsko_modeliranje_pomocu_vektorskih_reprezentacija.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Tematsko modeliranje pomoću vektorskih reprezentacija</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_4_semanticko_pretrazivanje_i_generiranje_potpomognuto_pretrazivanjem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Semantičko pretraživanje i generiranje potpomognuto pretraživanjem (RAG)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">JEZIK, ETIKA I UMJETNA INTELIGENCIJA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_1_analiza_teksta_na_hrvatskom_jeziku.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Analiza teksta na hrvatskom jeziku</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_2_etika_pravni_okvir_i_istrazivačka_praksa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Etika, pravni okvir i istraživačka praksa</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_3_obrada_prirodnoga_jezika_i_umjetna_inteligencija.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Obrada prirodnoga jezika i umjetna inteligencija</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">OD PITANJA DO ZAKLJUČKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9_1_cjelovita_studija_slucaja.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Cjelovita studija slučaja</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literatura</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#odakle-dolaze-tekstovi" id="toc-odakle-dolaze-tekstovi" class="nav-link active" data-scroll-target="#odakle-dolaze-tekstovi"><span class="header-section-number">6.1</span> Odakle dolaze tekstovi</a></li>
+  <li><a href="#učitavanje-teksta-iz-datoteke" id="toc-učitavanje-teksta-iz-datoteke" class="nav-link" data-scroll-target="#učitavanje-teksta-iz-datoteke"><span class="header-section-number">6.2</span> Učitavanje teksta iz datoteke</a>
+  <ul class="collapse">
+  <li><a href="#kodiranje-znakova" id="toc-kodiranje-znakova" class="nav-link" data-scroll-target="#kodiranje-znakova"><span class="header-section-number">6.2.1</span> Kodiranje znakova</a></li>
+  <li><a href="#druge-vrste-datoteka" id="toc-druge-vrste-datoteka" class="nav-link" data-scroll-target="#druge-vrste-datoteka"><span class="header-section-number">6.2.2</span> Druge vrste datoteka</a></li>
+  <li><a href="#učitavanje-više-datoteka-odjednom" id="toc-učitavanje-više-datoteka-odjednom" class="nav-link" data-scroll-target="#učitavanje-više-datoteka-odjednom"><span class="header-section-number">6.2.3</span> Učitavanje više datoteka odjednom</a></li>
+  </ul></li>
+  <li><a href="#preuzimanje-sadržaja-s-interneta" id="toc-preuzimanje-sadržaja-s-interneta" class="nav-link" data-scroll-target="#preuzimanje-sadržaja-s-interneta"><span class="header-section-number">6.3</span> Preuzimanje sadržaja s interneta</a>
+  <ul class="collapse">
+  <li><a href="#kako-je-građena-internetska-stranica" id="toc-kako-je-građena-internetska-stranica" class="nav-link" data-scroll-target="#kako-je-građena-internetska-stranica"><span class="header-section-number">6.3.1</span> Kako je građena internetska stranica</a></li>
+  <li><a href="#preuzimanje-teksta-paketom-rvest" id="toc-preuzimanje-teksta-paketom-rvest" class="nav-link" data-scroll-target="#preuzimanje-teksta-paketom-rvest"><span class="header-section-number">6.3.2</span> Preuzimanje teksta paketom <code>rvest</code></a></li>
+  <li><a href="#pronalaženje-selektora" id="toc-pronalaženje-selektora" class="nav-link" data-scroll-target="#pronalaženje-selektora"><span class="header-section-number">6.3.3</span> Pronalaženje selektora</a></li>
+  <li><a href="#dobre-prakse-pri-preuzimanju-sadržaja" id="toc-dobre-prakse-pri-preuzimanju-sadržaja" class="nav-link" data-scroll-target="#dobre-prakse-pri-preuzimanju-sadržaja"><span class="header-section-number">6.3.4</span> Dobre prakse pri preuzimanju sadržaja</a></li>
+  </ul></li>
+  <li><a href="#programska-sučelja" id="toc-programska-sučelja" class="nav-link" data-scroll-target="#programska-sučelja"><span class="header-section-number">6.4</span> Programska sučelja</a>
+  <ul class="collapse">
+  <li><a href="#programsko-sučelje-bez-ključa" id="toc-programsko-sučelje-bez-ključa" class="nav-link" data-scroll-target="#programsko-sučelje-bez-ključa"><span class="header-section-number">6.4.1</span> Programsko sučelje bez ključa</a></li>
+  <li><a href="#programsko-sučelje-s-ključem" id="toc-programsko-sučelje-s-ključem" class="nav-link" data-scroll-target="#programsko-sučelje-s-ključem"><span class="header-section-number">6.4.2</span> Programsko sučelje s ključem</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p>Prije nego što tekst možemo analizirati, moramo ga učitati u R. Tekstovi koji se koriste u analizi dolaze iz vrlo različitih izvora, poput novinskih arhiva, saborskih rasprava, objava na društvenim mrežama i forumima, otvorenih odgovora iz anketa, transkripata intervjua ili književnih djela. Neki od njih već su spremljeni u datotekama, neke treba preuzeti s internetskih stranica, a neke nude same ustanove ili tvrtke preko posebnih programskih sučelja. U ovom ćemo poglavlju proći kroz sva tri puta, odnosno kroz učitavanje teksta iz datoteke, preuzimanje sadržaja s internetskih stranica i preuzimanje podataka preko programskih sučelja.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Primjer">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Primjer
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>U ovom ćemo poglavlju sve postupke pokazati na tekstovima o <strong>Grimmovim bajkama</strong>, zbirci njemačkih narodnih priča koju su braća Jacob i Wilhelm Grimm prvi put objavila početkom 19. stoljeća. Koristit ćemo tri izvora. Prvi je engleski prijevod zbirke koji su izradili Edgar Taylor i Marian Edwardes, a koji je dostupan na stranicama projekta Project Gutenberg (<em>Grimms’ Fairy Tales</em>, e-knjiga broj 2591). Prijevod je u javnoj domeni pa ga smijemo slobodno učitavati, ispisivati i dijeliti. Drugi je izvor članak <em>Grimms’ Fairy Tales</em> na engleskoj Wikipediji koji je objavljen pod licencom CC BY-SA i na kojem ćemo pokazati preuzimanje sadržaja s internetskih stranica. Treći su izvor dva programska sučelja, Gutendex koji vraća podatke o knjigama s Project Gutenberga, i sučelje novina The Guardian koje vraća novinske članke. Na njima ćemo pokazati kako se podaci preuzimaju preko programskih sučelja, bez ključa i s ključem.</p>
+</div>
+</div>
+<section id="odakle-dolaze-tekstovi" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="odakle-dolaze-tekstovi"><span class="header-section-number">6.1</span> Odakle dolaze tekstovi</h2>
+<p>Najjednostavniji su put do teksta gotovi korpusi koji dolaze u R paketima. Paket <code>janeaustenr</code>, primjerice, sadrži romane Jane Austen, a paket <code>quanteda</code> inauguracijske govore američkih predsjednika pa se takvi tekstovi učitavaju jednom naredbom, bez traženja i preuzimanja datoteka. Paket <code>gutenbergr</code> omogućuje pristup djelima u javnoj domeni s Project Gutenberga. Njime se knjige preuzimaju prema broju e-knjige, a paket pritom sam uklanja zaglavlje i podnožje s napomenama o licenci koje nisu dio teksta.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preuzimanje Grimmovih bajki paketom gutenbergr</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gutenbergr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>grimm <span class="ot">&lt;-</span> <span class="fu">gutenberg_download</span>(<span class="dv">2591</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Gotovi korpusi ipak pokrivaju tek malen dio onoga što istraživače zanima pa tekstove najčešće moramo pribaviti sami. Kad tekstovi postoje kao datoteke, učitavamo ih u R, a kad se nalaze na internetu, imamo dvije mogućnosti. Ako stranica nudi programsko sučelje, podatke preuzimamo preko njega, a ako ga ne nudi, sadržaj preuzimamo sa samih stranica. Programsko sučelje gotovo je uvijek bolji izbor jer daje upravo one podatke koji nam trebaju u urednom obliku i bez suvišnog sadržaja, a njegov vlasnik zadržava nadzor nad time tko i koliko podataka preuzima. Prije nego što počnemo preuzimati podatke s interneta, korisno je provjeriti i nudi li vlasnik podatke kao gotove datoteke ili bi nam ih mogao ustupiti na upit jer je to za obje strane jednostavnije od automatiziranog preuzimanja.</p>
+</section>
+<section id="učitavanje-teksta-iz-datoteke" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="učitavanje-teksta-iz-datoteke"><span class="header-section-number">6.2</span> Učitavanje teksta iz datoteke</h2>
+<p>Ako je tekst spremljen kao obična tekstna datoteka, u formatu .txt, u kojem se tekstualni podaci najčešće i čuvaju, u R se može učitati funkcijom <code>readLines()</code> kojoj se kao argument zadaje putanja do datoteke.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Napomena">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Napomena
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Putanju do datoteke u R-u možete zapisati na nekoliko načina, ovisno o operacijskom sustavu (Windows, macOS ili Linux) i organizaciji projekta. Najjednostavnije je zapisati je kao znakovni niz. U Windowsu se mape odvajaju obrnutom kosom crtom (<code>\</code>), no ona u R-u ima posebno značenje pa je treba udvostručiti (<code>\\</code>) ili umjesto nje koristiti kosu crtu (<code>/</code>) koja radi na svim operacijskim sustavima. Putanja se tako može zapisati kao:</p>
+<p><code>"C:\\Users\\Ime\\Dokumenti\\datoteka.txt"</code> ili kao <code>"C:/Users/Ime/Dokumenti/datoteka.txt"</code></p>
+<p>Osim apsolutnih, mogu se koristiti i relativne putanje koje R tumači u odnosu na radni direktorij, a on se provjerava funkcijom <code>getwd()</code>. Ako se datoteka nalazi u mapi <code>podaci</code> unutar radnog direktorija, dovoljno je napisati <code>"podaci/datoteka.txt"</code>. Znak <code>~</code> označava korisnikovu početnu mapu pa putanja poput <code>"~/podaci/datoteka.txt"</code> nije relativna u odnosu na projekt i na tuđem računalu najčešće neće raditi.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje teksta (uz preskakanje znakova NUL)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>grimm_lines <span class="ot">&lt;-</span> <span class="fu">readLines</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/Grimms_Fairy_Tales.txt"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">skipNul =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj redaka</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(grimm_lines)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9615</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled prvih 30 redaka</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(grimm_lines, <span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "The Project Gutenberg eBook of Grimms' Fairy Tales"                      
+ [2] "    "                                                                    
+ [3] "This eBook is for the use of anyone anywhere in the United States and"   
+ [4] "most other parts of the world at no cost and with almost no restrictions"
+ [5] "whatsoever. You may copy it, give it away or re-use it under the terms"  
+ [6] "of the Project Gutenberg License included with this eBook or online"     
+ [7] "at www.gutenberg.org. If you are not located in the United States,"      
+ [8] "you will have to check the laws of the country where you are located"    
+ [9] "before using this eBook."                                                
+[10] ""                                                                        
+[11] "Title: Grimms' Fairy Tales"                                              
+[12] ""                                                                        
+[13] "Author: Jacob Grimm"                                                     
+[14] "        Wilhelm Grimm"                                                   
+[15] ""                                                                        
+[16] ""                                                                        
+[17] "        "                                                                
+[18] "Release date: April 1, 2001 [eBook #2591]"                               
+[19] "                Most recently updated: September 20, 2026"               
+[20] ""                                                                        
+[21] "Language: English"                                                       
+[22] ""                                                                        
+[23] "Other information and formats: www.gutenberg.org/ebooks/2591"            
+[24] ""                                                                        
+[25] "Credits: Emma Dudding, John Bickers, Dagny and David Widger"             
+[26] ""                                                                        
+[27] ""                                                                        
+[28] "*** START OF THE PROJECT GUTENBERG EBOOK GRIMMS' FAIRY TALES ***"        
+[29] ""                                                                        
+[30] ""                                                                        </code></pre>
+</div>
+</div>
+<p>Funkcija <code>readLines()</code> vraća znakovni vektor u kojem je svaki element jedan redak datoteke pa je datoteka s Grimmovim bajkama učitana kao vektor od 9615 elemenata. Već iz prvih tridesetak redaka vidi se da datoteka ne počinje bajkama, nego napomenom o licenci Project Gutenberga, naslovom, imenima autora i podacima o izdanju. Tek iza retka koji počinje oznakom <code>*** START OF THE PROJECT GUTENBERG EBOOK</code> slijedi sama knjiga, a na kraju datoteke nalazi se podnožje s cijelim tekstom licence. Takve ćemo dijelove ukloniti u sljedećem poglavlju pri čišćenju teksta.</p>
+<p>Argumentom <code>skipNul = TRUE</code> pri učitavanju se preskaču znakovi NUL (<code>\x00</code>). To je nevidljiv kontrolni znak koji ima smisla u binarnim datotekama, ali se u tekstnim datotekama ne bi smio pojavljivati. Najčešće nastaje pri pogrešnoj pretvorbi kodiranja, pri optičkom prepoznavanju znakova (OCR), u starijim alatima ili kad je datoteka preuzeta ili raspakirana nestandardnim alatima. Znakovni nizovi u R-u ne mogu sadržavati znak NUL pa ga nakon učitavanja nije moguće pronaći ni ukloniti. Bez tog argumenta <code>readLines()</code> pri nailasku na NUL javlja upozorenje i odbacuje ostatak retka pa ga je najbolje ukloniti već pri učitavanju. Ako datoteka ne sadrži taj znak, argument ne mijenja ništa.</p>
+<p>Ako tekst želimo učitati kao jedan znakovni niz, a ne redak po redak, koristimo funkciju <code>read_file()</code> iz paketa <code>readr</code>. Isti paket ima i funkciju <code>read_lines()</code> koja radi isto što i <code>readLines()</code>, ali je brža i dosljednija s ostalim funkcijama paketa <code>tidyverse</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje teksta kao jednog znakovnog niza</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>grimm_text <span class="ot">&lt;-</span> <span class="fu">read_file</span>(<span class="st">"data/Grimms_Fairy_Tales.txt"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj znakova u tekstu</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str_length</span>(grimm_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 540158</code></pre>
+</div>
+</div>
+<p>Cijela je knjiga sada jedan niz od više od pola milijuna znakova u kojem su prijelomi redaka zapisani znakom <code>\n</code>.</p>
+<section id="kodiranje-znakova" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="kodiranje-znakova"><span class="header-section-number">6.2.1</span> Kodiranje znakova</h3>
+<p>Pri učitavanju teksta može se pojaviti problem s neprepoznatim znakovima koji se u tekstu prikazuju kao � ili kao neobični nizovi poput <code>\x92</code>. Uzrok je u tome što sadržaj tekstne datoteke nisu „čista slova”, nego niz bajtova, a koji bajt odgovara kojem znaku određuje <strong>kodiranje znakova</strong> (engl. <em>character encoding</em>). Da bi se sva poznata slova, simboli i emojiji mogli zapisati na isti način, predložen je standard Unicode, ali i on zahtijeva neki oblik digitalnog zapisa od kojih je danas najrašireniji <strong>UTF-8</strong>. UTF-8 standard je za internetske stranice, a koriste ga i novije verzije R-a, RStudio i paket <code>stringr</code>. Starije datoteke iz sustava Windows i mnoge e-knjige, međutim, često su kodirane u obliku Windows-1252 za zapadnoeuropske jezike ili Windows-1250 za srednjoeuropske jezike, uključujući hrvatski. Ako R datoteku pročita pod pogrešnim kodiranjem, pojedine bajtove ne može ispravno protumačiti pa se u tekstu pojavljuju neobični znakovi. Preporuka je zato jednostavna, a to je da u R-u svi tekstovi budu kodirani u obliku UTF-8, bilo tako da ih učitamo iz datoteka kodiranih u tom obliku, bilo tako da ih pri učitavanju pretvorimo iz poznatog kodiranja.</p>
+<p>Prije daljnje obrade zato je dobro provjeriti kodiranje datoteke. Funkcija <code>guess_encoding()</code> iz paketa <code>readr</code> procjenjuje najvjerojatnija kodiranja i uz svako navodi stupanj pouzdanosti. Riječ je o procjeni, a ne o jamstvu pa rezultat valja provjeriti pregledom teksta.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Procjena kodiranja datoteke</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">guess_encoding</span>(<span class="st">"data/Grimms_Fairy_Tales.txt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  encoding     confidence
+  &lt;chr&gt;             &lt;dbl&gt;
+1 UTF-8              1   
+2 windows-1252       0.85</code></pre>
+</div>
+</div>
+<p>Funkcija s potpunom pouzdanošću procjenjuje da je datoteka kodirana u obliku UTF-8 pa je ne treba pretvarati. Primijetimo da funkciju pozivamo zajedno s imenom paketa, kao <code>readr::guess_encoding()</code>. Paket <code>rvest</code>, koji ćemo koristiti u nastavku poglavlja, ima istoimenu, ali zastarjelu funkciju pa bi se nakon njegova učitavanja pozvala ona, a ona za istu datoteku daje drugačiju i pogrešnu procjenu.</p>
+<p>Kako izgleda tekst učitan pod pogrešnim kodiranjem, možemo pokazati tako da jedan redak Grimmovih bajki spremimo u privremenu datoteku kodiranu u obliku Windows-1252, a zatim je učitamo. Funkcija <code>tempfile()</code> pritom stvara putanju do privremene datoteke koja se briše kad zatvorimo R, a funkcija <code>iconv()</code> pretvara redak u kodiranje Windows-1252.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Redak s apostrofom i slovom ä</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>grimm_lines[<span class="dv">41</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "     the Grimms’ Kinder und Hausmärchen by"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spremanje retka u privremenu datoteku kodiranu u obliku Windows-1252</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>datoteka_1252 <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".txt"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="fu">iconv</span>(grimm_lines[<span class="dv">41</span>], <span class="at">from =</span> <span class="st">"UTF-8"</span>, <span class="at">to =</span> <span class="st">"Windows-1252"</span>), datoteka_1252, <span class="at">useBytes =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Procjena kodiranja i učitavanje bez navođenja kodiranja</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">guess_encoding</span>(datoteka_1252)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  encoding     confidence
+  &lt;chr&gt;             &lt;dbl&gt;
+1 windows-1252       0.78
+2 windows-1254       0.39
+3 windows-1250       0.23</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>redak_1252 <span class="ot">&lt;-</span> <span class="fu">readLines</span>(datoteka_1252)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>redak_1252</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "     the Grimms\x92 Kinder und Hausm\xe4rchen by"</code></pre>
+</div>
+</div>
+<p>U učitanom retku apostrof je prikazan kao <code>\x92</code>, a slovo <em>ä</em> kao <code>\xe4</code> jer R te bajtove pokušava protumačiti kao UTF-8, a u tom obliku oni ne označavaju nijedan znak. Funkcija <code>guess_encoding()</code> pritom ispravno procjenjuje da je datoteka kodirana u obliku Windows-1252.</p>
+<p>Kad je kodiranje poznato, tekst se u UTF-8 pretvara funkcijom <code>iconv()</code>. Njezin je prvi argument, <code>x</code>, znakovni vektor koji se pretvara. U argument <code>from</code> upisuje se trenutačno kodiranje, a u argument <code>to</code> željeno. Ako se neki znak ne može pretvoriti, cijeli element vektora u kojem se nalazi postaje <code>NA</code>, a to se ponašanje može promijeniti argumentom <code>sub</code>, primjerice <code>sub = "?"</code> kojim se svaki takav znak zamjenjuje upitnikom.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pretvaranje kodiranja iz Windows-1252 u UTF-8</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">iconv</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> redak_1252,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">from =</span> <span class="st">"Windows-1252"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">to =</span> <span class="st">"UTF-8"</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "     the Grimms’ Kinder und Hausmärchen by"</code></pre>
+</div>
+</div>
+<p>Isti se rezultat može dobiti i jednostavnije, tako da kodiranje navedemo već pri učitavanju. Funkcije <code>read_lines()</code> i <code>read_file()</code> iz paketa <code>readr</code> imaju argument <code>locale</code> kojemu se funkcijom <code>locale()</code> zadaje kodiranje datoteke pa se tekst pri učitavanju odmah pretvara u UTF-8.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje uz navođenje kodiranja</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">read_lines</span>(datoteka_1252, <span class="at">locale =</span> <span class="fu">locale</span>(<span class="at">encoding =</span> <span class="st">"Windows-1252"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "     the Grimms’ Kinder und Hausmärchen by"</code></pre>
+</div>
+</div>
+</section>
+<section id="druge-vrste-datoteka" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="druge-vrste-datoteka"><span class="header-section-number">6.2.2</span> Druge vrste datoteka</h3>
+<p>Tekst se u R može učitati i drugim funkcijama i paketima, ovisno o vrsti datoteke u kojoj su podaci spremljeni i o obliku u kojem ih želimo pohraniti u R-u. R sam čita obične tekstne datoteke i datoteke CSV, a za datoteke poput JSON, HTML, XML, Word, Excel i PDF potrebni su dodatni paketi.</p>
+<div style="width: 100%">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 13%">
+<col style="width: 9%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Vrsta datoteke</th>
+<th>Funkcija</th>
+<th>Paket</th>
+<th>Primjer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Običan tekst (redak po redak)</td>
+<td><code>readLines()</code></td>
+<td>base R</td>
+<td><code>readLines("clanak.txt")</code></td>
+</tr>
+<tr class="even">
+<td>Običan tekst (redak po redak)</td>
+<td><code>read_lines()</code></td>
+<td><code>readr</code></td>
+<td><code>read_lines("clanak.txt")</code></td>
+</tr>
+<tr class="odd">
+<td>Običan tekst (kao jedan niz)</td>
+<td><code>read_file()</code></td>
+<td><code>readr</code></td>
+<td><code>read_file("clanak.txt")</code></td>
+</tr>
+<tr class="even">
+<td>Tablični tekst (npr. odvojen tabulatorom)</td>
+<td><code>read.table()</code></td>
+<td>base R</td>
+<td><code>read.table("podaci.txt", header = TRUE, sep = "\t")</code></td>
+</tr>
+<tr class="odd">
+<td>Tablični tekst (npr. odvojen tabulatorom)</td>
+<td><code>read_delim()</code></td>
+<td><code>readr</code></td>
+<td><code>read_delim("podaci.txt", delim = "\t")</code></td>
+</tr>
+<tr class="even">
+<td>CSV</td>
+<td><code>read.csv()</code></td>
+<td>base R</td>
+<td><code>read.csv("podaci.csv")</code></td>
+</tr>
+<tr class="odd">
+<td>CSV</td>
+<td><code>read_csv()</code></td>
+<td><code>readr</code></td>
+<td><code>read_csv("podaci.csv")</code></td>
+</tr>
+<tr class="even">
+<td>Excel (.xls, .xlsx)</td>
+<td><code>read_excel()</code></td>
+<td><code>readxl</code></td>
+<td><code>read_excel("podaci.xlsx", sheet = 1)</code></td>
+</tr>
+<tr class="odd">
+<td>OpenDocument proračunska tablica (.ods)</td>
+<td><code>read_ods()</code></td>
+<td><code>readODS</code></td>
+<td><code>read_ods("podaci.ods")</code></td>
+</tr>
+<tr class="even">
+<td>SPSS (.sav)</td>
+<td><code>read_sav()</code></td>
+<td><code>haven</code></td>
+<td><code>read_sav("anketa.sav")</code></td>
+</tr>
+<tr class="odd">
+<td>Stata (.dta)</td>
+<td><code>read_dta()</code></td>
+<td><code>haven</code></td>
+<td><code>read_dta("analiza.dta")</code></td>
+</tr>
+<tr class="even">
+<td>SAS (.sas7bdat)</td>
+<td><code>read_sas()</code></td>
+<td><code>haven</code></td>
+<td><code>read_sas("podaci.sas7bdat")</code></td>
+</tr>
+<tr class="odd">
+<td>PDF</td>
+<td><code>pdf_text()</code></td>
+<td><code>pdftools</code></td>
+<td><code>pdf_text("izvjestaj.pdf")</code></td>
+</tr>
+<tr class="even">
+<td>Word (.docx)</td>
+<td><code>readtext()</code></td>
+<td><code>readtext</code></td>
+<td><code>readtext("intervju.docx")</code></td>
+</tr>
+<tr class="odd">
+<td>HTML</td>
+<td><code>read_html()</code></td>
+<td><code>rvest</code></td>
+<td><code>read_html("stranica.html")</code></td>
+</tr>
+<tr class="even">
+<td>JSON</td>
+<td><code>read_json()</code></td>
+<td><code>jsonlite</code></td>
+<td><code>read_json("podaci.json")</code></td>
+</tr>
+<tr class="odd">
+<td>XML</td>
+<td><code>read_xml()</code></td>
+<td><code>xml2</code></td>
+<td><code>read_xml("podaci.xml")</code></td>
+</tr>
+<tr class="even">
+<td>R-ova binarna datoteka (.RData)</td>
+<td><code>load()</code></td>
+<td>base R</td>
+<td><code>load("moji_podaci.RData")</code></td>
+</tr>
+<tr class="odd">
+<td>R-ova binarna datoteka (.rds)</td>
+<td><code>readRDS()</code></td>
+<td>base R</td>
+<td><code>objekt &lt;- readRDS("objekt.rds")</code></td>
+</tr>
+<tr class="even">
+<td>ZIP arhiva (raspakiravanje)</td>
+<td><code>unzip()</code></td>
+<td>base R</td>
+<td><code>unzip("arhiva.zip", exdir = "podaci/")</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Funkcija <code>pdf_text()</code> vraća znakovni vektor u kojem je svaka stranica dokumenta jedan element. Pritom treba znati da se tekst može izvući samo iz dokumenata PDF u kojima je tekst zapisan kao tekst. Ako je dokument skeniran, on sadrži samo slike stranica pa tekst najprije treba prepoznati postupkom <strong>optičkog prepoznavanja znakova</strong> (engl. <em>optical character recognition</em>, OCR) za koji u R-u služi paket <code>tesseract</code>. Takav je tekst rijetko savršen pa ga treba pažljivo provjeriti.</p>
+<p>Rad s mnogo različitih paketa i njihovim različitim rezultatima može biti zamoran, osobito ako se u istom projektu koriste datoteke različitih vrsta. Jedno je rješenje paket <code>readtext</code> koji objedinjuje više paketa za učitavanje i nudi jednu funkciju za učitavanje gotovo svih spomenutih vrsta datoteka. Funkcija <code>readtext()</code> vraća podatkovni okvir u kojem je svaki dokument jedan redak, a stupac <code>doc_id</code> sadrži naziv datoteke, dok stupac <code>text</code> sadrži njezin tekst.</p>
+</section>
+<section id="učitavanje-više-datoteka-odjednom" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="učitavanje-više-datoteka-odjednom"><span class="header-section-number">6.2.3</span> Učitavanje više datoteka odjednom</h3>
+<p>U istraživanjima se korpus rijetko sastoji od jedne datoteke. Transkripti intervjua, novinski članci ili saborski govori najčešće su spremljeni kao zasebne datoteke u jednoj mapi pa ih treba učitati sve odjednom. Funkciji <code>readtext()</code> putanju tada možemo zadati s uzorkom poput <code>"intervjui/*.txt"</code> pa će učitati sve datoteke s nastavkom .txt iz mape <code>intervjui</code>. Funkcija može pretraživati i podmape te učitati sve datoteke iz arhive ZIP, a svaku datoteku učitava prema njezinoj vrsti pa u istoj mapi mogu biti i datoteke različitih vrsta. Argumentom <code>encoding</code> može se zadati i kodiranje datoteka.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje svih datoteka .txt iz mape intervjui</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>intervjui <span class="ot">&lt;-</span> <span class="fu">readtext</span>(<span class="st">"intervjui/*.txt"</span>, <span class="at">encoding =</span> <span class="st">"UTF-8"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Isto se može postići i funkcijama iz skupa paketa <code>tidyverse</code>. Funkcija <code>list.files()</code> vraća putanje do svih datoteka u mapi koje odgovaraju zadanom uzorku, a funkcija <code>map_chr()</code> iz paketa <code>purrr</code> na svaku putanju primjenjuje funkciju <code>read_file()</code>. Rezultat spremamo u podatkovni okvir u kojem je naziv datoteke u jednom, a njezin tekst u drugom stupcu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Putanje do svih datoteka .txt u mapi intervjui</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>datoteke <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"intervjui"</span>, <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.txt$"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje svake datoteke kao jednog niza</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>intervjui <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">doc_id =</span> <span class="fu">basename</span>(datoteke),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> <span class="fu">map_chr</span>(datoteke, read_file)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="preuzimanje-sadržaja-s-interneta" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="preuzimanje-sadržaja-s-interneta"><span class="header-section-number">6.3</span> Preuzimanje sadržaja s interneta</h2>
+<p>Mnogi tekstovi koje želimo analizirati nisu spremljeni u urednim datotekama na računalu, nego se nalaze na internetu, primjerice novinski članci, objave na forumima, saborske rasprave, recenzije proizvoda ili enciklopedijski članci. Umjesto da ih ručno kopiramo sa stranica u datoteke, možemo ih <strong>automatizirano preuzimati s internetskih stranica</strong> (engl. <em>web scraping</em>). Riječ je o postupku u kojem u R-u pišemo kod koji stranicu preuzme, u njoj pronađe dijelove koji nas zanimaju i spremi ih kao objekt spreman za daljnju obradu. Takav je pristup bolji od ručnog kopiranja jer je brži, jer se njime može preuzeti mnogo više sadržaja, jer se postupak može ponoviti i jer je pogrešaka manje nego pri ručnom kopiranju.</p>
+<section id="kako-je-građena-internetska-stranica" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="kako-je-građena-internetska-stranica"><span class="header-section-number">6.3.1</span> Kako je građena internetska stranica</h3>
+<p>Kad u pregledniku otvorimo internetsku stranicu, preglednik s poslužitelja preuzima tekstnu datoteku napisanu u jeziku <strong>HTML</strong> (engl. <em>HyperText Markup Language</em>) i prikazuje je u obliku koji vidimo na zaslonu. HTML nije programski jezik, nego jezik za označavanje kojim se opisuje što je koji dio sadržaja, primjerice naslov, odlomak, poveznica ili tablica.</p>
+<p>HTML dokument sastoji se od <strong>elemenata</strong>. Element obično počinje početnom oznakom, primjerice <code>&lt;p&gt;</code>, a završava završnom oznakom s kosom crtom, primjerice <code>&lt;/p&gt;</code>, a između njih nalazi se sadržaj elementa. Pojednostavljena internetska stranica mogla bi izgledati ovako:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode html code-with-copy"><code class="sourceCode html"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">html</span><span class="dt">&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">head</span><span class="dt">&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">title</span><span class="dt">&gt;</span>Naslov u kartici preglednika<span class="dt">&lt;/</span><span class="kw">title</span><span class="dt">&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">head</span><span class="dt">&gt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">body</span><span class="dt">&gt;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">h1</span><span class="dt">&gt;</span>Glavni naslov stranice<span class="dt">&lt;/</span><span class="kw">h1</span><span class="dt">&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">"uvod"</span><span class="dt">&gt;</span>Prvi <span class="dt">&lt;</span><span class="kw">b</span><span class="dt">&gt;</span>odlomak<span class="dt">&lt;/</span><span class="kw">b</span><span class="dt">&gt;</span> teksta.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">p</span><span class="dt">&gt;</span>Drugi odlomak s <span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> href</span><span class="op">=</span><span class="st">"https://www.r-project.org"</span><span class="dt">&gt;</span>poveznicom<span class="dt">&lt;/</span><span class="kw">a</span><span class="dt">&gt;</span>.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">body</span><span class="dt">&gt;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">html</span><span class="dt">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Iz ovog se primjera vide tri važne osobine HTML-a. Prvo, elementi imaju značenje pa oznaka <code>&lt;h1&gt;</code> označava naslov prve razine (postoje i oznake od <code>&lt;h2&gt;</code> do <code>&lt;h6&gt;</code>), oznaka <code>&lt;p&gt;</code> odlomak, <code>&lt;a&gt;</code> poveznicu, <code>&lt;b&gt;</code> podebljani tekst, <code>&lt;table&gt;</code> tablicu, a <code>&lt;div&gt;</code> i <code>&lt;section&gt;</code> općenite odjeljke kojima se sadržaj grupira. Svaka stranica mora imati element <code>&lt;html&gt;</code>, a on dva elementa, <code>&lt;head&gt;</code> u kojem su podaci o stranici, poput naslova u kartici preglednika, i <code>&lt;body&gt;</code> u kojem je sadržaj koji vidimo u pregledniku.</p>
+<p>Drugo, elementi su ugniježđeni. Element <code>&lt;b&gt;</code> nalazi se unutar elementa <code>&lt;p&gt;</code>, koji se nalazi unutar elementa <code>&lt;body&gt;</code>, a on unutar elementa <code>&lt;html&gt;</code>. HTML dokument zato ima strukturu stabla u kojoj svaki element ima svog „roditelja” i može imati „djecu”.</p>
+<p>Treće, elementi mogu imati <strong>atribute</strong> koji se pišu u početnoj oznaci, u obliku <code>ime="vrijednost"</code>. Atribut <code>href</code> elementa <code>&lt;a&gt;</code> sadrži, primjerice, adresu na koju poveznica vodi. Za preuzimanje sadržaja posebno su važni atributi <code>class</code> i <code>id</code>. Atribut <code>class</code> označava skupinu elemenata iste vrste pa više elemenata može imati istu klasu, a atribut <code>id</code> jedinstveno označava jedan element na stranici.</p>
+<p>Upravo nam te tri osobine omogućuju da u kodu točno opišemo koji dio stranice želimo. Za to se koriste <strong>CSS selektori</strong>, odnosno kratki izrazi koji opisuju elemente prema oznaci, klasi, identifikatoru ili položaju u stablu.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 62%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Selektor</th>
+<th>Što odabire</th>
+<th>Primjer iz gornjeg HTML-a</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>p</code></td>
+<td>sve elemente s tom oznakom</td>
+<td>oba odlomka</td>
+</tr>
+<tr class="even">
+<td><code>.uvod</code></td>
+<td>sve elemente s klasom <code>uvod</code> (točka označava klasu)</td>
+<td>prvi odlomak</td>
+</tr>
+<tr class="odd">
+<td><code>#glavni</code></td>
+<td>element s identifikatorom <code>glavni</code> (ljestve označavaju <code>id</code>)</td>
+<td>nijedan</td>
+</tr>
+<tr class="even">
+<td><code>body p</code></td>
+<td>elemente <code>p</code> bilo gdje unutar elementa <code>body</code> (razmak)</td>
+<td>oba odlomka</td>
+</tr>
+<tr class="odd">
+<td><code>p &gt; b</code></td>
+<td>elemente <code>b</code> koji su izravna djeca elementa <code>p</code> (znak <code>&gt;</code>)</td>
+<td>riječ „odlomak”</td>
+</tr>
+<tr class="even">
+<td><code>p, h1</code></td>
+<td>elemente <code>p</code> i elemente <code>h1</code> (zarez)</td>
+<td>oba odlomka i naslov</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="preuzimanje-teksta-paketom-rvest" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="preuzimanje-teksta-paketom-rvest"><span class="header-section-number">6.3.2</span> Preuzimanje teksta paketom <code>rvest</code></h3>
+<p>Za preuzimanje sadržaja s internetskih stranica u R-u najčešće se koristi paket <code>rvest</code>. On je dio skupa paketa <code>tidyverse</code>, ali se ne učitava naredbom <code>library(tidyverse)</code> pa ga treba zasebno učitati. Prije rada sa stvarnom stranicom isprobat ćemo selektore iz tablice na gornjem primjeru. Funkcija <code>minimal_html()</code> iz HTML-a zapisanog kao znakovni niz stvara isti objekt kakav bismo dobili preuzimanjem stranice pa je pogodna za vježbanje.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pojednostavljena stranica iz gornjeg primjera</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>html <span class="ot">&lt;-</span> <span class="fu">minimal_html</span>(<span class="st">'</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="st">  &lt;h1&gt;Glavni naslov stranice&lt;/h1&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="st">  &lt;p class="uvod"&gt;Prvi &lt;b&gt;odlomak&lt;/b&gt; teksta.&lt;/p&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="st">  &lt;p&gt;Drugi odlomak s &lt;a href="https://www.r-project.org"&gt;poveznicom&lt;/a&gt;.&lt;/p&gt;</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="st">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Elemente odabiremo funkcijama <code>html_element()</code> i <code>html_elements()</code>. Funkcija <code>html_elements()</code> vraća sve elemente koji odgovaraju selektoru, a funkcija <code>html_element()</code> samo prvi od njih. Tekst iz odabranih elemenata zatim izvlačimo funkcijom <code>html_text2()</code> koja tekst vraća onako kako bi ga prikazao preglednik.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tekst svih odlomaka</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>html <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_elements</span>(<span class="st">"p"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Prvi odlomak teksta."        "Drugi odlomak s poveznicom."</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tekst odlomka s klasom uvod</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>html <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_element</span>(<span class="st">".uvod"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Prvi odlomak teksta."</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tekst podebljane riječi unutar odlomka</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>html <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_elements</span>(<span class="st">"p &gt; b"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "odlomak"</code></pre>
+</div>
+</div>
+<p>Funkcije <code>html_element()</code> i <code>html_elements()</code> razlikuju se i kad selektor ne odgovara nijednom elementu. Tada <code>html_elements()</code> vraća prazan rezultat, a <code>html_element()</code> nedostajuću vrijednost što je važno kad iz više elemenata izvlačimo podatke koji ne postoje u svakom od njih. Osim teksta, iz elemenata možemo izvući i vrijednosti atributa za što služi funkcija <code>html_attr()</code>. Tako, primjerice, dobivamo adresu na koju vodi poveznica.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adresa na koju vodi poveznica</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>html <span class="sc">|&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_element</span>(<span class="st">"a"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_attr</span>(<span class="st">"href"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "https://www.r-project.org"</code></pre>
+</div>
+</div>
+<p>Ako se podaci na stranici nalaze u tablici, izvlačimo ih funkcijom <code>html_table()</code> koja tablicu pretvara u podatkovni okvir i pritom stupce s brojevima sama pretvara u brojeve. HTML tablica sastoji se od elementa <code>&lt;table&gt;</code>, redaka <code>&lt;tr&gt;</code>, naslovnih ćelija <code>&lt;th&gt;</code> i ćelija s podacima <code>&lt;td&gt;</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pojednostavljena stranica s tablicom</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>tablica <span class="ot">&lt;-</span> <span class="fu">minimal_html</span>(<span class="st">'</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="st">  &lt;table&gt;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="st">    &lt;tr&gt;&lt;th&gt;Bajka&lt;/th&gt;&lt;th&gt;Broj odlomaka&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="st">    &lt;tr&gt;&lt;td&gt;Rapunzel&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;&lt;/tr&gt;</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="st">    &lt;tr&gt;&lt;td&gt;Hansel and Gretel&lt;/td&gt;&lt;td&gt;15&lt;/td&gt;&lt;/tr&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="st">  &lt;/table&gt;</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="st">'</span>)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pretvaranje tablice u podatkovni okvir</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>tablica <span class="sc">|&gt;</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_element</span>(<span class="st">"table"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_table</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  Bajka             `Broj odlomaka`
+  &lt;chr&gt;                       &lt;int&gt;
+1 Rapunzel                       12
+2 Hansel and Gretel              15</code></pre>
+</div>
+</div>
+<p>Brojevi u ovoj tablici izmišljeni su i služe samo kao primjer.</p>
+</section>
+<section id="pronalaženje-selektora" class="level3" data-number="6.3.3">
+<h3 data-number="6.3.3" class="anchored" data-anchor-id="pronalaženje-selektora"><span class="header-section-number">6.3.3</span> Pronalaženje selektora</h3>
+<p>Na stvarnim stranicama HTML je mnogo složeniji nego u gornjem primjeru pa je pronalaženje pravog selektora često najteži dio posla. Selektor treba biti dovoljno precizan da ne odabere ono što nam ne treba, ali i dovoljno širok da odabere sve što nam treba, a do takvog se selektora obično dolazi isprobavanjem. Dva su alata pritom posebno korisna.</p>
+<p>Prvi je <strong>SelectorGadget</strong>, besplatan alat otvorenog koda koji na temelju elemenata na koje kliknemo predlaže CSS selektor. U pregledniku Google Chrome, kao i u drugim preglednicima temeljenima na Chromiumu, poput Microsoft Edgea ili Bravea, SelectorGadget se instalira kao proširenje iz trgovine <a href="https://chromewebstore.google.com/">Chrome Web Store</a>. Kad otvorimo stranicu i pokrenemo SelectorGadget, u donjem desnom kutu zaslona pojavljuje se traka alata. Prelaskom miša preko stranice pojedini se elementi uokviruju, a klikom na element odabiremo ga i on postaje zelen. SelectorGadget na temelju odabira predlaže selektor, ispisuje ga u traci i žutom bojom označava sve ostale elemente koje taj selektor obuhvaća. Ako je među žutim elementima neki koji ne želimo, klikom na njega isključujemo ga pa on postaje crven, a selektor se prilagođava. Klikanje se tako ponavlja dok selektor ne obuhvati točno ono što želimo, a zatim ga kopiramo iz trake u kod. U traci se nalaze i gumb <em>Clear</em> koji poništava odabir pri čemu broj u zagradi pokazuje koliko je elemenata trenutačno obuhvaćeno, gumb <em>Toggle Position</em> koji traku premješta u drugi kut zaslona, te gumb <em>XPath</em> koji umjesto CSS selektora prikazuje isti izraz u jeziku XPath.</p>
+<p>Drugi su alat <strong>alati za razvojne programere</strong> (engl. <em>developer tools</em>) koji su ugrađeni u svaki moderni preglednik. Kad desnom tipkom miša kliknemo na neki element stranice i odaberemo naredbu <em>Inspect</em>, otvara se prikaz cijelog HTML-a stranice, usredotočen na element na koji smo kliknuli. U tom prikazu možemo istražiti strukturu stranice, a posebnu pozornost treba obratiti na atribute <code>class</code> i <code>id</code> jer se oni najčešće koriste za oblikovanje stranice i zato su dobri za odabir elemenata. Desnim klikom na element u tom prikazu i naredbom <em>Copy selector</em> dobivamo selektor koji jednoznačno opisuje taj element.</p>
+<p>Kao stvaran primjer koristit ćemo članak <em>Grimms’ Fairy Tales</em> s engleske Wikipedije. Prvi je korak uvijek učitavanje stranice funkcijom <code>read_html()</code> kojoj se kao argument zadaje adresa stranice. R pritom preuzima HTML stranice i sprema ga kao objekt klase <code>xml_document</code> u kojem je sačuvana cijela struktura stabla.</p>
+<p>Stranicu je dovoljno preuzeti samo jednom. Pri svakom preuzimanju šaljemo zahtjev poslužitelju, a ako kod izvršavamo mnogo puta, primjerice dok ga razvijamo, nepotrebno opterećujemo tuđi poslužitelj. Osim toga, sadržaj se stranice s vremenom mijenja pa bi isti kod sutra mogao dati drugačiji rezultat. Zato preuzetu stranicu odmah spremamo na računalo funkcijom <code>write_html()</code> iz paketa <code>xml2</code> na kojem se temelji paket <code>rvest</code>, a u daljnjem radu učitavamo spremljenu datoteku.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preuzimanje stranice i spremanje u datoteku</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales"</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>stranica <span class="ot">&lt;-</span> <span class="fu">read_html</span>(url)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>xml2<span class="sc">::</span><span class="fu">write_html</span>(stranica, <span class="st">"data/grimm_wikipedia.html"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>stranica</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{html_document}
+&lt;html class="client-nojs vector-feature-language-in-header-enabled vector-feature-language-in-main-menu-disabled vector-feature-language-in-main-page-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-custom-font-size-clientpref-1 vector-feature-appearance-pinned-clientpref-1 skin-theme-clientpref-day vector-sticky-header-enabled vector-toc-available skin-thumbsize-clientpref-standard skin-underline-clientpref-browser" lang="en" dir="ltr"&gt;
+[1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8 ...
+[2] &lt;body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt action-view skin ...</code></pre>
+</div>
+</div>
+<p>Kod možemo napisati i tako da stranicu preuzme samo ako još nije spremljena. Funkcija <code>file.exists()</code> provjerava postoji li datoteka pa se preuzimanje izvršava samo pri prvom pokretanju koda, a svaki sljedeći put učitava se spremljena datoteka.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stranica se preuzima samo ako još nije spremljena</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>datoteka <span class="ot">&lt;-</span> <span class="st">"data/grimm_wikipedia.html"</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(datoteka)) {</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_html</span>(url) <span class="sc">|&gt;</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    xml2<span class="sc">::</span><span class="fu">write_html</span>(datoteka)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>stranica <span class="ot">&lt;-</span> <span class="fu">read_html</span>(datoteka)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Naslov članka nalazi se u elementu <code>&lt;h1&gt;</code>, a budući da na stranici postoji samo jedan takav element, dovoljna je funkcija <code>html_element()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Naslov članka</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>stranica <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_element</span>(<span class="st">"h1"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Grimms' Fairy Tales"</code></pre>
+</div>
+</div>
+<p>Obično nas, međutim, zanima cijeli tekst članka. Svi odlomci članka elementi su <code>&lt;p&gt;</code>, a sam sadržaj članka na Wikipediji nalazi se unutar elementa s identifikatorom <code>mw-content-text</code>. Ograničavanjem na taj element, selektorom <code>#mw-content-text p</code>, izbjegavamo odlomke u izbornicima i podnožju stranice. Budući da želimo sve odlomke, koristimo funkciju <code>html_elements()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tekst svih odlomaka članka</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>odlomci <span class="ot">&lt;-</span> stranica <span class="sc">|&gt;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_elements</span>(<span class="st">"#mw-content-text p"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj preuzetih odlomaka i prva tri odlomka</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(odlomci)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 19</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(odlomci, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Grimms' Fairy Tales (German: Grimms Märchen), originally known as the Children's and Household Tales (German: Kinder- und Hausmärchen, .mw-parser-output .IPA-label-small{font-size:85%}.mw-parser-output .references .IPA-label-small,.mw-parser-output .infobox .IPA-label-small,.mw-parser-output .navbox .IPA-label-small{font-size:100%}pronounced [ˌkɪndɐ ʔʊnt ˈhaʊsmɛːɐ̯çən], commonly abbreviated as KHM), is a German collection of fairy tales by the Brothers Grimm, Jacob and Wilhelm, first published on 20 December 1812. Vol. 1 of the first edition contained 86 stories, which were followed by 70 more tales, numbered consecutively, in the 1st edition, Vol. 2, in 1815. By the seventh edition in 1857, the corpus of tales had expanded to 200 tales and 10 \"Children's Legends\". It is considered the seminal work of Western children's literature and is listed by UNESCO in its Memory of the World Register."                                                                                                                                    
+[2] "Jacob Grimm began attending the University of Marburg in 1802, and Wilhelm joined him a year later, both studying law.[1] Jacob drew the attention of Professor Friedrich Carl von Savigny, founder of its historical school of law. He became a prominent personal and professional influence on the brothers. Throughout their time at university, the brothers became quite close with Savigny and were able to use his personal library as they became interested in German law, history, and folklore. Savigny asked Jacob to join him in Paris as an assistant, and Jacob went with him for a year. While he was gone, Wilhelm became very interested in German literature and started collecting books. Once Jacob returned to Kassel in 1806, he adopted his brother's passion and changed his focus from law to German literature. While Jacob studied literature and took care of their siblings, Wilhelm continued to complete his degree in law at Marburg.[2] During the Napoleonic Wars, Jacob interrupted his studies to serve the Hessian War Commission.[3]"
+[3] "Achim von Arnim and Clemens Brentano were good friends of the brothers and wanted to publish folk tales, so they asked the brothers to collect oral tales for publication. The Grimms collected many old books and asked friends and acquaintances in Kassel to tell tales and to gather stories from others. Jacob and Wilhelm sought to collect these stories to write a history of old German literature and to preserve history.[2]"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     </code></pre>
+</div>
+</div>
+<p>Rezultat je znakovni vektor u kojem je svaki element jedan odlomak članka. Među njima bit će i nekoliko praznih odlomaka, a tekst će sadržavati i oznake izvora poput <em>[1]</em> ili <em>[23]</em> koje Wikipedija stavlja iza rečenica. Takve ćemo dijelove ukloniti pri čišćenju teksta.</p>
+<p>Na isti način možemo preuzeti i druge dijelove članka. Naslovi odjeljaka nalaze se u elementima <code>&lt;h2&gt;</code>, poveznice u elementima <code>&lt;a&gt;</code> čiju adresu izvlačimo funkcijom <code>html_attr("href")</code>, a tablice, koje na Wikipediji obično imaju klasu <code>wikitable</code>, pretvaramo u podatkovne okvire funkcijom <code>html_table()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Naslovi odjeljaka</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>stranica <span class="sc">|&gt;</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_elements</span>(<span class="st">"#mw-content-text h2"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Origin"                       "Composition"                 
+ [3] "Popularity"                   "Influence"                   
+ [5] "English-language collections" "List"                        
+ [7] "See also"                     "Notes"                       
+ [9] "References"                   "Bibliography"                
+[11] "External links"              </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sve tablice s klasom wikitable kao popis podatkovnih okvira</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>stranica <span class="sc">|&gt;</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_elements</span>(<span class="st">".wikitable"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_table</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>list()</code></pre>
+</div>
+</div>
+<p>Treba imati na umu da se struktura stranica s vremenom mijenja. Selektor koji danas radi sutra može prestati raditi pa kod za preuzimanje sadržaja treba povremeno provjeriti i prilagoditi. Zato je bolje koristiti selektore koji opisuju sadržaj, poput <code>#mw-content-text p</code>, nego one koje stranica stvara automatski i koji se mijenjaju pri svakoj izmjeni, poput nasumičnih oznaka u atributu <code>id</code> pojedinih odlomaka.</p>
+<p>Opisani postupak radi na stranicama čiji se sadržaj nalazi izravno u HTML-u koji poslužitelj šalje pregledniku, kao što je slučaj s Wikipedijom i većinom novinskih portala. Neke stranice, međutim, sadržaj učitavaju naknadno pomoću jezika JavaScript pa funkcija <code>read_html()</code> dobiva gotovo praznu stranicu jer paket <code>rvest</code> preuzima samo HTML i ne izvršava JavaScript. Takve stranice zahtijevaju alate koji stranicu otvaraju u pravom pregledniku, poput funkcije <code>read_html_live()</code> iz novijih verzija paketa <code>rvest</code> za koju je potreban paket <code>chromote</code> i instaliran preglednik Chrome. Prije toga uvijek je dobro provjeriti nudi li stranica programsko sučelje.</p>
+</section>
+<section id="dobre-prakse-pri-preuzimanju-sadržaja" class="level3" data-number="6.3.4">
+<h3 data-number="6.3.4" class="anchored" data-anchor-id="dobre-prakse-pri-preuzimanju-sadržaja"><span class="header-section-number">6.3.4</span> Dobre prakse pri preuzimanju sadržaja</h3>
+<p>Prije nego što počnemo preuzimati sadržaj s neke stranice, trebamo se zapitati smijemo li to učiniti i kako to učiniti a da nikome ne naštetimo. Pravna je situacija složena i razlikuje se od zemlje do zemlje, a ni sudske odluke nisu dosljedne. Većina poznatih sudskih sporova ticala se preuzimanja u komercijalne svrhe pa je ponovno objavljivanje tuđeg sadržaja radi zarade mnogo ozbiljnije pitanje od preuzimanja stranica za istraživanje. Kao opće pravilo vrijedi da je preuzimanje vjerojatno dopušteno ako su podaci javni, ako nisu osobni i ako su činjenični, a te su tri odrednice povezane s uvjetima korištenja stranice, zaštitom osobnih podataka i autorskim pravom.</p>
+<p>Mnoge stranice imaju <strong>uvjete korištenja</strong> (engl. <em>terms of service</em>) koji često zabranjuju automatizirano preuzimanje sadržaja. U Europi su sudovi pritom presuđivali da su takvi uvjeti obvezujući čak i kad ih korisnik nije izričito prihvatio. Pri preuzimanju osobnih podataka, poput imena, adresa e-pošte, brojeva telefona ili datuma rođenja, treba biti iznimno oprezan, čak i kad su podaci javno dostupni jer Europa ima vrlo stroge propise o njihovu prikupljanju i pohrani. Konačno, tekst je u pravilu zaštićen <strong>autorskim pravom</strong>, za razliku od samih činjenica, a u Europi su posebno zaštićene i baze podataka.</p>
+<p>Mnoge stranice u svom korijenskom direktoriju imaju i datoteku <strong>robots.txt</strong> u kojoj navode koje dijelove stranice automatizirani programi smiju preuzimati, a koje ne smiju. Ta datoteka nema zakonsku snagu i ne sprječava preuzimanje, nego je preporuka vlasnika stranice, ali je svakako treba poštovati. Datoteka se nalazi na adresi koja se sastoji od adrese stranice i nastavka <code>/robots.txt</code>, a pravila su u njoj zapisana tako da redak <code>User-agent</code> označava program na koji se pravila odnose, a pri čemu zvjezdica označava sve programe, a retci <code>Disallow</code> i <code>Allow</code> dijelove stranice koje taj program ne smije, odnosno smije preuzimati. Redak <code>Crawl-delay</code> traži da program između dva zahtjeva pričeka zadani broj sekundi.</p>
+<p>Uz to, pri preuzimanju sadržaja treba se ponašati pristojno. Kad god je moguće, podatke treba preuzimati preko programskog sučelja ili ih zatražiti od vlasnika, a stranice preuzimati samo kad drugog načina nema. Treba ostati prepoznatljiv, odnosno u zahtjevu navesti tko preuzima sadržaj i kako ga se može kontaktirati, a promet treba svesti na najmanju moguću mjeru pa svaku stranicu treba preuzeti samo jednom i preuzimati samo ono što nam je doista potrebno. Ako preuzimamo mnogo stranica, između dvaju zahtjeva treba pričekati, za što možemo koristiti funkciju <code>Sys.sleep()</code> koja zaustavlja izvršavanje koda na zadani broj sekundi. Isto to automatski čini paket <code>polite</code> koji poštuje pravila iz datoteke robots.txt, čeka između zahtjeva i pamti već preuzete stranice pa istu stranicu nikada ne preuzima dvaput.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preuzimanje više stranica uz pauzu od dvije sekunde između zahtjeva</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (url <span class="cf">in</span> adrese) {</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  stranica <span class="ot">&lt;-</span> <span class="fu">read_html</span>(url)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  xml2<span class="sc">::</span><span class="fu">write_html</span>(stranica, <span class="fu">file.path</span>(<span class="st">"stranice"</span>, <span class="fu">paste0</span>(<span class="fu">basename</span>(url), <span class="st">".html"</span>)))</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sys.sleep</span>(<span class="dv">2</span>)</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="programska-sučelja" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="programska-sučelja"><span class="header-section-number">6.4</span> Programska sučelja</h2>
+<p><strong>Programsko sučelje</strong> (engl. <em>application programming interface</em>, API) općenito je alat koji korisnicima omogućuje da svoj program povežu s nekim drugim programom ili uslugom. Kad govorimo o preuzimanju podataka, mislimo na mrežna programska sučelja koja nude internetske stranice i usluge kako bi drugi programi mogli preuzimati njihove podatke. Za razliku od internetske stranice koja je namijenjena ljudima i uz sadržaj sadrži izbornike, oblikovanje i druge elemente koji nam ne trebaju, programsko sučelje vraća samo podatke i to u standardiziranom obliku. Zato je preuzimanje podataka preko programskog sučelja zlatni standard prikupljanja podataka s interneta.</p>
+<p>Većina današnjih programskih sučelja radi na načelu <strong>REST</strong> (engl. <em>Representational State Transfer</em>) prema kojem se podacima pristupa preko adresa, a odgovor se vraća kao dokument u nekom standardnom formatu. Zahtjev se sastoji od osnovne adrese sučelja i parametara koje joj dodajemo, a podatke dobivamo zahtjevom GET, kakav i preglednik šalje kad otvaramo stranicu. Razlika je u tome što su parametri zahtjeva opisani u dokumentaciji sučelja, a odgovor sadrži samo podatke, bez ikakvog oblikovanja.</p>
+<p>Postupak preuzimanja podataka preko programskog sučelja ima nekoliko koraka. Najprije treba pronaći sučelje i upoznati se s njegovom dokumentacijom, uvjetima korištenja i ograničenjima, primjerice s najvećim dopuštenim brojem zahtjeva. Neka sučelja zatim traže registraciju i ključ koji treba sigurno spremiti. Nakon toga sučelju šaljemo zahtjeve, a dobivene podatke pretvaramo u objekte s kojima R može raditi. Za mnoga poznata sučelja već postoje R paketi koji sve to rade umjesto nas, pa je dobro najprije provjeriti postoji li takav paket.</p>
+<p>Programska sučelja podatke najčešće vraćaju u formatu <strong>JSON</strong> (engl. <em>JavaScript Object Notation</em>) koji je zamišljen tako da ga strojevi lako čitaju i zapisuju. JSON ima šest vrsta podataka. Četiri su jednostavne, a to su <code>null</code> koji odgovara R-ovoj vrijednosti <code>NA</code>, nizovi koji se uvijek pišu u dvostrukim navodnicima, brojevi te logičke vrijednosti <code>true</code> i <code>false</code>. Za zapisivanje više vrijednosti služe preostale dvije vrste, <strong>polja</strong> koja se pišu u uglatim zagradama i odgovaraju R-ovim neimenovanim listama i <strong>objekti</strong> koji se pišu u vitičastim zagradama i odgovaraju imenovanim listama pa je svaka vrijednost u objektu označena imenom, odnosno ključem.</p>
+<p>JSON zapisan kao znakovni niz u R pretvaramo funkcijom <code>parse_json()</code> iz paketa <code>jsonlite</code>, a datoteku JSON spremljenu na računalu funkcijom <code>read_json()</code>. Rezultat je lista koju u podatkovni okvir pretvaramo funkcijama <code>unnest_wider()</code> i <code>unnest_longer()</code> iz paketa <code>tidyr</code>. Prva elemente liste smješta u stupce, a druga u retke, a koliko god je lista duboko ugniježđena, dovoljno je te dvije funkcije primjenjivati redom. JSON nema vlastiti zapis za datume pa se oni obično zapisuju kao nizovi, a katkad se i brojevi zapisuju kao nizovi pa ih nakon pretvaranja treba pretvoriti u odgovarajuću vrstu podataka. Paket <code>jsonlite</code> ima i funkciju <code>fromJSON()</code> koja JSON odmah pokušava pretvoriti u podatkovni okvir. U jednostavnim slučajevima to dobro radi, ali je u složenijima bolje pretvaranje provesti sami, kako bismo znali što se točno događa s podacima.</p>
+<section id="programsko-sučelje-bez-ključa" class="level3" data-number="6.4.1">
+<h3 data-number="6.4.1" class="anchored" data-anchor-id="programsko-sučelje-bez-ključa"><span class="header-section-number">6.4.1</span> Programsko sučelje bez ključa</h3>
+<p>Gutendex je otvoreno programsko sučelje koje vraća podatke o knjigama s Project Gutenberga i ne traži registraciju. Zahtjeve ćemo slati paketom <code>httr2</code>. Funkcijom <code>request()</code> stvaramo zahtjev s osnovnom adresom sučelja, funkcijom <code>req_url_path_append()</code> adresi dodajemo broj knjige, a funkcijom <code>req_user_agent()</code> u zahtjevu navodimo tko ga šalje. Zahtjev šaljemo funkcijom <code>req_perform()</code>, a odgovor u formatu JSON u listu pretvaramo funkcijom <code>resp_body_json()</code>. Odgovor odmah spremamo i u datoteku kako zahtjev ne bismo morali ponavljati. Funkcijom <code>resp_body_string()</code> izvlačimo ga kao znakovni niz, točno onakvog kakav ga je sučelje poslalo, a funkcijom <code>write_file()</code> spremamo ga u datoteku koju poslije možemo učitati funkcijom <code>read_json()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zahtjev za podatke o Grimmovim bajkama</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>odgovor_gutendex <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://gutendex.com/books"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_url_path_append</span>(<span class="st">"2591"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_user_agent</span>(<span class="st">"Analiza teksta u R-u"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>()</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Spremanje odgovora u datoteku</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="fu">write_file</span>(<span class="fu">resp_body_string</span>(odgovor_gutendex), <span class="st">"data/gutendex_2591.json"</span>)</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pretvaranje odgovora u listu</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>knjiga <span class="ot">&lt;-</span> <span class="fu">resp_body_json</span>(odgovor_gutendex)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Struktura liste</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(knjiga, <span class="at">max.level =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 13
+ $ id            : int 2591
+ $ title         : chr "Grimms' Fairy Tales"
+ $ authors       :List of 2
+ $ summaries     :List of 1
+ $ editors       : list()
+ $ translators   : list()
+ $ subjects      :List of 1
+ $ bookshelves   :List of 4
+ $ languages     :List of 1
+ $ copyright     : logi FALSE
+ $ media_type    : chr "Text"
+ $ formats       :List of 8
+ $ download_count: int 37383</code></pre>
+</div>
+</div>
+<p>Rezultat je imenovana lista, odnosno JSON objekt, u kojem su neki elementi jednostavne vrijednosti, poput broja e-knjige (<code>id</code>), naslova (<code>title</code>) i broja preuzimanja (<code>download_count</code>), a neki su liste, poput popisa autora (<code>authors</code>), tema (<code>subjects</code>) i jezika (<code>languages</code>). Jednostavne vrijednosti dohvaćamo operatorom <code>$</code>, a popis autora u kojem je svaki autor zaseban objekt s imenom i godinama rođenja i smrti pretvaramo u podatkovni okvir tako da ga stavimo u stupac podatkovnog okvira, a zatim ga funkcijom <code>unnest_wider()</code> raširimo u stupce.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Naslov i broj preuzimanja</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>knjiga<span class="sc">$</span>title</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Grimms' Fairy Tales"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>knjiga<span class="sc">$</span>download_count</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 37383</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Autori kao podatkovni okvir</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">autor =</span> knjiga<span class="sc">$</span>authors) <span class="sc">|&gt;</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_wider</span>(autor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  name           birth_year death_year
+  &lt;chr&gt;               &lt;int&gt;      &lt;int&gt;
+1 Grimm, Jacob         1785       1863
+2 Grimm, Wilhelm       1786       1859</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Teme knjige kao znakovni vektor</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unlist</span>(knjiga<span class="sc">$</span>subjects)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Fairy tales -- Germany"</code></pre>
+</div>
+</div>
+<p>Parametre zahtjeva zadajemo funkcijom <code>req_url_query()</code>. Sučelje Gutendex ima, primjerice, parametar <code>search</code> kojim se knjige traže prema riječima u naslovu ili imenu autora i parametar <code>languages</code> kojim se pretraga ograničava na knjige na određenom jeziku. Odgovor na takav zahtjev ima polje <code>count</code> s brojem pronađenih knjiga i polje <code>results</code> s popisom knjiga koje u podatkovni okvir pretvaramo funkcijom <code>unnest_wider()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pretraživanje knjiga braće Grimm na engleskom</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>odgovor_pretraga <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://gutendex.com/books"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_url_query</span>(<span class="at">search =</span> <span class="st">"grimm"</span>, <span class="at">languages =</span> <span class="st">"en"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_user_agent</span>(<span class="st">"Udzbenik Analiza teksta u R-u"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>()</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Spremanje odgovora u datoteku</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="fu">write_file</span>(<span class="fu">resp_body_string</span>(odgovor_pretraga), <span class="st">"data/gutendex_grimm_en.json"</span>)</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pretvaranje odgovora u listu</span></span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>rezultati <span class="ot">&lt;-</span> <span class="fu">resp_body_json</span>(odgovor_pretraga)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj pronađenih knjiga</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>rezultati<span class="sc">$</span>count</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 22</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj, naslov i broj preuzimanja pronađenih knjiga</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">knjiga =</span> rezultati<span class="sc">$</span>results) <span class="sc">|&gt;</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_wider</span>(knjiga) <span class="sc">|&gt;</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, title, download_count)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 22 × 3
+      id title                                                    download_count
+   &lt;int&gt; &lt;chr&gt;                                                             &lt;int&gt;
+ 1  2591 Grimms' Fairy Tales                                               37383
+ 2 20027 Grimms' Fairy Tales                                                8936
+ 3  5314 Household Tales by Brothers Grimm                                  4448
+ 4 11027 Grimm's Fairy Stories                                              3648
+ 5 52521 Grimm's Fairy Tales                                                3152
+ 6 19068 Household Stories by the Brothers Grimm                            2038
+ 7 33858 The Adventurous Simplicissimus: being the description o…           1350
+ 8 59508 Index of the Project Gutenberg Works of the Brothers Gr…           1336
+ 9 37381 Snowdrop &amp; Other Tales                                             1296
+10 23024 Grimm Tales Made Gay                                               1154
+# ℹ 12 more rows</code></pre>
+</div>
+</div>
+<p>Sučelje vraća rezultate po stranicama pa polje <code>results</code> sadrži samo knjige s prve stranice, dok polje <code>next</code> sadrži adresu sljedeće stranice.</p>
+<p>Podaci o knjizi sadrže i polje <code>formats</code> u kojem su adrese datoteka s tekstom knjige u različitim formatima, primjerice kao e-knjiga, kao stranica HTML ili kao običan tekst. Polje je imenovana lista u kojoj je ime svakog elementa vrsta datoteke, a vrijednost adresa na kojoj se datoteka nalazi. Običan tekst označen je vrstom koja počinje s <code>text/plain</code> pa funkcijom <code>str_detect()</code> među imenima tražimo tu oznaku i uzimamo prvu pronađenu adresu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vrste datoteka u kojima je knjiga dostupna</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(knjiga<span class="sc">$</span>formats)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "text/html"                      "application/epub+zip"          
+[3] "application/x-mobipocket-ebook" "application/rdf+xml"           
+[5] "image/jpeg"                     "application/octet-stream"      
+[7] "text/html; charset=utf-8"       "text/plain; charset=utf-8"     </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adresa datoteke s običnim tekstom knjige</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>adresa_teksta <span class="ot">&lt;-</span> knjiga<span class="sc">$</span>formats[<span class="fu">str_detect</span>(<span class="fu">names</span>(knjiga<span class="sc">$</span>formats), <span class="st">"^text/plain"</span>)][[<span class="dv">1</span>]]</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>adresa_teksta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "https://www.gutenberg.org/ebooks/2591.txt.utf-8"</code></pre>
+</div>
+</div>
+<p>Sada imamo sve što nam treba da preuzmemo tekst knjige. Na dobivenu adresu šaljemo novi zahtjev, a odgovor, koji ovaj put nije JSON, nego običan tekst, funkcijom <code>resp_body_string()</code> izvlačimo kao znakovni niz i spremamo u datoteku. Kao i ostale sadržaje s interneta, i knjigu preuzimamo samo jednom, a u daljnjem radu učitavamo spremljenu datoteku funkcijom <code>read_lines()</code> koja tekst dijeli na retke.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preuzimanje teksta knjige s dobivene adrese</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>tekst_knjige <span class="ot">&lt;-</span> <span class="fu">request</span>(adresa_teksta) <span class="sc">|&gt;</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_user_agent</span>(<span class="st">"Analiza teksta u R-u"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">resp_body_string</span>()</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Spremanje teksta u datoteku</span></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="fu">write_file</span>(tekst_knjige, <span class="st">"data/grimm_gutendex.txt"</span>)</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Tekst knjige redak po redak</span></span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>grimm_api <span class="ot">&lt;-</span> <span class="fu">read_lines</span>(<span class="st">"data/grimm_gutendex.txt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj redaka</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(grimm_api)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9616</code></pre>
+</div>
+</div>
+<p>Preuzeli smo isti tekst koji smo na početku poglavlja učitali iz datoteke s istim zaglavljem i podnožjem Project Gutenberga. Razlika je u tome što smo ga ovaj put pronašli i preuzeli preko programskog sučelja pa smo adresu teksta dobili od sučelja, a ne potražili je sami na stranici.</p>
+<p>Bajke u knjizi slijede jedna za drugom, onim redom kojim su navedene u sadržaju na početku knjige. Do teksta pojedine bajke zato dolazimo tako da pronađemo redak s njezinim naslovom i redak s naslovom sljedeće bajke, a zatim zadržimo sve retke između njih. Pokažimo to na bajci <em>Hansel and Gretel</em> iza koje u knjizi slijedi bajka <em>The Mouse, the Bird, and the Sausage</em>.</p>
+<p>Naslovi su u knjizi zapisani velikim slovima, svaki u zasebnom retku. Operatorom <code>==</code> za svaki redak provjeravamo je li jednak naslovu, a funkcija <code>which()</code> vraća redne brojeve redaka za koje je uvjet ispunjen. Isti se naslovi pojavljuju i u sadržaju na početku knjige, ali su ondje uvučeni razmacima pa ih operator <code>==</code> ne smatra jednakima naslovu. Kako bismo bili sigurni da ćemo dobiti naslov bajke, a ne naslov iz sadržaja, funkcijom <code>max()</code> uzimamo posljednje pojavljivanje. Kraj bajke je redak neposredno ispred naslova sljedeće bajke pa od njegova rednog broja oduzimamo jedan.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Redni broj retka s naslovom bajke</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>pocetak <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">which</span>(grimm_api <span class="sc">==</span> <span class="st">"HANSEL AND GRETEL"</span>))</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Redni broj posljednjeg retka bajke (redak ispred naslova sljedeće bajke)</span></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>kraj <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">which</span>(grimm_api <span class="sc">==</span> <span class="st">"THE MOUSE, THE BIRD, AND THE SAUSAGE"</span>)) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Retci bajke</span></span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>hansel_gretel <span class="ot">&lt;-</span> grimm_api[pocetak<span class="sc">:</span>kraj]</span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Prvih deset redaka bajke</span></span>
+<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hansel_gretel, <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "HANSEL AND GRETEL"                                                     
+ [2] ""                                                                      
+ [3] ""                                                                      
+ [4] "Hard by a great forest dwelt a poor wood-cutter with his wife and his" 
+ [5] "two children. The boy was called Hansel and the girl Gretel. He had"   
+ [6] "little to bite and to break, and once when great dearth fell on the"   
+ [7] "land, he could no longer procure even daily bread. Now when he thought"
+ [8] "over this by night in his bed, and tossed about in his anxiety, he"    
+ [9] "groaned and said to his wife: ‘What is to become of us? How are we"    
+[10] "to feed our poor children, when we no longer have anything even for"   </code></pre>
+</div>
+</div>
+<p>Bajka je sada znakovni vektor u kojem je svaki element jedan redak teksta, a među njima su i prazni retci koji u knjizi odvajaju naslov od teksta i odlomke jedan od drugoga. Ako tekst bajke želimo imati kao jedan znakovni niz, retke spajamo funkcijom <code>str_c()</code> s argumentom <code>collapse = " "</code> kojim se između redaka umeće razmak, a suvišne razmake koji pritom nastanu na mjestu praznih redaka uklanjamo funkcijom <code>str_squish()</code>. Za pregled ispisujemo samo početak teksta, a funkcijom <code>str_wrap()</code> lomimo ga u retke kako bi bio čitljiviji.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tekst bajke kao jedan znakovni niz</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>hansel_gretel_tekst <span class="ot">&lt;-</span> hansel_gretel <span class="sc">|&gt;</span></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_c</span>(<span class="at">collapse =</span> <span class="st">" "</span>) <span class="sc">|&gt;</span></span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_squish</span>()</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj znakova u bajci</span></span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str_length</span>(hansel_gretel_tekst)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15372</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prvih 600 znakova bajke</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>hansel_gretel_tekst <span class="sc">|&gt;</span></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_sub</span>(<span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">600</span>) <span class="sc">|&gt;</span></span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_wrap</span>(<span class="at">width =</span> <span class="dv">80</span>) <span class="sc">|&gt;</span></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">writeLines</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>HANSEL AND GRETEL Hard by a great forest dwelt a poor wood-cutter with his
+wife and his two children. The boy was called Hansel and the girl Gretel. He
+had little to bite and to break, and once when great dearth fell on the land,
+he could no longer procure even daily bread. Now when he thought over this by
+night in his bed, and tossed about in his anxiety, he groaned and said to his
+wife: ‘What is to become of us? How are we to feed our poor children, when we
+no longer have anything even for ourselves?’ ‘I’ll tell you what, husband,’
+answered the woman, ‘early tomorrow morning we will take the</code></pre>
+</div>
+</div>
+</section>
+<section id="programsko-sučelje-s-ključem" class="level3" data-number="6.4.2">
+<h3 data-number="6.4.2" class="anchored" data-anchor-id="programsko-sučelje-s-ključem"><span class="header-section-number">6.4.2</span> Programsko sučelje s ključem</h3>
+<p>Mnoga programska sučelja traže da se korisnik registrira, a zauzvrat dobiva <strong>ključ</strong> (engl. <em>API key</em>), odnosno niz znakova koji se šalje uz svaki zahtjev i po kojem sučelje prepoznaje tko ga koristi. Pomoću ključa vlasnik sučelja može ograničiti broj zahtjeva, primjerice na određen broj u sekundi ili u danu, i prepoznati korisnike koji ta ograničenja ne poštuju. Ta ograničenja treba poštovati, a svrhu za koju koristimo sučelje dobro je opisati već pri registraciji.</p>
+<p>Kao primjer koristit ćemo programsko sučelje novina The Guardian preko kojeg se mogu pretraživati i preuzimati njihovi članci. Ključ za nekomercijalnu upotrebu dobiva se besplatno nakon registracije na stranici <em>The Guardian Open Platform</em>, a uvjete korištenja i ograničenja broja zahtjeva treba provjeriti u dokumentaciji sučelja.</p>
+<p>Ključ je osobni podatak za pristup, kao lozinka, pa ga ne smijemo zapisivati izravno u kod. Kod često dijelimo s drugima ili ga objavljujemo, primjerice na GitHubu, a s njim bismo objavili i ključ pa bi ga netko drugi mogao koristiti u naše ime. Zato ključ spremamo u datoteku <code>.Renviron</code> u kojoj R čuva varijable okruženja, a u kodu ga čitamo funkcijom <code>Sys.getenv()</code>. Datoteku <code>.Renviron</code> najlakše je otvoriti funkcijom <code>edit_r_environ()</code> iz paketa <code>usethis</code>. U nju upisujemo redak s imenom varijable i ključem, primjerice <code>GUARDIAN_KEY=nas_kljuc</code>, zatim je spremamo i ponovno pokrećemo R. Ako datoteku <code>.Renviron</code> spremimo u mapu projekta, a ne u početnu mapu korisnika, moramo je dodati u datoteku <code>.gitignore</code> kako se ne bi objavila zajedno s projektom.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Otvaranje datoteke .Renviron</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Datoteka .Renviron čita se samo pri pokretanju R-a pa nakon upisivanja ključa R treba ponovno pokrenuti (u RStudiju naredbom Session &gt; Restart R), a dok to ne učinimo, funkcija <code>Sys.getenv()</code> neće pronaći ključ. Ako R ne želimo ponovno pokretati, datoteku možemo učitati i ručno, naredbom <code>readRenviron("~/.Renviron")</code>.</p>
+<p>Datoteku <code>.Renviron</code> otvaramo samo jednom kad upisujemo ključ pa se ovaj kod ne izvršava pri svakom pokretanju. Nakon ponovnog pokretanja R-a ključ čitamo iz varijable okruženja, a funkcijom <code>nchar()</code> možemo provjeriti je li učitan, a da ga pritom ne ispišemo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Provjera je li ključ učitan (broj znakova veći od nule)</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nchar</span>(<span class="fu">Sys.getenv</span>(<span class="st">"GUARDIAN_KEY"</span>)) <span class="sc">&gt;</span> <span class="dv">0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>Sada možemo poslati zahtjev. Parametrom <code>q</code> zadajemo pojam koji tražimo, parametrom <code>page-size</code> broj članaka na jednoj stranici rezultata, a parametrom <code>show-fields</code> dodatne podatke o člancima, a pri čemu vrijednost <code>bodyText</code> znači da uz naslov i datum želimo i cijeli tekst članka. Ključ se šalje parametrom <code>api-key</code>. Budući da nazivi tih parametara sadrže crticu, u funkciji <code>req_url_query()</code> pišemo ih unutar obrnutih apostrofa. Funkcijom <code>req_throttle()</code> ograničavamo broj zahtjeva u sekundi kako ne bismo prekoračili ograničenja sučelja. Odgovor i ovdje odmah spremamo u datoteku koju nazivamo prema broju stranice rezultata jer ćemo uskoro preuzimati i sljedeće stranice. Ključ se pritom ne sprema jer je dio zahtjeva, a ne odgovora.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zahtjev za članke koji spominju braću Grimm</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>odgovor_guardian <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://content.guardianapis.com/search"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_url_query</span>(</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">q =</span> <span class="st">"</span><span class="sc">\"</span><span class="st">Brothers Grimm</span><span class="sc">\"</span><span class="st">"</span>,</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">page-size</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">20</span>,</span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">show-fields</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"bodyText"</span>,</span>
+<span id="cb81-7"><a href="#cb81-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">api-key</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">Sys.getenv</span>(<span class="st">"GUARDIAN_KEY"</span>)</span>
+<span id="cb81-8"><a href="#cb81-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb81-9"><a href="#cb81-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_throttle</span>(<span class="at">rate =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb81-10"><a href="#cb81-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req_perform</span>()</span>
+<span id="cb81-11"><a href="#cb81-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-12"><a href="#cb81-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Spremanje odgovora u datoteku</span></span>
+<span id="cb81-13"><a href="#cb81-13" aria-hidden="true" tabindex="-1"></a><span class="fu">write_file</span>(<span class="fu">resp_body_string</span>(odgovor_guardian), <span class="st">"data/guardian_stranica_1.json"</span>)</span>
+<span id="cb81-14"><a href="#cb81-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-15"><a href="#cb81-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Pretvaranje odgovora u listu</span></span>
+<span id="cb81-16"><a href="#cb81-16" aria-hidden="true" tabindex="-1"></a>odgovor <span class="ot">&lt;-</span> <span class="fu">resp_body_json</span>(odgovor_guardian)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ukupan broj pronađenih članaka i broj stranica rezultata</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>odgovor<span class="sc">$</span>response<span class="sc">$</span>total</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 642</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>odgovor<span class="sc">$</span>response<span class="sc">$</span>pages</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 33</code></pre>
+</div>
+</div>
+<p>Odgovor sučelja ima polje <code>response</code> u kojem se nalaze podaci o pretrazi, poput ukupnog broja pronađenih članaka i broja stranica rezultata te polje <code>results</code> s popisom članaka. Svaki članak ima, među ostalim, naslov (<code>webTitle</code>), datum objave (<code>webPublicationDate</code>), adresu (<code>webUrl</code>) i polje <code>fields</code> u kojem je tekst članka. Popis članaka u podatkovni okvir pretvaramo istim postupkom kao i odgovor sučelja Gutendex, a datum objave, koji je zapisan kao niz, pretvaramo u datum.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Članci kao podatkovni okvir</span></span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>clanci <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">clanak =</span> odgovor<span class="sc">$</span>response<span class="sc">$</span>results) <span class="sc">|&gt;</span></span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_wider</span>(clanak) <span class="sc">|&gt;</span></span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_wider</span>(fields) <span class="sc">|&gt;</span></span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(webTitle, webPublicationDate, webUrl, bodyText) <span class="sc">|&gt;</span></span>
+<span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">webPublicationDate =</span> <span class="fu">as_date</span>(<span class="fu">ymd_hms</span>(webPublicationDate)))</span>
+<span id="cb86-7"><a href="#cb86-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-8"><a href="#cb86-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
+<span id="cb86-9"><a href="#cb86-9" aria-hidden="true" tabindex="-1"></a>clanci</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 4
+   webTitle                                   webPublicationDate webUrl bodyText
+   &lt;chr&gt;                                      &lt;date&gt;             &lt;chr&gt;  &lt;chr&gt;   
+ 1 "Into the Woods review – Brothers Grimm g… 2025-12-12         https… Can Ste…
+ 2 "‘His ability is hard to deny’: is Tom Ha… 2026-06-29         https… As good…
+ 3 "Stranger things turn an English village … 2026-10-23         https… Overhea…
+ 4 "Sweeney Todd review – Sondheim’s demon b… 2026-07-16         https… Stephen…
+ 5 "That’s all folk: Marina Warner, the cura… 2025-10-23         https… Marina …
+ 6 "‘Let’s go out in a beautiful fashion’: A… 2026-02-18         https… Burrowe…
+ 7 "Germany moves to legalise wolf hunting i… 2026-03-05         https… Wolf hu…
+ 8 "Post your questions for Terry Gilliam"    2025-10-22         https… Terry G…
+ 9 "We Who Wrestle With God by Jordan Peters… 2024-11-11         https… There i…
+10 "La Pendue: La Manékine review: puppets a… 2025-01-19         https… The poe…
+11 "Night of the Zoopocalypse review – Clive… 2025-10-07         https… A child…
+12 "The Legend of Rooney’s Ring review – myt… 2025-07-27         https… Sometim…
+13 "Spooky eucy! Let’s celebrate the hauntin… 2025-10-27         https… The spo…
+14 "Lesley Walker obituary"                   2026-02-19         https… Lesley …
+15 "The Most Precious of Cargoes review – po… 2025-04-01         https… Directe…
+16 "‘It’s more about life than death’: the g… 2025-10-28         https… They’re…
+17 "Antony Maitland obituary"                 2025-09-23         https… Antony …
+18 "Weapons review – Zach Cregger’s slick Ba… 2025-08-06         https… No one …
+19 "Friday briefing: How disabled creators a… 2026-07-24         https… Good mo…
+20 "37-year-old Tatjana Maria storms into Qu… 2025-06-14         https… Tatjana…</code></pre>
+</div>
+</div>
+<p>U podatkovnom okviru clanci tekst svakog članka nalazi se u stupcu bodyText. Sučelje ga vraća samo zato što smo u zahtjevu zadali parametar <code>show-fields = "bodyText"</code>. Bez tog parametra odgovor sadrži samo naslov, datum, adresu i druge podatke o članku, ali ne i njegov tekst. Polje <code>bodyText</code> sadrži čisti tekst članka, bez oznaka HTML, pa ga možemo odmah koristiti u analizi. Tekst pojedinog članka dohvaćamo kao i svaku drugu vrijednost iz stupca podatkovnog okvira pa tekst prvog članka dobivamo s <code>clanci$bodyText[1]</code>. Budući da su članci dugi, a i zaštićeni autorskim pravom, ispisujemo samo naslov, datum i početak teksta prvog članka.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Naslov i datum objave prvog članka</span></span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>clanci<span class="sc">$</span>webTitle[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Into the Woods review – Brothers Grimm gloriously mashed up by Sondheim"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>clanci<span class="sc">$</span>webPublicationDate[<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2025-12-12"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prvih 600 znakova teksta prvog članka</span></span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>clanci<span class="sc">$</span>bodyText[<span class="dv">1</span>] <span class="sc">|&gt;</span></span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_sub</span>(<span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">600</span>) <span class="sc">|&gt;</span></span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_wrap</span>(<span class="at">width =</span> <span class="dv">80</span>) <span class="sc">|&gt;</span></span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">writeLines</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Can Stephen Sondheim and James Lapine’s eternally imaginative Grimm brothers
+mashup ever disappoint, when its book is so clever and it is driven by the most
+gorgeous (if tricky) music? Jordan Fein’s production shimmers and shines with
+all the humour and pathos of these errant fairytale characters who misadventure
+into the woods, winding their rearranged stories around each other. The show
+begins with swift efficiency, racing through some of the early songs, but it
+gathers feeling and there is picaresque fun. A witch’s curse inflicted on the
+Baker (Jamie Parker) and his wife (Katie Brayben) for</code></pre>
+</div>
+</div>
+<p>Funkcija <code>str_length()</code> pokazuje koliko je znakova u tekstu svakog članka pa tako vidimo jesu li preuzeti cijeli tekstovi. S tekstom možemo raditi i funkcijama iz poglavlja o znakovnim nizovima i regularnim izrazima pa funkcijom <code>str_detect()</code> možemo, primjerice, zadržati samo članke u kojima se spominje bajka Hansel and Gretel.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj znakova u tekstu svakog članka</span></span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_length</span>(clanci<span class="sc">$</span>bodyText)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  3116  4148  3528  2161  5715  5796  4134  1908  5834  2084  2020  2198
+[13]  4255  7248  2190  6068  5194  4849 15901  3784</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Članci u kojima se spominje bajka Hansel and Gretel</span></span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>clanci <span class="sc">|&gt;</span></span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(bodyText, <span class="st">"Hansel"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(webTitle, webPublicationDate)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  webTitle                                                    webPublicationDate
+  &lt;chr&gt;                                                       &lt;date&gt;            
+1 Sweeney Todd review – Sondheim’s demon barber is still a c… 2026-07-16        </code></pre>
+</div>
+</div>
+<p>Uz bodyText sučelje nudi i polje body u kojem je tekst članka zapisan kao HTML s odlomcima, poveznicama i drugim oznakama. Za analizu teksta obično je prikladnije polje bodyText. Polje body korisno je kad nam je važna struktura članka, na primjer podjela na odlomke, a iz njega se tekst izvlači funkcijama paketa <code>rvest</code>.</p>
+<p>Sučelje vraća rezultate po stranicama pa ako pronađenih članaka ima više nego što ih stane na jednu stranicu, svaku stranicu treba zatražiti posebnim zahtjevom, mijenjajući parametar <code>page</code>. Pri tome je funkcija <code>req_throttle()</code> posebno važna jer bi bez nje zahtjevi slijedili jedan za drugim bez ikakve stanke.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Putanje do datoteka za prvih pet stranica rezultata</span></span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a>datoteke_guardian <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"data/guardian_stranica_"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="st">".json"</span>)</span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb98-4"><a href="#cb98-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preuzimanje i spremanje prvih pet stranica rezultata</span></span>
+<span id="cb98-5"><a href="#cb98-5" aria-hidden="true" tabindex="-1"></a>stranice <span class="ot">&lt;-</span> <span class="fu">map2</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, datoteke_guardian, \(broj, datoteka) {</span>
+<span id="cb98-6"><a href="#cb98-6" aria-hidden="true" tabindex="-1"></a>  odgovor_stranica <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://content.guardianapis.com/search"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb98-7"><a href="#cb98-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_query</span>(</span>
+<span id="cb98-8"><a href="#cb98-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">q =</span> <span class="st">"</span><span class="sc">\"</span><span class="st">Brothers Grimm</span><span class="sc">\"</span><span class="st">"</span>,</span>
+<span id="cb98-9"><a href="#cb98-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">page =</span> broj,</span>
+<span id="cb98-10"><a href="#cb98-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">page-size</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">20</span>,</span>
+<span id="cb98-11"><a href="#cb98-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">show-fields</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"bodyText"</span>,</span>
+<span id="cb98-12"><a href="#cb98-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">api-key</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">Sys.getenv</span>(<span class="st">"GUARDIAN_KEY"</span>)</span>
+<span id="cb98-13"><a href="#cb98-13" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb98-14"><a href="#cb98-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_throttle</span>(<span class="at">rate =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb98-15"><a href="#cb98-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>()</span>
+<span id="cb98-16"><a href="#cb98-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb98-17"><a href="#cb98-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write_file</span>(<span class="fu">resp_body_string</span>(odgovor_stranica), datoteka)</span>
+<span id="cb98-18"><a href="#cb98-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">resp_body_json</span>(odgovor_stranica)</span>
+<span id="cb98-19"><a href="#cb98-19" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spajanje članaka sa svih stranica u jedan podatkovni okvir</span></span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>clanci <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">clanak =</span> <span class="fu">map</span>(stranice, \(s) s<span class="sc">$</span>response<span class="sc">$</span>results) <span class="sc">|&gt;</span> <span class="fu">list_flatten</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_wider</span>(clanak) <span class="sc">|&gt;</span></span>
+<span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_wider</span>(fields) <span class="sc">|&gt;</span></span>
+<span id="cb99-5"><a href="#cb99-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, webTitle, webPublicationDate, webUrl, bodyText) <span class="sc">|&gt;</span></span>
+<span id="cb99-6"><a href="#cb99-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">webPublicationDate =</span> <span class="fu">as_date</span>(<span class="fu">ymd_hms</span>(webPublicationDate)))</span>
+<span id="cb99-7"><a href="#cb99-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb99-8"><a href="#cb99-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj preuzetih članaka</span></span>
+<span id="cb99-9"><a href="#cb99-9" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(clanci)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 100</code></pre>
+</div>
+</div>
+<p>Funkcija <code>map2()</code> iz paketa <code>purrr</code> za svaki par broja stranice i naziva datoteke šalje jedan zahtjev, sprema odgovor u datoteku i vraća ga kao listu, pa je rezultat lista odgovora sa svih pet stranica. Funkcijom <code>list_flatten()</code> popise članaka s pojedinih stranica spajamo u jedan popis, koji zatim pretvaramo u podatkovni okvir na isti način kao i prije. Ako rezultata ima manje od pet stranica, onda sučelje za nepostojeće stranice javlja pogrešku pa broj stranica treba uskladiti s vrijednošću <code>odgovor$response$pages</code>.</p>
+<p>Tekstovi preuzeti preko programskog sučelja zaštićeni su autorskim pravom kao i svi drugi novinski članci. Uvjeti korištenja sučelja određuju što s njima smijemo činiti pa ih valja pročitati prije nego što preuzete tekstove objavimo ili podijelimo s drugima.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./2_2_regularni_izrazi.html" class="pagination-link" aria-label="Regularni izrazi">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regularni izrazi</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./3_2_pretpostavke_za_analizu_teksta.html" class="pagination-link" aria-label="Pretpostavke za analizu teksta">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2026, Alen Husnjak</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="./www.linkedin.com/in/alen-husnjak-5a0bb9206">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

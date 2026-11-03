@@ -1,0 +1,701 @@
+---
+title: "Učitavanje tekstualnih podataka"
+description: "Svaka analiza teksta počinje dovođenjem teksta u R, a taj se korak lako podcijeni. Tekstovi dolaze iz različitih izvora i u različitim oblicima pa se jedni nalaze u datotekama na našem računalu, drugi na internetskim stranicama, a treći u bazama podataka koje svoj sadržaj nude preko programskih sučelja. Za svaki od tih izvora postoje drugačiji alati, ali i drugačija pravila o tome što smijemo preuzeti i kako to učiniti a da ne opteretimo tuđe poslužitelje i ne povrijedimo tuđa prava."
+number-sections: true
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+library(rvest)
+library(jsonlite)
+library(httr2)
+library(gutenbergr)
+```
+
+Prije nego što tekst možemo analizirati, moramo ga učitati u R. Tekstovi koji se koriste u analizi dolaze iz vrlo različitih izvora, poput novinskih arhiva, saborskih rasprava, objava na društvenim mrežama i forumima, otvorenih odgovora iz anketa, transkripata intervjua ili književnih djela. Neki od njih već su spremljeni u datotekama, neke treba preuzeti s internetskih stranica, a neke nude same ustanove ili tvrtke preko posebnih programskih sučelja. U ovom ćemo poglavlju proći kroz sva tri puta, odnosno kroz učitavanje teksta iz datoteke, preuzimanje sadržaja s internetskih stranica i preuzimanje podataka preko programskih sučelja.
+
+::: {.callout-tip title="Primjer"}
+U ovom ćemo poglavlju sve postupke pokazati na tekstovima o **Grimmovim bajkama**, zbirci njemačkih narodnih priča koju su braća Jacob i Wilhelm Grimm prvi put objavila početkom 19. stoljeća. Koristit ćemo tri izvora. Prvi je engleski prijevod zbirke koji su izradili Edgar Taylor i Marian Edwardes, a koji je dostupan na stranicama projekta Project Gutenberg (*Grimms' Fairy Tales*, e-knjiga broj 2591). Prijevod je u javnoj domeni pa ga smijemo slobodno učitavati, ispisivati i dijeliti. Drugi je izvor članak *Grimms' Fairy Tales* na engleskoj Wikipediji koji je objavljen pod licencom CC BY-SA i na kojem ćemo pokazati preuzimanje sadržaja s internetskih stranica. Treći su izvor dva programska sučelja, Gutendex koji vraća podatke o knjigama s Project Gutenberga, i sučelje novina The Guardian koje vraća novinske članke. Na njima ćemo pokazati kako se podaci preuzimaju preko programskih sučelja, bez ključa i s ključem.
+:::
+
+## Odakle dolaze tekstovi
+
+Najjednostavniji su put do teksta gotovi korpusi koji dolaze u R paketima. Paket `janeaustenr`, primjerice, sadrži romane Jane Austen, a paket `quanteda` inauguracijske govore američkih predsjednika pa se takvi tekstovi učitavaju jednom naredbom, bez traženja i preuzimanja datoteka. Paket `gutenbergr` omogućuje pristup djelima u javnoj domeni s Project Gutenberga. Njime se knjige preuzimaju prema broju e-knjige, a paket pritom sam uklanja zaglavlje i podnožje s napomenama o licenci koje nisu dio teksta.
+
+```{r}
+#| eval: false
+# Preuzimanje Grimmovih bajki paketom gutenbergr
+library(gutenbergr)
+grimm <- gutenberg_download(2591)
+```
+
+Gotovi korpusi ipak pokrivaju tek malen dio onoga što istraživače zanima pa tekstove najčešće moramo pribaviti sami. Kad tekstovi postoje kao datoteke, učitavamo ih u R, a kad se nalaze na internetu, imamo dvije mogućnosti. Ako stranica nudi programsko sučelje, podatke preuzimamo preko njega, a ako ga ne nudi, sadržaj preuzimamo sa samih stranica. Programsko sučelje gotovo je uvijek bolji izbor jer daje upravo one podatke koji nam trebaju u urednom obliku i bez suvišnog sadržaja, a njegov vlasnik zadržava nadzor nad time tko i koliko podataka preuzima. Prije nego što počnemo preuzimati podatke s interneta, korisno je provjeriti i nudi li vlasnik podatke kao gotove datoteke ili bi nam ih mogao ustupiti na upit jer je to za obje strane jednostavnije od automatiziranog preuzimanja.
+
+## Učitavanje teksta iz datoteke
+
+Ako je tekst spremljen kao obična tekstna datoteka, u formatu .txt, u kojem se tekstualni podaci najčešće i čuvaju, u R se može učitati funkcijom `readLines()` kojoj se kao argument zadaje putanja do datoteke.
+
+::: {.callout-note title="Napomena"}
+Putanju do datoteke u R-u možete zapisati na nekoliko načina, ovisno o operacijskom sustavu (Windows, macOS ili Linux) i organizaciji projekta. Najjednostavnije je zapisati je kao znakovni niz. U Windowsu se mape odvajaju obrnutom kosom crtom (`\`), no ona u R-u ima posebno značenje pa je treba udvostručiti (`\\`) ili umjesto nje koristiti kosu crtu (`/`) koja radi na svim operacijskim sustavima. Putanja se tako može zapisati kao:
+
+`"C:\\Users\\Ime\\Dokumenti\\datoteka.txt"` ili kao `"C:/Users/Ime/Dokumenti/datoteka.txt"`
+
+Osim apsolutnih, mogu se koristiti i relativne putanje koje R tumači u odnosu na radni direktorij, a on se provjerava funkcijom `getwd()`. Ako se datoteka nalazi u mapi `podaci` unutar radnog direktorija, dovoljno je napisati `"podaci/datoteka.txt"`. Znak `~` označava korisnikovu početnu mapu pa putanja poput `"~/podaci/datoteka.txt"` nije relativna u odnosu na projekt i na tuđem računalu najčešće neće raditi.
+:::
+
+```{r}
+# Učitavanje teksta (uz preskakanje znakova NUL)
+grimm_lines <- readLines(
+  "data/Grimms_Fairy_Tales.txt",
+  skipNul = TRUE
+)
+
+# Broj redaka
+length(grimm_lines)
+
+# Pregled prvih 30 redaka
+head(grimm_lines, 30)
+```
+
+Funkcija `readLines()` vraća znakovni vektor u kojem je svaki element jedan redak datoteke pa je datoteka s Grimmovim bajkama učitana kao vektor od 9615 elemenata. Već iz prvih tridesetak redaka vidi se da datoteka ne počinje bajkama, nego napomenom o licenci Project Gutenberga, naslovom, imenima autora i podacima o izdanju. Tek iza retka koji počinje oznakom `*** START OF THE PROJECT GUTENBERG EBOOK` slijedi sama knjiga, a na kraju datoteke nalazi se podnožje s cijelim tekstom licence. Takve ćemo dijelove ukloniti u sljedećem poglavlju pri čišćenju teksta.
+
+Argumentom `skipNul = TRUE` pri učitavanju se preskaču znakovi NUL (`\x00`). To je nevidljiv kontrolni znak koji ima smisla u binarnim datotekama, ali se u tekstnim datotekama ne bi smio pojavljivati. Najčešće nastaje pri pogrešnoj pretvorbi kodiranja, pri optičkom prepoznavanju znakova (OCR), u starijim alatima ili kad je datoteka preuzeta ili raspakirana nestandardnim alatima. Znakovni nizovi u R-u ne mogu sadržavati znak NUL pa ga nakon učitavanja nije moguće pronaći ni ukloniti. Bez tog argumenta `readLines()` pri nailasku na NUL javlja upozorenje i odbacuje ostatak retka pa ga je najbolje ukloniti već pri učitavanju. Ako datoteka ne sadrži taj znak, argument ne mijenja ništa.
+
+Ako tekst želimo učitati kao jedan znakovni niz, a ne redak po redak, koristimo funkciju `read_file()` iz paketa `readr`. Isti paket ima i funkciju `read_lines()` koja radi isto što i `readLines()`, ali je brža i dosljednija s ostalim funkcijama paketa `tidyverse`.
+
+```{r}
+# Učitavanje teksta kao jednog znakovnog niza
+grimm_text <- read_file("data/Grimms_Fairy_Tales.txt")
+
+# Broj znakova u tekstu
+str_length(grimm_text)
+```
+
+Cijela je knjiga sada jedan niz od više od pola milijuna znakova u kojem su prijelomi redaka zapisani znakom `\n`.
+
+### Kodiranje znakova
+
+Pri učitavanju teksta može se pojaviti problem s neprepoznatim znakovima koji se u tekstu prikazuju kao � ili kao neobični nizovi poput `\x92`. Uzrok je u tome što sadržaj tekstne datoteke nisu „čista slova”, nego niz bajtova, a koji bajt odgovara kojem znaku određuje **kodiranje znakova** (engl. *character encoding*). Da bi se sva poznata slova, simboli i emojiji mogli zapisati na isti način, predložen je standard Unicode, ali i on zahtijeva neki oblik digitalnog zapisa od kojih je danas najrašireniji **UTF-8**. UTF-8 standard je za internetske stranice, a koriste ga i novije verzije R-a, RStudio i paket `stringr`. Starije datoteke iz sustava Windows i mnoge e-knjige, međutim, često su kodirane u obliku Windows-1252 za zapadnoeuropske jezike ili Windows-1250 za srednjoeuropske jezike, uključujući hrvatski. Ako R datoteku pročita pod pogrešnim kodiranjem, pojedine bajtove ne može ispravno protumačiti pa se u tekstu pojavljuju neobični znakovi. Preporuka je zato jednostavna, a to je da u R-u svi tekstovi budu kodirani u obliku UTF-8, bilo tako da ih učitamo iz datoteka kodiranih u tom obliku, bilo tako da ih pri učitavanju pretvorimo iz poznatog kodiranja.
+
+Prije daljnje obrade zato je dobro provjeriti kodiranje datoteke. Funkcija `guess_encoding()` iz paketa `readr` procjenjuje najvjerojatnija kodiranja i uz svako navodi stupanj pouzdanosti. Riječ je o procjeni, a ne o jamstvu pa rezultat valja provjeriti pregledom teksta.
+
+```{r}
+# Procjena kodiranja datoteke
+readr::guess_encoding("data/Grimms_Fairy_Tales.txt")
+```
+
+Funkcija s potpunom pouzdanošću procjenjuje da je datoteka kodirana u obliku UTF-8 pa je ne treba pretvarati. Primijetimo da funkciju pozivamo zajedno s imenom paketa, kao `readr::guess_encoding()`. Paket `rvest`, koji ćemo koristiti u nastavku poglavlja, ima istoimenu, ali zastarjelu funkciju pa bi se nakon njegova učitavanja pozvala ona, a ona za istu datoteku daje drugačiju i pogrešnu procjenu.
+
+Kako izgleda tekst učitan pod pogrešnim kodiranjem, možemo pokazati tako da jedan redak Grimmovih bajki spremimo u privremenu datoteku kodiranu u obliku Windows-1252, a zatim je učitamo. Funkcija `tempfile()` pritom stvara putanju do privremene datoteke koja se briše kad zatvorimo R, a funkcija `iconv()` pretvara redak u kodiranje Windows-1252.
+
+```{r}
+# Redak s apostrofom i slovom ä
+grimm_lines[41]
+
+# Spremanje retka u privremenu datoteku kodiranu u obliku Windows-1252
+datoteka_1252 <- tempfile(fileext = ".txt")
+writeLines(iconv(grimm_lines[41], from = "UTF-8", to = "Windows-1252"), datoteka_1252, useBytes = TRUE)
+
+# Procjena kodiranja i učitavanje bez navođenja kodiranja
+readr::guess_encoding(datoteka_1252)
+redak_1252 <- readLines(datoteka_1252)
+redak_1252
+```
+
+U učitanom retku apostrof je prikazan kao `\x92`, a slovo *ä* kao `\xe4` jer R te bajtove pokušava protumačiti kao UTF-8, a u tom obliku oni ne označavaju nijedan znak. Funkcija `guess_encoding()` pritom ispravno procjenjuje da je datoteka kodirana u obliku Windows-1252.
+
+Kad je kodiranje poznato, tekst se u UTF-8 pretvara funkcijom `iconv()`. Njezin je prvi argument, `x`, znakovni vektor koji se pretvara. U argument `from` upisuje se trenutačno kodiranje, a u argument `to` željeno. Ako se neki znak ne može pretvoriti, cijeli element vektora u kojem se nalazi postaje `NA`, a to se ponašanje može promijeniti argumentom `sub`, primjerice `sub = "?"` kojim se svaki takav znak zamjenjuje upitnikom.
+
+```{r}
+# Pretvaranje kodiranja iz Windows-1252 u UTF-8
+iconv(
+    x = redak_1252,
+    from = "Windows-1252",
+    to = "UTF-8"
+)
+```
+
+Isti se rezultat može dobiti i jednostavnije, tako da kodiranje navedemo već pri učitavanju. Funkcije `read_lines()` i `read_file()` iz paketa `readr` imaju argument `locale` kojemu se funkcijom `locale()` zadaje kodiranje datoteke pa se tekst pri učitavanju odmah pretvara u UTF-8.
+
+```{r}
+# Učitavanje uz navođenje kodiranja
+read_lines(datoteka_1252, locale = locale(encoding = "Windows-1252"))
+```
+
+### Druge vrste datoteka
+
+Tekst se u R može učitati i drugim funkcijama i paketima, ovisno o vrsti datoteke u kojoj su podaci spremljeni i o obliku u kojem ih želimo pohraniti u R-u. R sam čita obične tekstne datoteke i datoteke CSV, a za datoteke poput JSON, HTML, XML, Word, Excel i PDF potrebni su dodatni paketi.
+
+::: {style="width: 100%"}
+| Vrsta datoteke                            | Funkcija        | Paket      | Primjer                                               |
+|-------------------------------------------|-----------------|------------|-------------------------------------------------------|
+| Običan tekst (redak po redak)             | `readLines()`   | base R     | `readLines("clanak.txt")`                             |
+| Običan tekst (redak po redak)             | `read_lines()`  | `readr`    | `read_lines("clanak.txt")`                            |
+| Običan tekst (kao jedan niz)              | `read_file()`   | `readr`    | `read_file("clanak.txt")`                             |
+| Tablični tekst (npr. odvojen tabulatorom) | `read.table()`  | base R     | `read.table("podaci.txt", header = TRUE, sep = "\t")` |
+| Tablični tekst (npr. odvojen tabulatorom) | `read_delim()`  | `readr`    | `read_delim("podaci.txt", delim = "\t")`              |
+| CSV                                       | `read.csv()`    | base R     | `read.csv("podaci.csv")`                              |
+| CSV                                       | `read_csv()`    | `readr`    | `read_csv("podaci.csv")`                              |
+| Excel (.xls, .xlsx)                       | `read_excel()`  | `readxl`   | `read_excel("podaci.xlsx", sheet = 1)`                |
+| OpenDocument proračunska tablica (.ods)   | `read_ods()`    | `readODS`  | `read_ods("podaci.ods")`                              |
+| SPSS (.sav)                               | `read_sav()`    | `haven`    | `read_sav("anketa.sav")`                              |
+| Stata (.dta)                              | `read_dta()`    | `haven`    | `read_dta("analiza.dta")`                             |
+| SAS (.sas7bdat)                           | `read_sas()`    | `haven`    | `read_sas("podaci.sas7bdat")`                         |
+| PDF                                       | `pdf_text()`    | `pdftools` | `pdf_text("izvjestaj.pdf")`                           |
+| Word (.docx)                              | `readtext()`    | `readtext` | `readtext("intervju.docx")`                           |
+| HTML                                      | `read_html()`   | `rvest`    | `read_html("stranica.html")`                          |
+| JSON                                      | `read_json()`   | `jsonlite` | `read_json("podaci.json")`                            |
+| XML                                       | `read_xml()`    | `xml2`     | `read_xml("podaci.xml")`                              |
+| R-ova binarna datoteka (.RData)           | `load()`        | base R     | `load("moji_podaci.RData")`                           |
+| R-ova binarna datoteka (.rds)             | `readRDS()`     | base R     | `objekt <- readRDS("objekt.rds")`                     |
+| ZIP arhiva (raspakiravanje)               | `unzip()`       | base R     | `unzip("arhiva.zip", exdir = "podaci/")`              |
+:::
+
+Funkcija `pdf_text()` vraća znakovni vektor u kojem je svaka stranica dokumenta jedan element. Pritom treba znati da se tekst može izvući samo iz dokumenata PDF u kojima je tekst zapisan kao tekst. Ako je dokument skeniran, on sadrži samo slike stranica pa tekst najprije treba prepoznati postupkom **optičkog prepoznavanja znakova** (engl. *optical character recognition*, OCR) za koji u R-u služi paket `tesseract`. Takav je tekst rijetko savršen pa ga treba pažljivo provjeriti.
+
+Rad s mnogo različitih paketa i njihovim različitim rezultatima može biti zamoran, osobito ako se u istom projektu koriste datoteke različitih vrsta. Jedno je rješenje paket `readtext` koji objedinjuje više paketa za učitavanje i nudi jednu funkciju za učitavanje gotovo svih spomenutih vrsta datoteka. Funkcija `readtext()` vraća podatkovni okvir u kojem je svaki dokument jedan redak, a stupac `doc_id` sadrži naziv datoteke, dok stupac `text` sadrži njezin tekst.
+
+### Učitavanje više datoteka odjednom
+
+U istraživanjima se korpus rijetko sastoji od jedne datoteke. Transkripti intervjua, novinski članci ili saborski govori najčešće su spremljeni kao zasebne datoteke u jednoj mapi pa ih treba učitati sve odjednom. Funkciji `readtext()` putanju tada možemo zadati s uzorkom poput `"intervjui/*.txt"` pa će učitati sve datoteke s nastavkom .txt iz mape `intervjui`. Funkcija može pretraživati i podmape te učitati sve datoteke iz arhive ZIP, a svaku datoteku učitava prema njezinoj vrsti pa u istoj mapi mogu biti i datoteke različitih vrsta. Argumentom `encoding` može se zadati i kodiranje datoteka.
+
+```{r}
+#| eval: false
+# Učitavanje svih datoteka .txt iz mape intervjui
+intervjui <- readtext("intervjui/*.txt", encoding = "UTF-8")
+```
+
+Isto se može postići i funkcijama iz skupa paketa `tidyverse`. Funkcija `list.files()` vraća putanje do svih datoteka u mapi koje odgovaraju zadanom uzorku, a funkcija `map_chr()` iz paketa `purrr` na svaku putanju primjenjuje funkciju `read_file()`. Rezultat spremamo u podatkovni okvir u kojem je naziv datoteke u jednom, a njezin tekst u drugom stupcu.
+
+```{r}
+#| eval: false
+# Putanje do svih datoteka .txt u mapi intervjui
+datoteke <- list.files("intervjui", pattern = "\\.txt$", full.names = TRUE)
+
+# Učitavanje svake datoteke kao jednog niza
+intervjui <- tibble(
+  doc_id = basename(datoteke),
+  text = map_chr(datoteke, read_file)
+)
+```
+
+## Preuzimanje sadržaja s interneta
+
+Mnogi tekstovi koje želimo analizirati nisu spremljeni u urednim datotekama na računalu, nego se nalaze na internetu, primjerice novinski članci, objave na forumima, saborske rasprave, recenzije proizvoda ili enciklopedijski članci. Umjesto da ih ručno kopiramo sa stranica u datoteke, možemo ih **automatizirano preuzimati s internetskih stranica** (engl. *web scraping*). Riječ je o postupku u kojem u R-u pišemo kod koji stranicu preuzme, u njoj pronađe dijelove koji nas zanimaju i spremi ih kao objekt spreman za daljnju obradu. Takav je pristup bolji od ručnog kopiranja jer je brži, jer se njime može preuzeti mnogo više sadržaja, jer se postupak može ponoviti i jer je pogrešaka manje nego pri ručnom kopiranju.
+
+### Kako je građena internetska stranica
+
+Kad u pregledniku otvorimo internetsku stranicu, preglednik s poslužitelja preuzima tekstnu datoteku napisanu u jeziku **HTML** (engl. *HyperText Markup Language*) i prikazuje je u obliku koji vidimo na zaslonu. HTML nije programski jezik, nego jezik za označavanje kojim se opisuje što je koji dio sadržaja, primjerice naslov, odlomak, poveznica ili tablica.
+
+HTML dokument sastoji se od **elemenata**. Element obično počinje početnom oznakom, primjerice `<p>`, a završava završnom oznakom s kosom crtom, primjerice `</p>`, a između njih nalazi se sadržaj elementa. Pojednostavljena internetska stranica mogla bi izgledati ovako:
+
+```html
+<html>
+  <head>
+    <title>Naslov u kartici preglednika</title>
+  </head>
+  <body>
+    <h1>Glavni naslov stranice</h1>
+    <p class="uvod">Prvi <b>odlomak</b> teksta.</p>
+    <p>Drugi odlomak s <a href="https://www.r-project.org">poveznicom</a>.</p>
+  </body>
+</html>
+```
+
+Iz ovog se primjera vide tri važne osobine HTML-a. Prvo, elementi imaju značenje pa oznaka `<h1>` označava naslov prve razine (postoje i oznake od `<h2>` do `<h6>`), oznaka `<p>` odlomak, `<a>` poveznicu, `<b>` podebljani tekst, `<table>` tablicu, a `<div>` i `<section>` općenite odjeljke kojima se sadržaj grupira. Svaka stranica mora imati element `<html>`, a on dva elementa, `<head>` u kojem su podaci o stranici, poput naslova u kartici preglednika, i `<body>` u kojem je sadržaj koji vidimo u pregledniku.
+
+Drugo, elementi su ugniježđeni. Element `<b>` nalazi se unutar elementa `<p>`, koji se nalazi unutar elementa `<body>`, a on unutar elementa `<html>`. HTML dokument zato ima strukturu stabla u kojoj svaki element ima svog „roditelja” i može imati „djecu”.
+
+Treće, elementi mogu imati **atribute** koji se pišu u početnoj oznaci, u obliku `ime="vrijednost"`. Atribut `href` elementa `<a>` sadrži, primjerice, adresu na koju poveznica vodi. Za preuzimanje sadržaja posebno su važni atributi `class` i `id`. Atribut `class` označava skupinu elemenata iste vrste pa više elemenata može imati istu klasu, a atribut `id` jedinstveno označava jedan element na stranici.
+
+Upravo nam te tri osobine omogućuju da u kodu točno opišemo koji dio stranice želimo. Za to se koriste **CSS selektori**, odnosno kratki izrazi koji opisuju elemente prema oznaci, klasi, identifikatoru ili položaju u stablu.
+
+| Selektor  | Što odabire                                                  | Primjer iz gornjeg HTML-a |
+|-----------|--------------------------------------------------------------|---------------------------|
+| `p`       | sve elemente s tom oznakom                                   | oba odlomka               |
+| `.uvod`   | sve elemente s klasom `uvod` (točka označava klasu)          | prvi odlomak              |
+| `#glavni` | element s identifikatorom `glavni` (ljestve označavaju `id`) | nijedan                   |
+| `body p`  | elemente `p` bilo gdje unutar elementa `body` (razmak)       | oba odlomka               |
+| `p > b`   | elemente `b` koji su izravna djeca elementa `p` (znak `>`)   | riječ „odlomak”           |
+| `p, h1`   | elemente `p` i elemente `h1` (zarez)                         | oba odlomka i naslov      |
+
+### Preuzimanje teksta paketom `rvest`
+
+Za preuzimanje sadržaja s internetskih stranica u R-u najčešće se koristi paket `rvest`. On je dio skupa paketa `tidyverse`, ali se ne učitava naredbom `library(tidyverse)` pa ga treba zasebno učitati. Prije rada sa stvarnom stranicom isprobat ćemo selektore iz tablice na gornjem primjeru. Funkcija `minimal_html()` iz HTML-a zapisanog kao znakovni niz stvara isti objekt kakav bismo dobili preuzimanjem stranice pa je pogodna za vježbanje.
+
+```{r}
+# Pojednostavljena stranica iz gornjeg primjera
+html <- minimal_html('
+  <h1>Glavni naslov stranice</h1>
+  <p class="uvod">Prvi <b>odlomak</b> teksta.</p>
+  <p>Drugi odlomak s <a href="https://www.r-project.org">poveznicom</a>.</p>
+')
+```
+
+Elemente odabiremo funkcijama `html_element()` i `html_elements()`. Funkcija `html_elements()` vraća sve elemente koji odgovaraju selektoru, a funkcija `html_element()` samo prvi od njih. Tekst iz odabranih elemenata zatim izvlačimo funkcijom `html_text2()` koja tekst vraća onako kako bi ga prikazao preglednik.
+
+```{r}
+# Tekst svih odlomaka
+html |>
+  html_elements("p") |>
+  html_text2()
+
+# Tekst odlomka s klasom uvod
+html |>
+  html_element(".uvod") |>
+  html_text2()
+
+# Tekst podebljane riječi unutar odlomka
+html |>
+  html_elements("p > b") |>
+  html_text2()
+```
+
+Funkcije `html_element()` i `html_elements()` razlikuju se i kad selektor ne odgovara nijednom elementu. Tada `html_elements()` vraća prazan rezultat, a `html_element()` nedostajuću vrijednost što je važno kad iz više elemenata izvlačimo podatke koji ne postoje u svakom od njih. Osim teksta, iz elemenata možemo izvući i vrijednosti atributa za što služi funkcija `html_attr()`. Tako, primjerice, dobivamo adresu na koju vodi poveznica.
+
+```{r}
+# Adresa na koju vodi poveznica
+html |>
+  html_element("a") |>
+  html_attr("href")
+```
+
+Ako se podaci na stranici nalaze u tablici, izvlačimo ih funkcijom `html_table()` koja tablicu pretvara u podatkovni okvir i pritom stupce s brojevima sama pretvara u brojeve. HTML tablica sastoji se od elementa `<table>`, redaka `<tr>`, naslovnih ćelija `<th>` i ćelija s podacima `<td>`.
+
+```{r}
+# Pojednostavljena stranica s tablicom
+tablica <- minimal_html('
+  <table>
+    <tr><th>Bajka</th><th>Broj odlomaka</th></tr>
+    <tr><td>Rapunzel</td><td>12</td></tr>
+    <tr><td>Hansel and Gretel</td><td>15</td></tr>
+  </table>
+')
+
+# Pretvaranje tablice u podatkovni okvir
+tablica |>
+  html_element("table") |>
+  html_table()
+```
+
+Brojevi u ovoj tablici izmišljeni su i služe samo kao primjer.
+
+### Pronalaženje selektora
+
+Na stvarnim stranicama HTML je mnogo složeniji nego u gornjem primjeru pa je pronalaženje pravog selektora često najteži dio posla. Selektor treba biti dovoljno precizan da ne odabere ono što nam ne treba, ali i dovoljno širok da odabere sve što nam treba, a do takvog se selektora obično dolazi isprobavanjem. Dva su alata pritom posebno korisna.
+
+Prvi je **SelectorGadget**, besplatan alat otvorenog koda koji na temelju elemenata na koje kliknemo predlaže CSS selektor. U pregledniku Google Chrome, kao i u drugim preglednicima temeljenima na Chromiumu, poput Microsoft Edgea ili Bravea, SelectorGadget se instalira kao proširenje iz trgovine [Chrome Web Store](https://chromewebstore.google.com/). Kad otvorimo stranicu i pokrenemo SelectorGadget, u donjem desnom kutu zaslona pojavljuje se traka alata. Prelaskom miša preko stranice pojedini se elementi uokviruju, a klikom na element odabiremo ga i on postaje zelen. SelectorGadget na temelju odabira predlaže selektor, ispisuje ga u traci i žutom bojom označava sve ostale elemente koje taj selektor obuhvaća. Ako je među žutim elementima neki koji ne želimo, klikom na njega isključujemo ga pa on postaje crven, a selektor se prilagođava. Klikanje se tako ponavlja dok selektor ne obuhvati točno ono što želimo, a zatim ga kopiramo iz trake u kod. U traci se nalaze i gumb *Clear* koji poništava odabir pri čemu broj u zagradi pokazuje koliko je elemenata trenutačno obuhvaćeno, gumb *Toggle Position* koji traku premješta u drugi kut zaslona, te gumb *XPath* koji umjesto CSS selektora prikazuje isti izraz u jeziku XPath.
+
+Drugi su alat **alati za razvojne programere** (engl. *developer tools*) koji su ugrađeni u svaki moderni preglednik. Kad desnom tipkom miša kliknemo na neki element stranice i odaberemo naredbu *Inspect*, otvara se prikaz cijelog HTML-a stranice, usredotočen na element na koji smo kliknuli. U tom prikazu možemo istražiti strukturu stranice, a posebnu pozornost treba obratiti na atribute `class` i `id` jer se oni najčešće koriste za oblikovanje stranice i zato su dobri za odabir elemenata. Desnim klikom na element u tom prikazu i naredbom *Copy selector* dobivamo selektor koji jednoznačno opisuje taj element.
+
+Kao stvaran primjer koristit ćemo članak *Grimms' Fairy Tales* s engleske Wikipedije. Prvi je korak uvijek učitavanje stranice funkcijom `read_html()` kojoj se kao argument zadaje adresa stranice. R pritom preuzima HTML stranice i sprema ga kao objekt klase `xml_document` u kojem je sačuvana cijela struktura stabla.
+
+Stranicu je dovoljno preuzeti samo jednom. Pri svakom preuzimanju šaljemo zahtjev poslužitelju, a ako kod izvršavamo mnogo puta, primjerice dok ga razvijamo, nepotrebno opterećujemo tuđi poslužitelj. Osim toga, sadržaj se stranice s vremenom mijenja pa bi isti kod sutra mogao dati drugačiji rezultat. Zato preuzetu stranicu odmah spremamo na računalo funkcijom `write_html()` iz paketa `xml2` na kojem se temelji paket `rvest`, a u daljnjem radu učitavamo spremljenu datoteku.
+
+```{r}
+#| eval: false
+# Preuzimanje stranice i spremanje u datoteku
+url <- "https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales"
+stranica <- read_html(url)
+xml2::write_html(stranica, "data/grimm_wikipedia.html")
+```
+
+```{r}
+#| include: false
+stranica <- read_html("data/grimm_wikipedia.html")
+```
+
+```{r}
+stranica
+```
+
+Kod možemo napisati i tako da stranicu preuzme samo ako još nije spremljena. Funkcija `file.exists()` provjerava postoji li datoteka pa se preuzimanje izvršava samo pri prvom pokretanju koda, a svaki sljedeći put učitava se spremljena datoteka.
+
+```{r}
+#| eval: false
+# Stranica se preuzima samo ako još nije spremljena
+datoteka <- "data/grimm_wikipedia.html"
+
+if (!file.exists(datoteka)) {
+  read_html(url) |>
+    xml2::write_html(datoteka)
+}
+
+stranica <- read_html(datoteka)
+```
+
+Naslov članka nalazi se u elementu `<h1>`, a budući da na stranici postoji samo jedan takav element, dovoljna je funkcija `html_element()`.
+
+```{r}
+# Naslov članka
+stranica |>
+  html_element("h1") |>
+  html_text2()
+```
+
+Obično nas, međutim, zanima cijeli tekst članka. Svi odlomci članka elementi su `<p>`, a sam sadržaj članka na Wikipediji nalazi se unutar elementa s identifikatorom `mw-content-text`. Ograničavanjem na taj element, selektorom `#mw-content-text p`, izbjegavamo odlomke u izbornicima i podnožju stranice. Budući da želimo sve odlomke, koristimo funkciju `html_elements()`.
+
+```{r}
+# Tekst svih odlomaka članka
+odlomci <- stranica |>
+  html_elements("#mw-content-text p") |>
+  html_text2()
+
+# Broj preuzetih odlomaka i prva tri odlomka
+length(odlomci)
+head(odlomci, 3)
+```
+
+Rezultat je znakovni vektor u kojem je svaki element jedan odlomak članka. Među njima bit će i nekoliko praznih odlomaka, a tekst će sadržavati i oznake izvora poput *[1]* ili *[23]* koje Wikipedija stavlja iza rečenica. Takve ćemo dijelove ukloniti pri čišćenju teksta.
+
+Na isti način možemo preuzeti i druge dijelove članka. Naslovi odjeljaka nalaze se u elementima `<h2>`, poveznice u elementima `<a>` čiju adresu izvlačimo funkcijom `html_attr("href")`, a tablice, koje na Wikipediji obično imaju klasu `wikitable`, pretvaramo u podatkovne okvire funkcijom `html_table()`.
+
+```{r}
+# Naslovi odjeljaka
+stranica |>
+  html_elements("#mw-content-text h2") |>
+  html_text2()
+
+# Sve tablice s klasom wikitable kao popis podatkovnih okvira
+stranica |>
+  html_elements(".wikitable") |>
+  html_table()
+```
+
+Treba imati na umu da se struktura stranica s vremenom mijenja. Selektor koji danas radi sutra može prestati raditi pa kod za preuzimanje sadržaja treba povremeno provjeriti i prilagoditi. Zato je bolje koristiti selektore koji opisuju sadržaj, poput `#mw-content-text p`, nego one koje stranica stvara automatski i koji se mijenjaju pri svakoj izmjeni, poput nasumičnih oznaka u atributu `id` pojedinih odlomaka.
+
+Opisani postupak radi na stranicama čiji se sadržaj nalazi izravno u HTML-u koji poslužitelj šalje pregledniku, kao što je slučaj s Wikipedijom i većinom novinskih portala. Neke stranice, međutim, sadržaj učitavaju naknadno pomoću jezika JavaScript pa funkcija `read_html()` dobiva gotovo praznu stranicu jer paket `rvest` preuzima samo HTML i ne izvršava JavaScript. Takve stranice zahtijevaju alate koji stranicu otvaraju u pravom pregledniku, poput funkcije `read_html_live()` iz novijih verzija paketa `rvest` za koju je potreban paket `chromote` i instaliran preglednik Chrome. Prije toga uvijek je dobro provjeriti nudi li stranica programsko sučelje.
+
+### Dobre prakse pri preuzimanju sadržaja
+
+Prije nego što počnemo preuzimati sadržaj s neke stranice, trebamo se zapitati smijemo li to učiniti i kako to učiniti a da nikome ne naštetimo. Pravna je situacija složena i razlikuje se od zemlje do zemlje, a ni sudske odluke nisu dosljedne. Većina poznatih sudskih sporova ticala se preuzimanja u komercijalne svrhe pa je ponovno objavljivanje tuđeg sadržaja radi zarade mnogo ozbiljnije pitanje od preuzimanja stranica za istraživanje. Kao opće pravilo vrijedi da je preuzimanje vjerojatno dopušteno ako su podaci javni, ako nisu osobni i ako su činjenični, a te su tri odrednice povezane s uvjetima korištenja stranice, zaštitom osobnih podataka i autorskim pravom.
+
+Mnoge stranice imaju **uvjete korištenja** (engl. *terms of service*) koji često zabranjuju automatizirano preuzimanje sadržaja. U Europi su sudovi pritom presuđivali da su takvi uvjeti obvezujući čak i kad ih korisnik nije izričito prihvatio. Pri preuzimanju osobnih podataka, poput imena, adresa e-pošte, brojeva telefona ili datuma rođenja, treba biti iznimno oprezan, čak i kad su podaci javno dostupni jer Europa ima vrlo stroge propise o njihovu prikupljanju i pohrani. Konačno, tekst je u pravilu zaštićen **autorskim pravom**, za razliku od samih činjenica, a u Europi su posebno zaštićene i baze podataka.
+
+Mnoge stranice u svom korijenskom direktoriju imaju i datoteku **robots.txt** u kojoj navode koje dijelove stranice automatizirani programi smiju preuzimati, a koje ne smiju. Ta datoteka nema zakonsku snagu i ne sprječava preuzimanje, nego je preporuka vlasnika stranice, ali je svakako treba poštovati. Datoteka se nalazi na adresi koja se sastoji od adrese stranice i nastavka `/robots.txt`, a pravila su u njoj zapisana tako da redak `User-agent` označava program na koji se pravila odnose, a pri čemu zvjezdica označava sve programe, a retci `Disallow` i `Allow` dijelove stranice koje taj program ne smije, odnosno smije preuzimati. Redak `Crawl-delay` traži da program između dva zahtjeva pričeka zadani broj sekundi.
+
+Uz to, pri preuzimanju sadržaja treba se ponašati pristojno. Kad god je moguće, podatke treba preuzimati preko programskog sučelja ili ih zatražiti od vlasnika, a stranice preuzimati samo kad drugog načina nema. Treba ostati prepoznatljiv, odnosno u zahtjevu navesti tko preuzima sadržaj i kako ga se može kontaktirati, a promet treba svesti na najmanju moguću mjeru pa svaku stranicu treba preuzeti samo jednom i preuzimati samo ono što nam je doista potrebno. Ako preuzimamo mnogo stranica, između dvaju zahtjeva treba pričekati, za što možemo koristiti funkciju `Sys.sleep()` koja zaustavlja izvršavanje koda na zadani broj sekundi. Isto to automatski čini paket `polite` koji poštuje pravila iz datoteke robots.txt, čeka između zahtjeva i pamti već preuzete stranice pa istu stranicu nikada ne preuzima dvaput.
+
+```{r}
+#| eval: false
+# Preuzimanje više stranica uz pauzu od dvije sekunde između zahtjeva
+for (url in adrese) {
+  stranica <- read_html(url)
+  xml2::write_html(stranica, file.path("stranice", paste0(basename(url), ".html")))
+  Sys.sleep(2)
+}
+```
+
+## Programska sučelja
+
+**Programsko sučelje** (engl. *application programming interface*, API) općenito je alat koji korisnicima omogućuje da svoj program povežu s nekim drugim programom ili uslugom. Kad govorimo o preuzimanju podataka, mislimo na mrežna programska sučelja koja nude internetske stranice i usluge kako bi drugi programi mogli preuzimati njihove podatke. Za razliku od internetske stranice koja je namijenjena ljudima i uz sadržaj sadrži izbornike, oblikovanje i druge elemente koji nam ne trebaju, programsko sučelje vraća samo podatke i to u standardiziranom obliku. Zato je preuzimanje podataka preko programskog sučelja zlatni standard prikupljanja podataka s interneta.
+
+Većina današnjih programskih sučelja radi na načelu **REST** (engl. *Representational State Transfer*) prema kojem se podacima pristupa preko adresa, a odgovor se vraća kao dokument u nekom standardnom formatu. Zahtjev se sastoji od osnovne adrese sučelja i parametara koje joj dodajemo, a podatke dobivamo zahtjevom GET, kakav i preglednik šalje kad otvaramo stranicu. Razlika je u tome što su parametri zahtjeva opisani u dokumentaciji sučelja, a odgovor sadrži samo podatke, bez ikakvog oblikovanja.
+
+Postupak preuzimanja podataka preko programskog sučelja ima nekoliko koraka. Najprije treba pronaći sučelje i upoznati se s njegovom dokumentacijom, uvjetima korištenja i ograničenjima, primjerice s najvećim dopuštenim brojem zahtjeva. Neka sučelja zatim traže registraciju i ključ koji treba sigurno spremiti. Nakon toga sučelju šaljemo zahtjeve, a dobivene podatke pretvaramo u objekte s kojima R može raditi. Za mnoga poznata sučelja već postoje R paketi koji sve to rade umjesto nas, pa je dobro najprije provjeriti postoji li takav paket.
+
+Programska sučelja podatke najčešće vraćaju u formatu **JSON** (engl. *JavaScript Object Notation*) koji je zamišljen tako da ga strojevi lako čitaju i zapisuju. JSON ima šest vrsta podataka. Četiri su jednostavne, a to su `null` koji odgovara R-ovoj vrijednosti `NA`, nizovi koji se uvijek pišu u dvostrukim navodnicima, brojevi te logičke vrijednosti `true` i `false`. Za zapisivanje više vrijednosti služe preostale dvije vrste, **polja** koja se pišu u uglatim zagradama i odgovaraju R-ovim neimenovanim listama i **objekti** koji se pišu u vitičastim zagradama i odgovaraju imenovanim listama pa je svaka vrijednost u objektu označena imenom, odnosno ključem.
+
+JSON zapisan kao znakovni niz u R pretvaramo funkcijom `parse_json()` iz paketa `jsonlite`, a datoteku JSON spremljenu na računalu funkcijom `read_json()`. Rezultat je lista koju u podatkovni okvir pretvaramo funkcijama `unnest_wider()` i `unnest_longer()` iz paketa `tidyr`. Prva elemente liste smješta u stupce, a druga u retke, a koliko god je lista duboko ugniježđena, dovoljno je te dvije funkcije primjenjivati redom. JSON nema vlastiti zapis za datume pa se oni obično zapisuju kao nizovi, a katkad se i brojevi zapisuju kao nizovi pa ih nakon pretvaranja treba pretvoriti u odgovarajuću vrstu podataka. Paket `jsonlite` ima i funkciju `fromJSON()` koja JSON odmah pokušava pretvoriti u podatkovni okvir. U jednostavnim slučajevima to dobro radi, ali je u složenijima bolje pretvaranje provesti sami, kako bismo znali što se točno događa s podacima.
+
+### Programsko sučelje bez ključa
+
+Gutendex je otvoreno programsko sučelje koje vraća podatke o knjigama s Project Gutenberga i ne traži registraciju. Zahtjeve ćemo slati paketom `httr2`. Funkcijom `request()` stvaramo zahtjev s osnovnom adresom sučelja, funkcijom `req_url_path_append()` adresi dodajemo broj knjige, a funkcijom `req_user_agent()` u zahtjevu navodimo tko ga šalje. Zahtjev šaljemo funkcijom `req_perform()`, a odgovor u formatu JSON u listu pretvaramo funkcijom `resp_body_json()`. Odgovor odmah spremamo i u datoteku kako zahtjev ne bismo morali ponavljati. Funkcijom `resp_body_string()` izvlačimo ga kao znakovni niz, točno onakvog kakav ga je sučelje poslalo, a funkcijom `write_file()` spremamo ga u datoteku koju poslije možemo učitati funkcijom `read_json()`.
+
+```{r}
+#| eval: false
+# Zahtjev za podatke o Grimmovim bajkama
+odgovor_gutendex <- request("https://gutendex.com/books") |>
+  req_url_path_append("2591") |>
+  req_user_agent("Analiza teksta u R-u") |>
+  req_perform()
+
+# Spremanje odgovora u datoteku
+write_file(resp_body_string(odgovor_gutendex), "data/gutendex_2591.json")
+
+# Pretvaranje odgovora u listu
+knjiga <- resp_body_json(odgovor_gutendex)
+```
+
+```{r}
+#| include: false
+knjiga <- read_json("data/gutendex_2591.json")
+```
+
+```{r}
+# Struktura liste
+str(knjiga, max.level = 1)
+```
+
+Rezultat je imenovana lista, odnosno JSON objekt, u kojem su neki elementi jednostavne vrijednosti, poput broja e-knjige (`id`), naslova (`title`) i broja preuzimanja (`download_count`), a neki su liste, poput popisa autora (`authors`), tema (`subjects`) i jezika (`languages`). Jednostavne vrijednosti dohvaćamo operatorom `$`, a popis autora u kojem je svaki autor zaseban objekt s imenom i godinama rođenja i smrti pretvaramo u podatkovni okvir tako da ga stavimo u stupac podatkovnog okvira, a zatim ga funkcijom `unnest_wider()` raširimo u stupce.
+
+```{r}
+# Naslov i broj preuzimanja
+knjiga$title
+knjiga$download_count
+
+# Autori kao podatkovni okvir
+tibble(autor = knjiga$authors) |>
+  unnest_wider(autor)
+
+# Teme knjige kao znakovni vektor
+unlist(knjiga$subjects)
+```
+
+Parametre zahtjeva zadajemo funkcijom `req_url_query()`. Sučelje Gutendex ima, primjerice, parametar `search` kojim se knjige traže prema riječima u naslovu ili imenu autora i parametar `languages` kojim se pretraga ograničava na knjige na određenom jeziku. Odgovor na takav zahtjev ima polje `count` s brojem pronađenih knjiga i polje `results` s popisom knjiga koje u podatkovni okvir pretvaramo funkcijom `unnest_wider()`.
+
+```{r}
+#| eval: false
+# Pretraživanje knjiga braće Grimm na engleskom
+odgovor_pretraga <- request("https://gutendex.com/books") |>
+  req_url_query(search = "grimm", languages = "en") |>
+  req_user_agent("Udzbenik Analiza teksta u R-u") |>
+  req_perform()
+
+# Spremanje odgovora u datoteku
+write_file(resp_body_string(odgovor_pretraga), "data/gutendex_grimm_en.json")
+
+# Pretvaranje odgovora u listu
+rezultati <- resp_body_json(odgovor_pretraga)
+```
+
+```{r}
+#| include: false
+rezultati <- read_json("data/gutendex_grimm_en.json")
+```
+
+```{r}
+# Broj pronađenih knjiga
+rezultati$count
+
+# Broj, naslov i broj preuzimanja pronađenih knjiga
+tibble(knjiga = rezultati$results) |>
+  unnest_wider(knjiga) |>
+  select(id, title, download_count)
+```
+
+Sučelje vraća rezultate po stranicama pa polje `results` sadrži samo knjige s prve stranice, dok polje `next` sadrži adresu sljedeće stranice.
+
+Podaci o knjizi sadrže i polje `formats` u kojem su adrese datoteka s tekstom knjige u različitim formatima, primjerice kao e-knjiga, kao stranica HTML ili kao običan tekst. Polje je imenovana lista u kojoj je ime svakog elementa vrsta datoteke, a vrijednost adresa na kojoj se datoteka nalazi. Običan tekst označen je vrstom koja počinje s `text/plain` pa funkcijom `str_detect()` među imenima tražimo tu oznaku i uzimamo prvu pronađenu adresu.
+
+```{r}
+# Vrste datoteka u kojima je knjiga dostupna
+names(knjiga$formats)
+
+# Adresa datoteke s običnim tekstom knjige
+adresa_teksta <- knjiga$formats[str_detect(names(knjiga$formats), "^text/plain")][[1]]
+adresa_teksta
+```
+
+Sada imamo sve što nam treba da preuzmemo tekst knjige. Na dobivenu adresu šaljemo novi zahtjev, a odgovor, koji ovaj put nije JSON, nego običan tekst, funkcijom `resp_body_string()` izvlačimo kao znakovni niz i spremamo u datoteku. Kao i ostale sadržaje s interneta, i knjigu preuzimamo samo jednom, a u daljnjem radu učitavamo spremljenu datoteku funkcijom `read_lines()` koja tekst dijeli na retke.
+
+```{r}
+#| eval: false
+# Preuzimanje teksta knjige s dobivene adrese
+tekst_knjige <- request(adresa_teksta) |>
+  req_user_agent("Analiza teksta u R-u") |>
+  req_perform() |>
+  resp_body_string()
+
+# Spremanje teksta u datoteku
+write_file(tekst_knjige, "data/grimm_gutendex.txt")
+
+# Tekst knjige redak po redak
+grimm_api <- read_lines("data/grimm_gutendex.txt")
+```
+
+```{r}
+#| include: false
+grimm_api <- read_lines("data/grimm_gutendex.txt")
+```
+
+```{r}
+# Broj redaka
+length(grimm_api)
+```
+
+Preuzeli smo isti tekst koji smo na početku poglavlja učitali iz datoteke s istim zaglavljem i podnožjem Project Gutenberga. Razlika je u tome što smo ga ovaj put pronašli i preuzeli preko programskog sučelja pa smo adresu teksta dobili od sučelja, a ne potražili je sami na stranici.
+
+Bajke u knjizi slijede jedna za drugom, onim redom kojim su navedene u sadržaju na početku knjige. Do teksta pojedine bajke zato dolazimo tako da pronađemo redak s njezinim naslovom i redak s naslovom sljedeće bajke, a zatim zadržimo sve retke između njih. Pokažimo to na bajci *Hansel and Gretel* iza koje u knjizi slijedi bajka *The Mouse, the Bird, and the Sausage*.
+
+Naslovi su u knjizi zapisani velikim slovima, svaki u zasebnom retku. Operatorom `==` za svaki redak provjeravamo je li jednak naslovu, a funkcija `which()` vraća redne brojeve redaka za koje je uvjet ispunjen. Isti se naslovi pojavljuju i u sadržaju na početku knjige, ali su ondje uvučeni razmacima pa ih operator `==` ne smatra jednakima naslovu. Kako bismo bili sigurni da ćemo dobiti naslov bajke, a ne naslov iz sadržaja, funkcijom `max()` uzimamo posljednje pojavljivanje. Kraj bajke je redak neposredno ispred naslova sljedeće bajke pa od njegova rednog broja oduzimamo jedan.
+
+```{r}
+# Redni broj retka s naslovom bajke
+pocetak <- max(which(grimm_api == "HANSEL AND GRETEL"))
+
+# Redni broj posljednjeg retka bajke (redak ispred naslova sljedeće bajke)
+kraj <- max(which(grimm_api == "THE MOUSE, THE BIRD, AND THE SAUSAGE")) - 1
+
+# Retci bajke
+hansel_gretel <- grimm_api[pocetak:kraj]
+
+# Prvih deset redaka bajke
+head(hansel_gretel, 10)
+```
+
+Bajka je sada znakovni vektor u kojem je svaki element jedan redak teksta, a među njima su i prazni retci koji u knjizi odvajaju naslov od teksta i odlomke jedan od drugoga. Ako tekst bajke želimo imati kao jedan znakovni niz, retke spajamo funkcijom `str_c()` s argumentom `collapse = " "` kojim se između redaka umeće razmak, a suvišne razmake koji pritom nastanu na mjestu praznih redaka uklanjamo funkcijom `str_squish()`. Za pregled ispisujemo samo početak teksta, a funkcijom `str_wrap()` lomimo ga u retke kako bi bio čitljiviji.
+
+```{r}
+# Tekst bajke kao jedan znakovni niz
+hansel_gretel_tekst <- hansel_gretel |>
+  str_c(collapse = " ") |>
+  str_squish()
+
+# Broj znakova u bajci
+str_length(hansel_gretel_tekst)
+
+# Prvih 600 znakova bajke
+hansel_gretel_tekst |>
+  str_sub(start = 1, end = 600) |>
+  str_wrap(width = 80) |>
+  writeLines()
+```
+
+### Programsko sučelje s ključem
+
+Mnoga programska sučelja traže da se korisnik registrira, a zauzvrat dobiva **ključ** (engl. *API key*), odnosno niz znakova koji se šalje uz svaki zahtjev i po kojem sučelje prepoznaje tko ga koristi. Pomoću ključa vlasnik sučelja može ograničiti broj zahtjeva, primjerice na određen broj u sekundi ili u danu, i prepoznati korisnike koji ta ograničenja ne poštuju. Ta ograničenja treba poštovati, a svrhu za koju koristimo sučelje dobro je opisati već pri registraciji.
+
+Kao primjer koristit ćemo programsko sučelje novina The Guardian preko kojeg se mogu pretraživati i preuzimati njihovi članci. Ključ za nekomercijalnu upotrebu dobiva se besplatno nakon registracije na stranici *The Guardian Open Platform*, a uvjete korištenja i ograničenja broja zahtjeva treba provjeriti u dokumentaciji sučelja.
+
+Ključ je osobni podatak za pristup, kao lozinka, pa ga ne smijemo zapisivati izravno u kod. Kod često dijelimo s drugima ili ga objavljujemo, primjerice na GitHubu, a s njim bismo objavili i ključ pa bi ga netko drugi mogao koristiti u naše ime. Zato ključ spremamo u datoteku `.Renviron` u kojoj R čuva varijable okruženja, a u kodu ga čitamo funkcijom `Sys.getenv()`. Datoteku `.Renviron` najlakše je otvoriti funkcijom `edit_r_environ()` iz paketa `usethis`. U nju upisujemo redak s imenom varijable i ključem, primjerice `GUARDIAN_KEY=nas_kljuc`, zatim je spremamo i ponovno pokrećemo R. Ako datoteku `.Renviron` spremimo u mapu projekta, a ne u početnu mapu korisnika, moramo je dodati u datoteku `.gitignore` kako se ne bi objavila zajedno s projektom.
+
+```{r}
+#| eval: false
+# Otvaranje datoteke .Renviron
+usethis::edit_r_environ()
+```
+
+Datoteka .Renviron čita se samo pri pokretanju R-a pa nakon upisivanja ključa R treba ponovno pokrenuti (u RStudiju naredbom Session > Restart R), a dok to ne učinimo, funkcija `Sys.getenv()` neće pronaći ključ. Ako R ne želimo ponovno pokretati, datoteku možemo učitati i ručno, naredbom `readRenviron("~/.Renviron")`.
+
+Datoteku `.Renviron` otvaramo samo jednom kad upisujemo ključ pa se ovaj kod ne izvršava pri svakom pokretanju. Nakon ponovnog pokretanja R-a ključ čitamo iz varijable okruženja, a funkcijom `nchar()` možemo provjeriti je li učitan, a da ga pritom ne ispišemo.
+
+```{r}
+# Provjera je li ključ učitan (broj znakova veći od nule)
+nchar(Sys.getenv("GUARDIAN_KEY")) > 0
+```
+
+Sada možemo poslati zahtjev. Parametrom `q` zadajemo pojam koji tražimo, parametrom `page-size` broj članaka na jednoj stranici rezultata, a parametrom `show-fields` dodatne podatke o člancima, a pri čemu vrijednost `bodyText` znači da uz naslov i datum želimo i cijeli tekst članka. Ključ se šalje parametrom `api-key`. Budući da nazivi tih parametara sadrže crticu, u funkciji `req_url_query()` pišemo ih unutar obrnutih apostrofa. Funkcijom `req_throttle()` ograničavamo broj zahtjeva u sekundi kako ne bismo prekoračili ograničenja sučelja. Odgovor i ovdje odmah spremamo u datoteku koju nazivamo prema broju stranice rezultata jer ćemo uskoro preuzimati i sljedeće stranice. Ključ se pritom ne sprema jer je dio zahtjeva, a ne odgovora.
+
+```{r}
+#| eval: false
+# Zahtjev za članke koji spominju braću Grimm
+odgovor_guardian <- request("https://content.guardianapis.com/search") |>
+  req_url_query(
+    q = "\"Brothers Grimm\"",
+    `page-size` = 20,
+    `show-fields` = "bodyText",
+    `api-key` = Sys.getenv("GUARDIAN_KEY")
+  ) |>
+  req_throttle(rate = 1) |>
+  req_perform()
+
+# Spremanje odgovora u datoteku
+write_file(resp_body_string(odgovor_guardian), "data/guardian_stranica_1.json")
+
+# Pretvaranje odgovora u listu
+odgovor <- resp_body_json(odgovor_guardian)
+```
+
+```{r}
+#| include: false
+odgovor <- read_json("data/guardian_stranica_1.json")
+```
+
+```{r}
+# Ukupan broj pronađenih članaka i broj stranica rezultata
+odgovor$response$total
+odgovor$response$pages
+```
+
+Odgovor sučelja ima polje `response` u kojem se nalaze podaci o pretrazi, poput ukupnog broja pronađenih članaka i broja stranica rezultata te polje `results` s popisom članaka. Svaki članak ima, među ostalim, naslov (`webTitle`), datum objave (`webPublicationDate`), adresu (`webUrl`) i polje `fields` u kojem je tekst članka. Popis članaka u podatkovni okvir pretvaramo istim postupkom kao i odgovor sučelja Gutendex, a datum objave, koji je zapisan kao niz, pretvaramo u datum.
+
+```{r}
+# Članci kao podatkovni okvir
+clanci <- tibble(clanak = odgovor$response$results) |>
+  unnest_wider(clanak) |>
+  unnest_wider(fields) |>
+  select(webTitle, webPublicationDate, webUrl, bodyText) |>
+  mutate(webPublicationDate = as_date(ymd_hms(webPublicationDate)))
+
+# Pregled
+clanci
+```
+
+U podatkovnom okviru clanci tekst svakog članka nalazi se u stupcu bodyText. Sučelje ga vraća samo zato što smo u zahtjevu zadali parametar `show-fields = "bodyText"`. Bez tog parametra odgovor sadrži samo naslov, datum, adresu i druge podatke o članku, ali ne i njegov tekst. Polje `bodyText` sadrži čisti tekst članka, bez oznaka HTML, pa ga možemo odmah koristiti u analizi. Tekst pojedinog članka dohvaćamo kao i svaku drugu vrijednost iz stupca podatkovnog okvira pa tekst prvog članka dobivamo s `clanci$bodyText[1]`. Budući da su članci dugi, a i zaštićeni autorskim pravom, ispisujemo samo naslov, datum i početak teksta prvog članka.
+
+```{r}
+# Naslov i datum objave prvog članka
+clanci$webTitle[1]
+clanci$webPublicationDate[1]
+
+# Prvih 600 znakova teksta prvog članka
+clanci$bodyText[1] |>
+  str_sub(start = 1, end = 600) |>
+  str_wrap(width = 80) |>
+  writeLines()
+```
+
+Funkcija `str_length()` pokazuje koliko je znakova u tekstu svakog članka pa tako vidimo jesu li preuzeti cijeli tekstovi. S tekstom možemo raditi i funkcijama iz poglavlja o znakovnim nizovima i regularnim izrazima pa funkcijom `str_detect()` možemo, primjerice, zadržati samo članke u kojima se spominje bajka Hansel and Gretel.
+
+```{r}
+# Broj znakova u tekstu svakog članka
+str_length(clanci$bodyText)
+
+# Članci u kojima se spominje bajka Hansel and Gretel
+clanci |>
+  filter(str_detect(bodyText, "Hansel")) |>
+  select(webTitle, webPublicationDate)
+```
+
+Uz bodyText sučelje nudi i polje body u kojem je tekst članka zapisan kao HTML s odlomcima, poveznicama i drugim oznakama. Za analizu teksta obično je prikladnije polje bodyText. Polje body korisno je kad nam je važna struktura članka, na primjer podjela na odlomke, a iz njega se tekst izvlači funkcijama paketa `rvest`.
+
+Sučelje vraća rezultate po stranicama pa ako pronađenih članaka ima više nego što ih stane na jednu stranicu, svaku stranicu treba zatražiti posebnim zahtjevom, mijenjajući parametar `page`. Pri tome je funkcija `req_throttle()` posebno važna jer bi bez nje zahtjevi slijedili jedan za drugim bez ikakve stanke.
+
+```{r}
+#| eval: false
+# Putanje do datoteka za prvih pet stranica rezultata
+datoteke_guardian <- paste0("data/guardian_stranica_", 1:5, ".json")
+
+# Preuzimanje i spremanje prvih pet stranica rezultata
+stranice <- map2(1:5, datoteke_guardian, \(broj, datoteka) {
+  odgovor_stranica <- request("https://content.guardianapis.com/search") |>
+    req_url_query(
+      q = "\"Brothers Grimm\"",
+      page = broj,
+      `page-size` = 20,
+      `show-fields` = "bodyText",
+      `api-key` = Sys.getenv("GUARDIAN_KEY")
+    ) |>
+    req_throttle(rate = 1) |>
+    req_perform()
+
+  write_file(resp_body_string(odgovor_stranica), datoteka)
+  resp_body_json(odgovor_stranica)
+})
+```
+
+```{r}
+#| include: false
+datoteke_guardian <- paste0("data/guardian_stranica_", 1:5, ".json")
+stranice <- map(datoteke_guardian, read_json)
+```
+
+```{r}
+# Spajanje članaka sa svih stranica u jedan podatkovni okvir
+clanci <- tibble(clanak = map(stranice, \(s) s$response$results) |> list_flatten()) |>
+  unnest_wider(clanak) |>
+  unnest_wider(fields) |>
+  select(id, webTitle, webPublicationDate, webUrl, bodyText) |>
+  mutate(webPublicationDate = as_date(ymd_hms(webPublicationDate)))
+
+# Broj preuzetih članaka
+nrow(clanci)
+```
+
+Funkcija `map2()` iz paketa `purrr` za svaki par broja stranice i naziva datoteke šalje jedan zahtjev, sprema odgovor u datoteku i vraća ga kao listu, pa je rezultat lista odgovora sa svih pet stranica. Funkcijom `list_flatten()` popise članaka s pojedinih stranica spajamo u jedan popis, koji zatim pretvaramo u podatkovni okvir na isti način kao i prije. Ako rezultata ima manje od pet stranica, onda sučelje za nepostojeće stranice javlja pogrešku pa broj stranica treba uskladiti s vrijednošću `odgovor$response$pages`.
+
+Tekstovi preuzeti preko programskog sučelja zaštićeni su autorskim pravom kao i svi drugi novinski članci. Uvjeti korištenja sučelja određuju što s njima smijemo činiti pa ih valja pročitati prije nego što preuzete tekstove objavimo ili podijelimo s drugima.

@@ -10,7 +10,11 @@ nocite: |
   @macanovic2022
   @manning2022
   @menshikova2025
+  @munzert2015
   @nelson2020
+  @silge2017
+  @welbers2017
+  @wickham2023
 ---
 
 # Literatura {.unnumbered}

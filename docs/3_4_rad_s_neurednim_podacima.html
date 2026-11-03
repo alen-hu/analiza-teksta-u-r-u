@@ -140,7 +140,7 @@ background: #8B475D;
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_i_oblikovanje_podataka.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_4_rad_s_neurednim_podacima.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_4_rad_s_neurednim_podacima.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -152,7 +152,7 @@ background: #8B475D;
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_i_oblikovanje_podataka.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_4_rad_s_neurednim_podacima.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></a></li></ol></nav>
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_4_rad_s_neurednim_podacima.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></a></li></ol></nav>
       <h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></h1>
                   <div>
         <div class="description">
@@ -252,8 +252,8 @@ background: #8B475D;
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_1_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  <a href="./3_1_ucitavanje_tekstualnih_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -532,36 +532,27 @@ background: #8B475D;
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>tToBtB_dtm_tales</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;&lt;DocumentTermMatrix (documents: 5, terms: 1076)&gt;&gt;
-Non-/sparse entries: 1421/3959
-Sparsity           : 74%
-Maximal term length: 13
+<pre><code>&lt;&lt;DocumentTermMatrix (documents: 4, terms: 1811)&gt;&gt;
+Non-/sparse entries: 2412/4832
+Sparsity           : 67%
+Maximal term length: 15
 Weighting          : term frequency (tf)</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Svih pet redaka i prvih 10 stupaca</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as.matrix</span>(tToBtB_dtm_tales[, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                             Terms
-Docs                                          afflict age aid amazement
-  1_the_wizard_and_the_hopping_pot                  1   2   1         1
-  2_the_fountain_of_fair_fortune                    0   0   0         0
-  3_the_warlocks_hairy_heart                        0   1   0         0
-  4_babbitty_rabbitty_and_her_cackling_stumps       0   1   0         0
-  5_the_tale_of_the_three_brothers                  0   1   0         1
+Docs                                          15 16 1675 1689 17 19io afflict
+  1_the_wizard_and_the_hopping_pot             1  1    1    1  1    1       1
+  2_the_fountain_of_fair_fortune               0  0    0    0  0    0       0
+  4_babbitty_rabbitty_and_her_cackling_stumps  0  0    0    0  0    0       0
+  5_the_tale_of_the_three_brothers             0  0    0    0  0    0       0
                                              Terms
-Docs                                          antidote approach baby bad bang
-  1_the_wizard_and_the_hopping_pot                   1        1    3   1    3
-  2_the_fountain_of_fair_fortune                     0        1    0   0    0
-  3_the_warlocks_hairy_heart                         0        0    0   0    0
-  4_babbitty_rabbitty_and_her_cackling_stumps        0        1    0   0    0
-  5_the_tale_of_the_three_brothers                   0        0    0   0    0
-                                             Terms
-Docs                                          bear
-  1_the_wizard_and_the_hopping_pot               3
-  2_the_fountain_of_fair_fortune                 1
-  3_the_warlocks_hairy_heart                     1
-  4_babbitty_rabbitty_and_her_cackling_stumps    0
-  5_the_tale_of_the_three_brothers               0</code></pre>
+Docs                                          age agree aid
+  1_the_wizard_and_the_hopping_pot              2     1   1
+  2_the_fountain_of_fair_fortune                1     1   0
+  4_babbitty_rabbitty_and_her_cackling_stumps   1     2   0
+  5_the_tale_of_the_three_brothers              3     1   0</code></pre>
 </div>
 </div>
 <p>Ispis sažeto opisuje matricu:</p>
@@ -924,37 +915,26 @@ attr(,"package")
 <span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>tToBtB_dfm</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Document-feature matrix of: 5 documents, 1,076 features (73.59% sparse) and 0 docvars.
+<pre><code>Document-feature matrix of: 4 documents, 1,811 features (66.70% sparse) and 0 docvars.
                                              features
-docs                                          afflict age aid amazement
-  1_the_wizard_and_the_hopping_pot                  1   2   1         1
-  2_the_fountain_of_fair_fortune                    0   0   0         0
-  3_the_warlocks_hairy_heart                        0   1   0         0
-  4_babbitty_rabbitty_and_her_cackling_stumps       0   1   0         0
-  5_the_tale_of_the_three_brothers                  0   1   0         1
+docs                                          15 16 1675 1689 17 19io afflict
+  1_the_wizard_and_the_hopping_pot             1  1    1    1  1    1       1
+  2_the_fountain_of_fair_fortune               0  0    0    0  0    0       0
+  4_babbitty_rabbitty_and_her_cackling_stumps  0  0    0    0  0    0       0
+  5_the_tale_of_the_three_brothers             0  0    0    0  0    0       0
                                              features
-docs                                          antidote approach baby bad bang
-  1_the_wizard_and_the_hopping_pot                   1        1    3   1    3
-  2_the_fountain_of_fair_fortune                     0        1    0   0    0
-  3_the_warlocks_hairy_heart                         0        0    0   0    0
-  4_babbitty_rabbitty_and_her_cackling_stumps        0        1    0   0    0
-  5_the_tale_of_the_three_brothers                   0        0    0   0    0
-                                             features
-docs                                          bear
-  1_the_wizard_and_the_hopping_pot               3
-  2_the_fountain_of_fair_fortune                 1
-  3_the_warlocks_hairy_heart                     1
-  4_babbitty_rabbitty_and_her_cackling_stumps    0
-  5_the_tale_of_the_three_brothers               0
-[ reached max_nfeat ... 1,066 more features ]</code></pre>
+docs                                          age agree aid
+  1_the_wizard_and_the_hopping_pot              2     1   1
+  2_the_fountain_of_fair_fortune                1     1   0
+  4_babbitty_rabbitty_and_her_cackling_stumps   1     2   0
+  5_the_tale_of_the_three_brothers              3     1   0
+[ reached max_nfeat ... 1,801 more features ]</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Deset najčešćih lema u svim bajkama</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">topfeatures</span>(tToBtB_dfm, <span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     king     witch charlatan      wand    wizard       pot   brother     death 
-       33        32        27        25        24        23        22        20 
-    heart     magic 
-       18        17 </code></pre>
+<pre><code> wizard    wand    king   magic   witch   death     pot brother   heart warlock 
+     66      63      45      42      42      39      39      36      31      31 </code></pre>
 </div>
 </div>
 <p>Dobili smo isti sadržaj kao u matrici dokumenata i pojmova s početka poglavlja, samo u drugoj klasi objekta: 5 dokumenata, 1076 značajki (riječi) i istih prvih deset stupaca. Paket <code>quanteda</code> rijetkost ispisuje preciznije, 73,59 % umjesto zaokruženih 74 %. Oznaka <code>0 docvars</code> znači da dfm nema metapodataka o dokumentima jer smo u njega prenijeli samo nazive bajki, riječi i broj pojavljivanja.</p>

@@ -281,8 +281,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_1_ucitavanje_i_oblikovanje_podataka.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje i oblikovanje podataka</span></span></a>
+  <a href="./3_1_ucitavanje_tekstualnih_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -541,7 +541,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled bigrama</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5,775 × 4
+<pre><code># A tibble: 10,394 × 4
     line fairy_tale                       paragraph_no bigram    
    &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;     
  1    20 1_the_wizard_and_the_hopping_pot            1 there was 
@@ -554,7 +554,7 @@ window.Quarto = {
  8    20 1_the_wizard_and_the_hopping_pot            1 who used  
  9    20 1_the_wizard_and_the_hopping_pot            1 used his  
 10    20 1_the_wizard_and_the_hopping_pot            1 his magic 
-# ℹ 5,765 more rows</code></pre>
+# ℹ 10,384 more rows</code></pre>
 </div>
 </div>
 <p>Za daljnju je analizu korisno stupac <code>bigram</code> podijeliti na dva stupca, <code>word1</code> i <code>word2</code>, po jedan za svaku riječ bigrama. To radimo funkcijom <code>separate()</code> iz paketa <code>tidyr</code>, kojoj zadajemo stupac koji dijelimo, nazive novih stupaca i znak na kojem se dijeli (<code>sep = " "</code>, razmak). Tako možemo, primjerice, ukloniti bigrame u kojima je bilo koja od riječi zaustavna riječ.</p>
@@ -567,7 +567,7 @@ window.Quarto = {
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled podijeljenih bigrama</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_separated</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5,775 × 5
+<pre><code># A tibble: 10,394 × 5
     line fairy_tale                       paragraph_no word1  word2 
    &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; 
  1    20 1_the_wizard_and_the_hopping_pot            1 there  was   
@@ -580,7 +580,7 @@ window.Quarto = {
  8    20 1_the_wizard_and_the_hopping_pot            1 who    used  
  9    20 1_the_wizard_and_the_hopping_pot            1 used   his   
 10    20 1_the_wizard_and_the_hopping_pot            1 his    magic 
-# ℹ 5,765 more rows</code></pre>
+# ℹ 10,384 more rows</code></pre>
 </div>
 </div>
 <section id="brojanje-n-grama" class="level3" data-number="12.0.1">
@@ -591,20 +591,20 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram <span class="sc">|&gt;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(bigram, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4,368 × 2
+<pre><code># A tibble: 7,770 × 2
    bigram            n
    &lt;chr&gt;         &lt;int&gt;
- 1 of the           40
- 2 to the           30
- 3 the charlatan    26
- 4 in the           25
- 5 and the          20
- 6 the king         20
- 7 the fountain     16
- 8 at the           15
- 9 of his           14
-10 upon the         14
-# ℹ 4,358 more rows</code></pre>
+ 1 of the           82
+ 2 in the           47
+ 3 to the           39
+ 4 and the          30
+ 5 the king         30
+ 6 the charlatan    27
+ 7 the warlock      22
+ 8 that the         21
+ 9 the fountain     21
+10 the wizard       21
+# ℹ 7,760 more rows</code></pre>
 </div>
 </div>
 <p>U bajkama se pojavljuje 4368 različitih bigrama. Najčešći su <em>of the</em> (40 pojavljivanja), <em>to the</em> (30), <em>the charlatan</em> (26) i <em>in the</em> (25). Sedam od deset najčešćih bigrama, poput <em>of the</em>, <em>to the</em>, <em>and the</em> ili <em>upon the</em>, sastoji se isključivo od zaustavnih riječi pa o sadržaju bajki ne govori ništa. Preostala tri, <em>the charlatan</em>, <em>the king</em> i <em>the fountain</em>, spajaju član <em>the</em> s riječima koje smo već upoznali kao karakteristične za pojedine bajke, ali i u njima je zaustavna riječ zapravo višak, a sadržaj nosi samo druga riječ. Zato iz podijeljenih bigrama uklanjamo one u kojima je bilo <code>word1</code> bilo <code>word2</code> zaustavna riječ, a zatim brojimo preostale.</p>
@@ -621,20 +621,20 @@ window.Quarto = {
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_count</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 588 × 3
-   word1    word2        n
-   &lt;chr&gt;    &lt;chr&gt;    &lt;int&gt;
- 1 foolish  king         8
- 2 sir      luckless     7
- 3 cooking  pot          6
- 4 witch    hunters      6
- 5 clang    clang        4
- 6 tree     stump        4
- 7 fair     fortune      3
- 8 hairy    heart        3
- 9 palace   grounds      3
-10 babbitty smiled       2
-# ℹ 578 more rows</code></pre>
+<pre><code># A tibble: 1,067 × 3
+   word1    word2          n
+   &lt;chr&gt;    &lt;chr&gt;      &lt;int&gt;
+ 1 hairy    heart         11
+ 2 sir      luckless       9
+ 3 fair     fortune        8
+ 4 foolish  king           8
+ 5 cooking  pot            7
+ 6 hopping  pot            7
+ 7 albus    dumbledore     6
+ 8 witch    hunters        6
+ 9 elder    wand           5
+10 babbitty rabbitty       4
+# ℹ 1,057 more rows</code></pre>
 </div>
 </div>
 <p>Nakon uklanjanja zaustavnih riječi ostalo je 588 različitih bigrama, otprilike sedam puta manje nego prije. Sada su najčešći bigrami <em>foolish king</em> (8 pojavljivanja), <em>sir luckless</em> (7), <em>cooking pot</em> i <em>witch hunters</em> (po 6) te <em>clang clang</em> i <em>tree stump</em> (po 4). Riječ je uglavnom o likovima i predmetima uz pridjeve ili odrednice koje ih stalno prate: kralj je u pravilu <em>foolish</em>, vitez se pojavljuje s titulom <em>sir</em>, a lonac je <em>cooking pot</em>. Bigram <em>clang clang</em> pokazuje ponavljanje iste riječi kojim se u bajci oponaša zvuk lonca. Većina bigrama, međutim, pojavljuje se samo jednom ili dvaput. Već od desetog mjesta nijedan se bigram ne pojavljuje više od dva puta, a što pokazuje koliko su parovi riječi rjeđi od pojedinačnih riječi.</p>
@@ -644,14 +644,15 @@ window.Quarto = {
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word2 <span class="sc">==</span> <span class="st">"king"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word1, word2, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 3
+<pre><code># A tibble: 6 × 3
   word1     word2     n
   &lt;chr&gt;     &lt;chr&gt; &lt;int&gt;
 1 foolish   king      8
 2 jubilant  king      1
 3 magical   king      1
-4 petrified king      1
-5 shamed    king      1</code></pre>
+4 muggle    king      1
+5 petrified king      1
+6 shamed    king      1</code></pre>
 </div>
 </div>
 <p>Kralj se u bajkama opisuje pet različitih riječi, no gotovo uvijek istom: <em>foolish</em> se pojavljuje osam puta, dok se <em>jubilant</em>, <em>magical</em>, <em>petrified</em> i <em>shamed</em> pojavljuju po jednom. Već i ovaj kratak popis pokazuje kakav je lik kralj, ponajprije budalast, a pridjevi poput <em>jubilant</em>, <em>petrified</em> i <em>shamed</em> daju naslutiti da se njegovo raspoloženje tijekom priča mijenja, od ushićenja preko straha do posramljenosti.</p>
@@ -664,7 +665,7 @@ window.Quarto = {
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_united</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 639 × 4
+<pre><code># A tibble: 1,177 × 4
     line fairy_tale                       paragraph_no bigram          
    &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;           
  1    20 1_the_wizard_and_the_hopping_pot            1 magic generously
@@ -677,7 +678,7 @@ window.Quarto = {
  8    21 1_the_wizard_and_the_hopping_pot            2 beloved wizard  
  9    21 1_the_wizard_and_the_hopping_pot            2 wizard lived    
 10    21 1_the_wizard_and_the_hopping_pot            2 goodly age      
-# ℹ 629 more rows</code></pre>
+# ℹ 1,167 more rows</code></pre>
 </div>
 </div>
 <p>Na isti se način mogu analizirati i trigrami. Ovdje tekst tokeniziramo na trigrame, uklanjamo retke iz kojih se trigram nije mogao stvoriti, dijelimo trigrame na tri riječi, uklanjamo trigrame sa zaustavnim riječima, brojimo ih i na kraju ponovno spajamo.</p>
@@ -695,20 +696,20 @@ window.Quarto = {
 <span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word1, word2, word3, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
 <span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unite</span>(trigram, word1, word2, word3, <span class="at">sep =</span> <span class="st">" "</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 146 × 2
-   trigram                      n
-   &lt;chr&gt;                    &lt;int&gt;
- 1 clang clang clang            2
- 2 witch hunting hounds         2
- 3 admiring death's gifts       1
- 4 age softened mind            1
- 5 aged parents died            1
- 6 altheda cast rocks           1
- 7 altheda walked faster        1
- 8 antidotes sprang ready       1
- 9 appointed day hundreds       1
-10 appointed grand sorcerer     1
-# ℹ 136 more rows</code></pre>
+<pre><code># A tibble: 284 × 2
+   trigram                           n
+   &lt;chr&gt;                         &lt;int&gt;
+ 1 clang clang clang                 2
+ 2 magick moste evile                2
+ 3 witch hunting hounds              2
+ 4 1675 brutus wrote                 1
+ 5 accumulate wisdom strength        1
+ 6 achicving perfect spontaneous     1
+ 7 actu ally discovered              1
+ 8 actual evidence true              1
+ 9 age softened mind                 1
+10 aged parents died                 1
+# ℹ 274 more rows</code></pre>
 </div>
 </div>
 </section>
@@ -725,20 +726,20 @@ window.Quarto = {
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_tf_idf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 589 × 6
+<pre><code># A tibble: 1,076 × 6
    fairy_tale                                  bigram      n     tf   idf tf_idf
    &lt;chr&gt;                                       &lt;chr&gt;   &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
- 1 1_the_wizard_and_the_hopping_pot            cookin…     6 0.0508  1.61 0.0818
- 2 2_the_fountain_of_fair_fortune              sir lu…     7 0.0470  1.61 0.0756
- 3 4_babbitty_rabbitty_and_her_cackling_stumps foolis…     8 0.0417  1.61 0.0671
- 4 1_the_wizard_and_the_hopping_pot            clang …     4 0.0339  1.61 0.0546
- 5 4_babbitty_rabbitty_and_her_cackling_stumps witch …     6 0.0312  1.61 0.0503
- 6 3_the_warlocks_hairy_heart                  hairy …     3 0.0233  1.61 0.0374
- 7 4_babbitty_rabbitty_and_her_cackling_stumps tree s…     4 0.0208  1.61 0.0335
- 8 2_the_fountain_of_fair_fortune              fair f…     3 0.0201  1.61 0.0324
- 9 5_the_tale_of_the_three_brothers            admiri…     1 0.0196  1.61 0.0316
-10 5_the_tale_of_the_three_brothers            boaste…     1 0.0196  1.61 0.0316
-# ℹ 579 more rows</code></pre>
+ 1 4_babbitty_rabbitty_and_her_cackling_stumps foolis…     8 0.0292  1.39 0.0405
+ 2 1_the_wizard_and_the_hopping_pot            cookin…     7 0.0264  1.39 0.0366
+ 3 2_the_fountain_of_fair_fortune              hairy …    11 0.0256  1.39 0.0355
+ 4 5_the_tale_of_the_three_brothers            elder …     5 0.0240  1.39 0.0333
+ 5 4_babbitty_rabbitty_and_her_cackling_stumps witch …     6 0.0219  1.39 0.0304
+ 6 2_the_fountain_of_fair_fortune              sir lu…     9 0.0209  1.39 0.0290
+ 7 2_the_fountain_of_fair_fortune              fair f…     8 0.0186  1.39 0.0258
+ 8 1_the_wizard_and_the_hopping_pot            clang …     4 0.0151  1.39 0.0209
+ 9 1_the_wizard_and_the_hopping_pot            pro mu…     4 0.0151  1.39 0.0209
+10 4_babbitty_rabbitty_and_her_cackling_stumps tree s…     4 0.0146  1.39 0.0202
+# ℹ 1,066 more rows</code></pre>
 </div>
 </div>
 <p>Na vrhu tablice nalaze se bigrami koje smo već vidjeli među najčešćima: <em>cooking pot</em> u bajci <em>The Wizard and the Hopping Pot</em>, <em>sir luckless</em> u bajci <em>The Fountain of Fair Fortune</em> i <em>foolish king</em> u bajci <em>Babbitty Rabbitty and Her Cackling Stumps</em>. Svi bigrami u prvih deset redaka imaju isti idf, 1,61, što znači da se svaki pojavljuje u samo jednoj bajci. To nije slučajno jer tablica ima 589 redaka, a različitih bigrama ima 588 pa se samo jedan bigram pojavljuje u više od jedne bajke. Za razliku od pojedinačnih riječi, parovi riječi gotovo su uvijek svojstveni samo jednoj bajci pa poredak prema tf-idf ovdje ovisi gotovo isključivo o tome koliko se bigram puta pojavljuje (tf).</p>
@@ -783,17 +784,17 @@ window.Quarto = {
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>tToBtB_bigram_graph</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IGRAPH e4eceb5 DN-- 42 25 -- 
+<pre><code>IGRAPH 383c497 DN-- 73 47 -- 
 + attr: name (v/c), n (e/n)
-+ edges from e4eceb5 (vertex names):
- [1] foolish  -&gt;king     sir      -&gt;luckless cooking  -&gt;pot     
- [4] witch    -&gt;hunters  clang    -&gt;clang    tree     -&gt;stump   
- [7] fair     -&gt;fortune  hairy    -&gt;heart    palace   -&gt;grounds 
-[10] babbitty -&gt;smiled   brass    -&gt;foot     bush     -&gt;babbitty
-[13] crystal  -&gt;casket   enchanted-&gt;garden   garden   -&gt;walls   
-[16] grand    -&gt;sorcerer hunting  -&gt;hounds   loud     -&gt;cackling
-[19] magical  -&gt;powers   palace   -&gt;leaving  perform  -&gt;magic   
-[22] pot      -&gt;hopping  sun      -&gt;rose     true     -&gt;witch   
++ edges from 383c497 (vertex names):
+ [1] hairy    -&gt;heart      sir      -&gt;luckless   fair     -&gt;fortune   
+ [4] foolish  -&gt;king       cooking  -&gt;pot        hopping  -&gt;pot       
+ [7] albus    -&gt;dumbledore witch    -&gt;hunters    elder    -&gt;wand      
+[10] babbitty -&gt;rabbitty   clang    -&gt;clang      pro      -&gt;muggle    
+[13] tree     -&gt;stump      cackling -&gt;stump      dark     -&gt;magic     
+[16] grand    -&gt;sorcerer   palace   -&gt;grounds    professor-&gt;beery     
+[19] wee      -&gt;willykins  anti     -&gt;muggle     axe      -&gt;stroke    
+[22] babbitty -&gt;smiled     brass    -&gt;foot       brutus   -&gt;malfoy    
 + ... omitted several edges</code></pre>
 </div>
 </div>
@@ -865,7 +866,7 @@ window.Quarto = {
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>tToBtB_paragraph_words</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2,344 × 4
+<pre><code># A tibble: 4,231 × 4
     line fairy_tale                       paragraph_no word      
    &lt;int&gt; &lt;chr&gt;                                   &lt;int&gt; &lt;chr&gt;     
  1    20 1_the_wizard_and_the_hopping_pot            1 kindly    
@@ -878,7 +879,7 @@ window.Quarto = {
  8    20 1_the_wizard_and_the_hopping_pot            1 reveal    
  9    20 1_the_wizard_and_the_hopping_pot            1 true      
 10    20 1_the_wizard_and_the_hopping_pot            1 source    
-# ℹ 2,334 more rows</code></pre>
+# ℹ 4,221 more rows</code></pre>
 </div>
 </div>
 <p>Funkcija <code>pairwise_count()</code> iz paketa <code>widyr</code> broji u koliko se odlomaka svaki par riječi pojavljuje zajedno. Prvi joj je argument stupac s riječima, a drugi stupac koji označava odlomak.</p>
@@ -890,20 +891,20 @@ window.Quarto = {
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>tToBtB_word_pairs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 35,136 × 3
+<pre><code># A tibble: 96,126 × 3
    item1     item2         n
    &lt;chr&gt;     &lt;chr&gt;     &lt;dbl&gt;
- 1 charlatan king         11
- 2 king      charlatan    11
- 3 pot       wizard        8
- 4 king      magic         8
- 5 wizard    pot           8
- 6 brother   death         8
- 7 king      foolish       8
- 8 magic     king          8
- 9 foolish   king          8
-10 babbitty  charlatan     8
-# ℹ 35,126 more rows</code></pre>
+ 1 pot       wizard       15
+ 2 wizard    pot          15
+ 3 charlatan king         15
+ 4 king      charlatan    15
+ 5 brother   death        12
+ 6 warlock   heart        12
+ 7 heart     warlock      12
+ 8 babbitty  king         12
+ 9 king      babbitty     12
+10 death     brother      12
+# ℹ 96,116 more rows</code></pre>
 </div>
 </div>
 <p>Ulazni podaci imali su jedan redak za svaki par odlomka i riječi, a rezultat ima jedan redak za svaki par riječi. I to je uredan oblik podataka, ali drugačije strukture. Tablica ima 35136 redaka, no svaki se par pojavljuje dvaput, jednom kao (<em>X</em>, <em>Y</em>) i jednom kao (<em>Y</em>, <em>X</em>), pa je različitih parova upola manje, 17568. To se vidi već na vrhu tablice jer se najčešći par, <em>charlatan</em> i <em>king</em>, nalazi se u prva dva retka, jednom u jednom, a jednom u drugom redoslijedu. Te se dvije riječi zajedno pojavljuju u 11 odlomaka. Slijede parovi koji se zajedno pojavljuju u po osam odlomaka: <em>pot</em> i <em>wizard</em>, <em>king</em> i <em>magic</em>, <em>brother</em> i <em>death</em>, <em>king</em> i <em>foolish</em> te <em>babbitty</em> i <em>charlatan</em>. Svaki od tih parova povezuje riječi iz iste bajke, pa nam ovakvo brojanje pokazuje koji se likovi i pojmovi u bajkama pojavljuju zajedno. Lako možemo pronaći i riječi koje se najčešće pojavljuju uz neku određenu riječ, primjerice uz riječ <em>king</em>.</p>
@@ -912,20 +913,20 @@ window.Quarto = {
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>tToBtB_word_pairs <span class="sc">|&gt;</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(item1 <span class="sc">==</span> <span class="st">"king"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 245 × 3
-   item1 item2         n
-   &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;
- 1 king  charlatan    11
- 2 king  magic         8
- 3 king  foolish       8
- 4 king  babbitty      6
- 5 king  palace        5
- 6 king  perform       5
- 7 king  power         4
- 8 king  magical       4
- 9 king  witch         4
-10 king  twig          4
-# ℹ 235 more rows</code></pre>
+<pre><code># A tibble: 404 × 3
+   item1 item2           n
+   &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;
+ 1 king  charlatan      15
+ 2 king  babbitty       12
+ 3 king  magic          10
+ 4 king  foolish         9
+ 5 king  magical         7
+ 6 king  wand            6
+ 7 king  witch           6
+ 8 king  palace          6
+ 9 king  power           5
+10 king  washerwoman     5
+# ℹ 394 more rows</code></pre>
 </div>
 </div>
 <p>Riječ <em>king</em> pojavljuje se u istim odlomcima s ukupno 245 različitih riječi. Najčešće se pojavljuje uz <em>charlatan</em> (11 odlomaka), <em>magic</em> i <em>foolish</em> (po 8) te <em>babbitty</em> (6). Slijede <em>palace</em> i <em>perform</em> (po 5) te <em>power</em>, <em>magical</em>, <em>witch</em> i <em>twig</em> (po 4). Popis tako okuplja glavne likove bajke <em>Babbitty Rabbitty and Her Cackling Stumps</em>, kralja, šarlatana i Babbitty, ali i skupinu riječi vezanih uz magiju (<em>magic</em>, <em>magical</em>, <em>power</em>, <em>perform</em>). To upućuje na to da se odlomci u kojima se kralj pojavljuje često bave magijom i njezinim izvođenjem. Pritom treba imati na umu da se na vrhu ovakvog popisa nalaze i riječi koje su same po sebi česte pa se pojavljuju uz mnoge druge riječi. Zato ćemo u sljedećem koraku izračunati korelaciju koja to uzima u obzir.</p>
@@ -984,20 +985,20 @@ window.Quarto = {
 <span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled</span></span>
 <span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>tToBtB_word_cors</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 7,140 × 3
-   item1    item2    correlation
-   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;
- 1 hunters  brigade        1    
- 2 brigade  hunters        1    
- 3 luckless sir            0.788
- 4 sir      luckless       0.788
- 5 brother  death          0.712
- 6 death    brother        0.712
- 7 walls    garden         0.662
- 8 garden   walls          0.662
- 9 pot      cooking        0.643
-10 cooking  pot            0.643
-# ℹ 7,130 more rows</code></pre>
+<pre><code># A tibble: 17,556 × 3
+   item1        item2        correlation
+   &lt;chr&gt;        &lt;chr&gt;              &lt;dbl&gt;
+ 1 dumbledore   albus              1    
+ 2 albus        dumbledore         1    
+ 3 hunters      brigade            1    
+ 4 brigade      hunters            1    
+ 5 invisibility cloak              1    
+ 6 cloak        invisibility       1    
+ 7 fortune      fair               1    
+ 8 fair         fortune            1    
+ 9 luckless     sir                0.860
+10 sir          luckless           0.860
+# ℹ 17,546 more rows</code></pre>
 </div>
 </div>
 <p>Tablica ima 7140 redaka, a i ovdje se svaki par pojavljuje dvaput, pa je različitih parova 3570. Toliko parova može se oblikovati od 85 riječi, koliko ih se u bajkama pojavljuje barem pet puta. Najveću korelaciju, 1, imaju riječi <em>hunters</em> i <em>brigade</em>, što znači da se pojavljuju uvijek u istim odlomcima, u svakom odlomku u kojem je jedna, nalazi se i druga. Visoke korelacije imaju i parovi <em>sir</em> i <em>luckless</em> (0,79), <em>brother</em> i <em>death</em> (0,71), <em>walls</em> i <em>garden</em> (0,66) te <em>pot</em> i <em>cooking</em> (0,64). Većinu tih parova već smo susreli među bigramima, kao <em>sir luckless</em>, <em>garden walls</em> i <em>cooking pot</em>, jer riječi koje stoje jedna uz drugu nužno se nalaze i u istom odlomku. Par <em>brother</em> i <em>death</em>, međutim, nije bigram, odnosno riječi se ne pojavljuju jedna uz drugu, ali se gotovo uvijek javljaju u istim odlomcima.</p>

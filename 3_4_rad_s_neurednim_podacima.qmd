@@ -15,7 +15,7 @@ library(quanteda)
 library(Matrix)
 
 # Učitavanje podataka
-tToBtB_word_tokens_stop_words_lemmatize <- readRDS("data_pictures_and_graphs/tToBtB_word_tokens_without_stop_words_lemmatize_word.rds")
+tToBtB_word_tokens_stop_words_lemmatize <- readRDS("data/tToBtB_word_tokens_without_stop_words_lemmatize_word.rds")
 ```
 
 U prethodnim poglavljima tekst smo analizirali u urednom formatu, odnosno u tablici s jednim tokenom po dokumentu po retku. Međutim, većina postojećih R paketa za obradu prirodnog jezika, osim paketa `tidytext`, s ovim formatom ne radi. [CRAN Task View](https://cran.r-project.org/web/views/NaturalLanguageProcessing.html) za obradu prirodnog jezika navodi velik broj paketa koji kao ulaz primaju druge strukture podataka i daju neuredne izlaze. Ti su paketi vrlo korisni, a mnogi postojeći skupovi tekstualnih podataka dostupni su upravo u njihovim formatima. Bez obzira na to koliko su pojedine operacije složene i dotjerane, često je upravo kvaliteta *ljepila* između njih ono što najviše određuje snagu cijelog sustava. To ljepilo u našem slučaju čine funkcije koje uredan format povezuju s drugim paketima i strukturama podataka. Zahvaljujući njima možemo se osloniti i na postojeće pakete za analizu teksta i na uredne alate.

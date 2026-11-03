@@ -12,9 +12,9 @@ library(tidytext)
 library(textdata)
 
 # Učitavanje podataka
-tToBtB_df <- readRDS("data_pictures_and_graphs/tToBtB_df.rds")
-tToBtB_word_tokens_stop_words <- readRDS("data_pictures_and_graphs/tToBtB_word_tokens_without_stop_words.rds")
-tToBtB_bigram <- readRDS("data_pictures_and_graphs/tToBtB_bigram.rds")
+tToBtB_df <- readRDS("data/tToBtB_df.rds")
+tToBtB_word_tokens_stop_words <- readRDS("data/tToBtB_word_tokens_without_stop_words.rds")
+tToBtB_bigram <- readRDS("data/tToBtB_bigram.rds")
 ```
 
 Kad čitamo tekst, na temelju značenja riječi zaključujemo je li neki njegov dio pozitivan ili negativan te prevladava li u njemu neka emocija, poput radosti, straha ili gađenja. **Analiza sentimenata** (engl. *sentiment analysis*) postupak je kojim se taj emocionalni ton teksta pokušava odrediti računalno. Cilj joj je prepoznati stavove, mišljenja i emocije izražene u tekstu. Primjenjuje se, primjerice, na društvenim mrežama gdje se analizom objava i komentara prate javno mnijenje i reakcije na događaje, u marketingu gdje se analizom recenzija proizvoda i usluga utvrđuje što kupci o njima misle, u politici gdje se analizom medijskih sadržaja i komentara prate stavovi javnosti o strankama, političarima i javnim politikama i slično. Ovdje ćemo se koristiti najjednostavnijim pristupom koji tekst promatramo kao skup pojedinačnih riječi, a sentiment teksta kao zbroj sentimenata riječi od kojih se sastoji.

@@ -15,7 +15,7 @@ library(tidytext)
 library(scales)
 
 # Učitavanje podataka
-tToBtB_word_tokens_stop_words_lemmatize <- readRDS("data_pictures_and_graphs/tToBtB_word_tokens_without_stop_words_lemmatize_word.rds")
+tToBtB_word_tokens_stop_words_lemmatize <- readRDS("data/tToBtB_word_tokens_without_stop_words_lemmatize_word.rds")
 ```
 
 ## Brojanje riječi

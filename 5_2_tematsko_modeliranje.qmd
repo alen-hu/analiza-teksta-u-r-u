@@ -12,7 +12,7 @@ library(tidytext)
 library(topicmodels)
 
 # Učitavanje podataka
-tToBtB_word_tokens_stop_words_lemmatize <- readRDS("data_pictures_and_graphs/tToBtB_word_tokens_without_stop_words_lemmatize_word.rds")
+tToBtB_word_tokens_stop_words_lemmatize <- readRDS("data/tToBtB_word_tokens_without_stop_words_lemmatize_word.rds")
 ```
 
 U analizi teksta često radimo sa zbirkama dokumenata koje želimo razvrstati u prirodne skupine kako bismo ih lakše razumjeli. **Tematsko modeliranje** (engl. *topic modeling*) metoda je nenadziranog razvrstavanja dokumenata koja pronalazi skupine riječi koje se pojavljuju zajedno, odnosno teme, iako unaprijed ne znamo koje su to teme. Najpoznatija metoda tematskog modeliranja je **latentna Dirichletova alokacija** (engl. *latent Dirichlet allocation*, **LDA**). Ona svaki dokument promatra kao mješavinu tema, a svaku temu kao mješavinu riječi. Zato se dokumenti mogu sadržajno preklapati, umjesto da budu razvrstani u strogo odvojene skupine.
