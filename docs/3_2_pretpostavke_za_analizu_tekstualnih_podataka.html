@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hr" xml:lang="hr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Tekst u izvornom obliku nije pogodan za kvantitativnu analizu. Prije nego što se riječi mogu brojati i uspoređivati, tekst treba očistiti, urediti u tablicu i razložiti na manje jedinice. Zato su čišćenje teksta, tokenizacija, uklanjanje zaustavnih riječi i lematizacija osnovni postupci takve pripreme, a kojima se iz teksta izdvaja ono što nosi značenje. Iako se čine tehničkima, ti postupci nisu neutralni jer o odlukama donesenima u njima ovise i rezultati svake daljnje analize.">
+
+<title>7&nbsp; Pretpostavke za analizu tekstualnih podataka – Analiza teksta u R-u</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./3_3_lingvisticka_obrada_teksta.html" rel="next">
+<link href="./3_1_ucitavanje_teksta.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ed937027807105842f1b8e9a1d8c8bec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: white;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: white;
+background: #8B475D;
+      }
+</style>
+
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_teksta.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_2_pretpostavke_za_analizu_tekstualnih_podataka.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu tekstualnih podataka</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_teksta.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_2_pretpostavke_za_analizu_tekstualnih_podataka.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu tekstualnih podataka</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu tekstualnih podataka</span></h1>
+                  <div>
+        <div class="description">
+          Tekst u izvornom obliku nije pogodan za kvantitativnu analizu. Prije nego što se riječi mogu brojati i uspoređivati, tekst treba očistiti, urediti u tablicu i razložiti na manje jedinice. Zato su čišćenje teksta, tokenizacija, uklanjanje zaustavnih riječi i lematizacija osnovni postupci takve pripreme, a kojima se iz teksta izdvaja ono što nosi značenje. Iako se čine tehničkima, ti postupci nisu neutralni jer o odlukama donesenima u njima ovise i rezultati svake daljnje analize.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Analiza teksta u R-u</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/alen-hu" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Predgovor</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">UVOD U OBRADU PRIRODNOG JEZIKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_1_tekst_kao_podatak.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Tekst kao podatak: temelji analize teksta i obrade prirodnoga jezika</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1_2_primjena_analize_teksta_u_znanstvenim_istraživanjima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Primjena analize teksta u znanstvenim istraživanjima</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">RAD S TEKSTOM U R-U</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_1_znakovni_nizovi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Znakovni nizovi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./2_2_regularni_izrazi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regularni izrazi</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">OD IZVORA DO PODATAKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_1_ucitavanje_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_2_pretpostavke_za_analizu_tekstualnih_podataka.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu tekstualnih podataka</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_3_lingvisticka_obrada_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_4_rad_s_neurednim_podacima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Rad s neurednim podacima</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">OPISIVANJE TEKSTA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_1_deskriptivna_analiza_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Deskriptivna analiza teksta</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_2_analiza_ucestalosti_riječi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Analiza učestalosti riječi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_3_odnosi_medu_rijecima.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Odnosi među riječima</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_4_stil_i_slozenost_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Stil i složenost teksta: stilometrija, čitljivost i leksička raznolikost</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_5_vizualizacije_teksta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vizualizacija teksta</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">OTKRIVANJE STRUKTURA U TEKSTU</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_1_slicnosti_tekstova_i_grupiranje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Sličnost tekstova i grupiranje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_2_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Tematsko modeliranje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./5_3_strukturno_tematsko_modeliranje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Strukturno tematsko modeliranje</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">MJERENJE POMOĆU TEKSTA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_1_analiza_pomocu_rjecnika.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Analiza pomoću rječnika</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_2_analiza_sentimenata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Analiza sentimenata</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_3_rucno_kodiranje_i_pouzdanost.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ručno kodiranje i pouzdanost</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_4_nadzirano_strojno_ucenje.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Nadzirano strojno učenje</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./6_5_skaliranje_tekstova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Skaliranje tekstova</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">MODERNA OBRADA PRIRODNOGA JEZIKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_1_vektorske_reprezentacije_rijeci_i_dokumenata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Vektorske reprezentacije riječi i dokumenata</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_2_transformeri_i_veliki_jezicni_modeli.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Transformeri i veliki jezični modeli</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_3_tematsko_modeliranje_pomocu_vektorskih_reprezentacija.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Tematsko modeliranje pomoću vektorskih reprezentacija</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./7_4_semanticko_pretrazivanje_i_generiranje_potpomognuto_pretrazivanjem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Semantičko pretraživanje i generiranje potpomognuto pretraživanjem (RAG)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">JEZIK, ETIKA I UMJETNA INTELIGENCIJA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_1_analiza_teksta_na_hrvatskom_jeziku.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Analiza teksta na hrvatskom jeziku</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_2_etika_pravni_okvir_i_istrazivačka_praksa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Etika, pravni okvir i istraživačka praksa</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./8_3_obrada_prirodnoga_jezika_i_umjetna_inteligencija.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Obrada prirodnoga jezika i umjetna inteligencija</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">OD PITANJA DO ZAKLJUČKA</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9_1_cjelovita_studija_slucaja.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Cjelovita studija slučaja</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literatura</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#podatkovni-okvir-i-tibble" id="toc-podatkovni-okvir-i-tibble" class="nav-link active" data-scroll-target="#podatkovni-okvir-i-tibble"><span class="header-section-number">7.1</span> Podatkovni okvir i tibble</a></li>
+  <li><a href="#čišćenje-teksta" id="toc-čišćenje-teksta" class="nav-link" data-scroll-target="#čišćenje-teksta"><span class="header-section-number">7.2</span> Čišćenje teksta</a>
+  <ul class="collapse">
+  <li><a href="#provjera-posebnih-i-kontrolnih-znakova" id="toc-provjera-posebnih-i-kontrolnih-znakova" class="nav-link" data-scroll-target="#provjera-posebnih-i-kontrolnih-znakova"><span class="header-section-number">7.2.1</span> Provjera posebnih i kontrolnih znakova</a></li>
+  <li><a href="#uklanjanje-praznih-redaka-i-zaglavlja" id="toc-uklanjanje-praznih-redaka-i-zaglavlja" class="nav-link" data-scroll-target="#uklanjanje-praznih-redaka-i-zaglavlja"><span class="header-section-number">7.2.2</span> Uklanjanje praznih redaka i zaglavlja</a></li>
+  <li><a href="#uklanjanje-tablica" id="toc-uklanjanje-tablica" class="nav-link" data-scroll-target="#uklanjanje-tablica"><span class="header-section-number">7.2.3</span> Uklanjanje tablica</a></li>
+  <li><a href="#spajanje-riječi-prelomljenih-spojnicom" id="toc-spajanje-riječi-prelomljenih-spojnicom" class="nav-link" data-scroll-target="#spajanje-riječi-prelomljenih-spojnicom"><span class="header-section-number">7.2.4</span> Spajanje riječi prelomljenih spojnicom</a></li>
+  <li><a href="#spajanje-redaka-u-tekst-stranice" id="toc-spajanje-redaka-u-tekst-stranice" class="nav-link" data-scroll-target="#spajanje-redaka-u-tekst-stranice"><span class="header-section-number">7.2.5</span> Spajanje redaka u tekst stranice</a></li>
+  </ul></li>
+  <li><a href="#tokenizacija" id="toc-tokenizacija" class="nav-link" data-scroll-target="#tokenizacija"><span class="header-section-number">7.3</span> Tokenizacija</a>
+  <ul class="collapse">
+  <li><a href="#druge-jedinice-teksta" id="toc-druge-jedinice-teksta" class="nav-link" data-scroll-target="#druge-jedinice-teksta"><span class="header-section-number">7.3.1</span> Druge jedinice teksta</a></li>
+  <li><a href="#čišćenje-nakon-tokenizacije" id="toc-čišćenje-nakon-tokenizacije" class="nav-link" data-scroll-target="#čišćenje-nakon-tokenizacije"><span class="header-section-number">7.3.2</span> Čišćenje nakon tokenizacije</a></li>
+  <li><a href="#ispravljanje-pogrešaka-udaljenošću-uređivanja" id="toc-ispravljanje-pogrešaka-udaljenošću-uređivanja" class="nav-link" data-scroll-target="#ispravljanje-pogrešaka-udaljenošću-uređivanja"><span class="header-section-number">7.3.3</span> Ispravljanje pogrešaka udaljenošću uređivanja</a></li>
+  <li><a href="#uredni-i-drugi-formati" id="toc-uredni-i-drugi-formati" class="nav-link" data-scroll-target="#uredni-i-drugi-formati"><span class="header-section-number">7.3.4</span> Uredni i drugi formati</a></li>
+  </ul></li>
+  <li><a href="#uklanjanje-zaustavnih-riječi" id="toc-uklanjanje-zaustavnih-riječi" class="nav-link" data-scroll-target="#uklanjanje-zaustavnih-riječi"><span class="header-section-number">7.4</span> Uklanjanje zaustavnih riječi</a></li>
+  <li><a href="#lematizacija" id="toc-lematizacija" class="nav-link" data-scroll-target="#lematizacija"><span class="header-section-number">7.5</span> Lematizacija</a></li>
+  <li><a href="#literatura" id="toc-literatura" class="nav-link" data-scroll-target="#literatura">Literatura</a></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p>Prije same analize teksta potrebno je provesti nekoliko postupaka koji tekst pripremaju za analizu. Bez njih analiza ne može ni započeti jer računalo tekst vidi kao dugačak niz znakova, a ne kao riječi koje se mogu brojati i uspoređivati. Zajedno, ti postupci čine predobradu teksta, odnosno <strong>pretpostavke analize teksta</strong>:</p>
+<ol type="1">
+<li><p>Prvi je postupak oblikovanje teksta u podatkovni okvir u kojem je uz svaki dio teksta zapisano odakle dolazi.</p></li>
+<li><p>Drugi je čišćenje teksta kojim se iz njega uklanjaju znakovi i dijelovi koji ne pripadaju sadržaju.</p></li>
+<li><p>Treći je tokenizacija kojom se tekst dijeli na manje jedinice, poput riječi ili nizova riječi.</p></li>
+<li><p>Četvrti je uklanjanje zaustavnih riječi, odnosno vrlo čestih riječi koje malo govore o sadržaju teksta.</p></li>
+<li><p>Peti je lematizacija kojom se različiti oblici iste riječi svode na njezin rječnički oblik.</p></li>
+</ol>
+<p>Svaki od tih postupaka uključuje odluke o tome što u tekstu zadržati, a što ukloniti. Te odluke nisu neutralne jer o njima ovise i rezultati svake daljnje analize. Zato ih je dobro donositi svjesno, provjeravati njihov učinak i zapisati ih u kodu, kako bi ih drugi mogli vidjeti i ponoviti.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Preuzimanje biltena Public Health Reports">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Preuzimanje biltena Public Health Reports
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Postupke ćemo pokazati na broju biltena <em>Public Health Reports</em> od 8.11.1918. Bilten je tjedno izdavala američka javnozdravstvena služba, a u jesen 1918. iz tjedna u tjedan izvještavao je o pandemiji gripe koja se tada nazivala i španjolskom gripom. U ovom se broju nalaze tablice s brojem oboljelih i umrlih po saveznim državama i gradovima, prijevodi izvještaja o gripi iz europskih zemalja, ali i pregled pisama u kojima su građani javnozdravstvenoj službi slali vlastite lijekove protiv gripe. Bilten je skeniran, a njegov je tekst dobiven optičkim prepoznavanjem znakova (engl. <em>optical character recognition</em>, OCR). Takav tekst sadrži mnogo pogrešaka. Slova su pogrešno prepoznata, riječi su prelomljene na kraju retka, tablice su se raspale u nizove brojeva i točaka, a na vrhu svake stranice nalazi se zaglavlje koje ne pripada tekstu. Zato je dobar primjer teksta na kojem se svi koraci pripreme stvarno moraju provesti.</p>
+<p>Brojevi biltena <em>Public Health Reports</em> iz 1918. godine dostupni su kao datoteke PDF u digitalnoj knjižnici <em>Stacks</em> američkih Centara za kontrolu i prevenciju bolesti. Kao publikacije američke savezne vlade nisu zaštićeni autorskim pravom pa ih smijemo slobodno preuzimati i obrađivati. Za preuzimanje nije potrebna ni registracija ni ključ. Datoteku preuzimamo funkcijom <code>download.file()</code>. Argument <code>destfile</code> određuje gdje će se datoteka spremiti, a argument <code>mode = "wb"</code> da se spremi kao binarna datoteka. Bez njega bi se datoteka PDF na Windowsima mogla oštetiti.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://stacks.cdc.gov/view/cdc/67877/cdc_67877_DS1.pdf"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">destfile =</span> <span class="st">"data/phr_1918_11_08.pdf"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">"wb"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Kod je pokrenut samo jednom, a u nastavku poglavlja radimo sa spremljenom datotekom.</p>
+<p>Tekst iz datoteke PDF čitamo paketom <code>pdftools</code>. Na Windowsima i macOS-u paket se instalira na uobičajen način, a na Linuxu je prije toga potrebno instalirati sistemsku biblioteku Poppler. Na distribucijama Ubuntu i Debian to se radi naredbom <code>sudo apt install libpoppler-cpp-dev</code> u terminalu.</p>
+</div>
+</div>
+<section id="podatkovni-okvir-i-tibble" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="podatkovni-okvir-i-tibble"><span class="header-section-number">7.1</span> Podatkovni okvir i tibble</h2>
+<p>Funkcija <code>pdf_text()</code> iz paketa <code>pdftools</code> čita tekst iz datoteke PDF i vraća znakovni vektor u kojem je svaki element jedna stranica. Ako datoteka PDF sadrži skenirane stranice, funkcija vraća tekst koji je pri digitalizaciji dobiven OCR-om. Funkcija pritom nastoji sačuvati raspored teksta na stranici pa su retci odvojeni znakom <code>\n</code>, a razmaci između stupaca tablica zadržani.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje teksta iz datoteke PDF</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>phr_text <span class="ot">&lt;-</span> <span class="fu">pdf_text</span>(<span class="st">"data/phr_1918_11_08.pdf"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj stranica</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(phr_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 56</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tekst prve stranice</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(phr_text[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> PUBLIC HEALTH REPORTS
+ VOL. 33                    NOVEMBER 8, 1918                       No. 45
+
+                        EPIDEMIC INFLUENZA.
+                    PREVALENCE IN THE UNIfED STATES.
+   In the following tablo an attempt lhas beeni mado to present in
+ as brief form as possible a statiitical statement of thie influenza
+ epidemic in the Uniited States up to anid including, the wveek ending
+ November 2, 1918.
+   The table is based on telearaphic and mail reports to the Public
+ Health Service.. Ihe moi tal-ity fgures-for cities La- e beCen checked
+wherever possible, %ith reports to thle Bureau of the Census. It
+should be kept in irind that the statemernt is far from being com-
+ plete for any locality or SLtat, particularly with respect to cases of
+influenza. Influenza wvas not made a reportable disense until the
+epidemic was well under way in many localities. In perhaps the
+groat majority of localities -where the prevalenc of the disease was
+severe, physicians were too busy to make accurate andl prom-pt
+reports to local health authorities. Furtberirmcre, it mrst Le obvious
+that the complete and regular-collcetion and forWarding of reports
+from a large proportion of counties and towns in practically every
+State was almost impossible under the extraordiinary condlitions that
+prevailed. For these reasons city or State totals for any given
+week are not exact or even more thian approximately- accurate. In
+some cases there are reasons to believe that tlhey aic far from ac-
+curate, and in nearly all instances, it is believed, the reported figures
+properly, may be considered as considerably below the actual onles.
+Estimates have been empl)oyed in a few instances, but when esti-
+mates were necessary those reported by local or State health au-
+thorities have been used whenever possible.
+   With these limitations in mind, the following table shoLld Lbe used
+only as a rough index of the course of the epidemic in various seC-
+tions of the country. It is presented as a preliminarT comipilation
+of such data as are now available, since the present (latt are being
+supplemented with information that, it is believed, will Le more
+accurate and complete.
+   From the beginning of the epidemic to and including November
+2 a grand total of approximately 115,000 deaths from influenza and
+pneumonia (all forms) had been reported to the Public Healtih Set-vice.
+      8917-is-1-1                (1913)</code></pre>
+</div>
+</div>
+<p>Već prva stranica pokazuje zašto takav tekst nije spreman za analizu. Na njoj su pogrešno prepoznate riječi, poput <em>tablo</em>, <em>lhas</em>, <em>beeni</em> i <em>wvas</em>, riječi prelomljene na kraju retka, poput <em>com-</em> i <em>plete</em>, a na dnu stranice tiskarska oznaka i broj stranice u zagradi.</p>
+<p>Prije čišćenja tekst ćemo urediti u podatkovni okvir. Takav redoslijed nije nužan, no kod teksta iz datoteka PDF praktičniji je. Mnogi koraci čišćenja ovise o tome na kojoj se stranici i u kojem retku nešto nalazi, a u podatkovnom okviru taj se podatak čuva uz svaki redak teksta.</p>
+<p>Tekstualni podaci u R-u mogu biti organizirani u nekoliko različitih oblika, a svaki od njih ima svoje prednosti, ovisno o vrsti analize. Najčešće se koriste znakovni vektori, podatkovni okviri (i njihova inačica <em>tibble</em>), korpusi, matrice dokumenata i pojmova te tokenizirani objekti.</p>
+<p>Podatkovni okvir (engl. <em>data frame</em>) i njegova modernija inačica <em>tibble</em> tablični su oblici podataka. U njima svaki redak obično predstavlja jednu jedinicu analize (dokument, stranicu, odlomak, rečenicu ili riječ), a stupci sadrže tekst i pripadajuće metapodatke, poput broja stranice. Takav oblik omogućuje korištenje alata iz skupa paketa <code>tidyverse</code>. <em>Tibble</em> je modernija inačica podatkovnog okvira razvijena u sklopu skupa paketa <code>tidyverse</code>. Od klasičnog podatkovnog okvira (<code>data.frame()</code>) razlikuje se ponajprije u ponašanju:</p>
+<ul>
+<li><p>Pri ispisu prikazuje samo prvih nekoliko redaka i onoliko stupaca koliko stane na zaslon, uz vrstu podataka u svakom stupcu (npr. <code>&lt;int&gt;</code> za cijele brojeve, <code>&lt;chr&gt;</code> za tekst).</p></li>
+<li><p>Nikad sam ne mijenja vrstu podataka ni imena stupaca.</p></li>
+<li><p>Upozorava kad se pozove stupac koji ne postoji umjesto da tiho vrati <code>NULL</code>.</p></li>
+</ul>
+<p>Zbog toga se s njim lakše radi, osobito kod velikih tablica, a on je i uobičajen oblik za rad s paketom <code>tidytext</code>.</p>
+<p>Podatkovni okvir stvaramo funkcijom <code>tibble()</code>. Svaki argument te funkcije postaje jedan stupac, pri čemu je ime argumenta ime stupca, a vrijednost argumenta njegov sadržaj. Ovdje stvaramo tri stupca.</p>
+<ul>
+<li><p><code>page</code> - redni broj stranice u datoteci PDF (funkcija <code>seq_along()</code> stvara niz brojeva od 1 do broja elemenata vektora),</p></li>
+<li><p><code>report_page</code> - broj stranice otisnut u biltenu,</p></li>
+<li><p><code>text</code> - tekst stranice.</p></li>
+</ul>
+<p>Stranice biltena numerirane su redom kroz cijelo godište pa ovaj broj ne počinje stranicom 1, nego stranicom 1913, što se vidi u zagradi na dnu prve stranice. Otisnuti broj stranice zato dobivamo tako da rednom broju stranice dodamo 1912. Funkcija <code>tibble()</code> stupce stvara redom pa se pri stvaranju stupca <code>report_page</code> možemo pozvati na upravo stvoreni stupac <code>page</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podatkovni okvir sa stranicama biltena</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>phr_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">page =</span> <span class="fu">seq_along</span>(phr_text),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">report_page =</span> page <span class="sc">+</span> <span class="dv">1912</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> phr_text</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled podatkovnog okvira</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>phr_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 56 × 3
+    page report_page text                                                       
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;                                                      
+ 1     1        1913 " PUBLIC HEALTH REPORTS\n VOL. 33                    NOVEM…
+ 2     2        1914 "Novvnulewl S. t918.                                      …
+ 3     3        1915 "                                                         …
+ 4     4        1916 " November 8, 1918.                                       …
+ 5     5        1917 "                                                         …
+ 6     6        1918 " November 8, 1918.                                       …
+ 7     7        1919 "                                                         …
+ 8     8        1920 " Nowrabc C., 19168.                                 .1920…
+ 9     9        1921 "                                                         …
+10    10        1922 " November 8, 1918.                                1922\na…
+# ℹ 46 more rows</code></pre>
+</div>
+</div>
+<p>U ovom podatkovnom okviru svaki je redak jedna stranica. Za čišćenje nam je potrebna sitnija jedinica, odnosno redak teksta, jer se zaglavlja, tablice i prelomljene riječi prepoznaju upravo po retcima. Funkcija <code>separate_longer_delim()</code> iz paketa <code>tidyr</code> dijeli tekst u stupcu <code>text</code> na mjestima na kojima se nalazi znak zadan argumentom <code>delim</code>, ovdje znak <code>\n</code>, i svaki dio stavlja u zaseban redak podatkovnog okvira. Vrijednosti ostalih stupaca pritom se ponavljaju pa za svaki redak teksta znamo s koje je stranice. Funkcijom <code>group_by()</code> zatim podatke grupiramo prema stranici, a funkcija <code>row_number()</code> unutar svake stranice retke numerira od 1 nadalje. Funkcijom <code>ungroup()</code> na kraju uklanjamo grupiranje kako ne bi utjecalo na kasnije operacije.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela stranica na retke</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="ot">&lt;-</span> phr_df <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_longer_delim</span>(text, <span class="at">delim =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(page) <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">line =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled podatkovnog okvira</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>phr_lines</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,508 × 4
+    page report_page text                                                   line
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;                                                 &lt;int&gt;
+ 1     1        1913 " PUBLIC HEALTH REPORTS"                                  1
+ 2     1        1913 " VOL. 33                    NOVEMBER 8, 1918       …     2
+ 3     1        1913 ""                                                        3
+ 4     1        1913 ""                                                        4
+ 5     1        1913 "                        EPIDEMIC INFLUENZA."             5
+ 6     1        1913 "                    PREVALENCE IN THE UNIfED STATES…     6
+ 7     1        1913 "   In the following tablo an attempt lhas beeni mad…     7
+ 8     1        1913 " as brief form as possible a statiitical statement …     8
+ 9     1        1913 " epidemic in the Uniited States up to anid includin…     9
+10     1        1913 " November 2, 1918."                                     10
+# ℹ 5,498 more rows</code></pre>
+</div>
+</div>
+<p>Podatkovni okvir <code>phr_lines</code> ima jedan redak teksta po retku. Na tom ćemo okviru provesti prvi dio čišćenja, a tek ćemo na kraju retke ponovno spojiti u tekst stranica.</p>
+</section>
+<section id="čišćenje-teksta" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="čišćenje-teksta"><span class="header-section-number">7.2</span> Čišćenje teksta</h2>
+<p>Nakon učitavanja tekst je potrebno očistiti. Ovdje je čišćenje podijeljeno u dva dijela. Prvi se provodi odmah nakon učitavanja teksta u R, a drugi nakon tokenizacije, odnosno nakon što se tekst podijeli na manje jedinice. Takva je podjela praktičnija jer neki elementi teksta trebaju ostati „nečisti” sve do tokenizacije. Interpunkcija, primjerice, označava granice rečenica, a prijelomi redaka pomažu prepoznati riječi prelomljene na kraju retka. Zato se u prvom dijelu bavimo tekstom kao cjelinom, a pojedinim riječima tek u drugom.</p>
+<section id="provjera-posebnih-i-kontrolnih-znakova" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="provjera-posebnih-i-kontrolnih-znakova"><span class="header-section-number">7.2.1</span> Provjera posebnih i kontrolnih znakova</h3>
+<p>Prvi je korak provjeriti koji se neobični ili posebni znakovi nalaze u tekstu. Prvom provjerom brojimo retke s vrijednošću <code>NA</code>. Takvih redaka ne smije biti jer bi jedan <code>NA</code> u sljedećim koracima pokvario tekst cijele stranice. Drugom provjerom brojimo retke u kojima se pojavljuje zamjenski znak (<code>�</code>) koji se prikazuje kao romb s upitnikom i označava znak koji pri promjeni kodiranja nije bilo moguće protumačiti.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj redaka s vrijednošću NA (treba biti 0)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(phr_lines<span class="sc">$</span>text))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj redaka sa zamjenskim znakom (treba biti 0)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">str_detect</span>(phr_lines<span class="sc">$</span>text, <span class="st">"�"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Trećom provjerom ispisujemo sve znakove izvan osnovnog skupa ASCII koji sadrži engleska slova, znamenke i osnovnu interpunkciju, zajedno s time koliko se puta pojavljuju. Funkcija <code>str_extract_all()</code> iz svakog retka izdvaja sve takve znakove, funkcija <code>unlist()</code> spaja ih u jedan vektor, a funkcija <code>count()</code> broji koliko se puta pojavljuje svaki od njih.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Znakovi izvan osnovnog skupa ASCII i njihova učestalost</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">char =</span> <span class="fu">unlist</span>(<span class="fu">str_extract_all</span>(phr_lines<span class="sc">$</span>text, <span class="st">"[^</span><span class="sc">\\</span><span class="st">x00-</span><span class="sc">\\</span><span class="st">x7F]"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(char, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  char      n
+  &lt;chr&gt; &lt;int&gt;
+1 £         7
+2 °         5
+3 ¶         2
+4 ¢         1</code></pre>
+</div>
+</div>
+<p>U tekstu se pojavljuju samo četiri takva znaka i to vrlo rijetko. Kod rijetkih je znakova dobro pogledati u kojem se kontekstu nalaze. To se radi funkcijom <code>str_subset()</code> koja vraća samo one elemente vektora u kojima je uzorak pronađen. Funkcija <code>str_squish()</code> pritom uklanja višestruke razmake kako bi ispis bio pregledniji.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retci u kojima se nalaze znakovi izvan skupa ASCII</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str_subset</span>(phr_lines<span class="sc">$</span>text, <span class="st">"[^</span><span class="sc">\\</span><span class="st">x00-</span><span class="sc">\\</span><span class="st">x7F]"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_squish</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "SCept. S2pt. £opt. Oct. 5. Oct. Oct. Oct. Nov. 2."                                        
+ [2] "Number of local1it¶. reporting .. g9 X) (1. . . .(1) (()101"                              
+ [3] "&lt;&gt;.°d'°{"                                                                                 
+ [4] "Kansas,City ........ 305.816 3.3 12.1 81.4 55.0 £3.1 64.4 ........."                      
+ [5] "e. Oct. °2Ot. Oct."                                                                       
+ [6] "89137°-18 -2"                                                                             
+ [7] "Westernvort.1 I I £cott Count . . 1"                                                      
+ [8] "Birmingham, A£la............ 1 .......... New Haven,o 1"                                  
+ [9] "Dover,¶.H::.13,\"76 16 ................ ......."                                          
+[10] "Gardner, if ass............... 17. £134 16 i .. .. .j Ll1"                                
+[11] "UP°PUbopu o"                                                                              
+[12] "........... .Juno 30-£ept. 7.... 130 14"                                                  
+[13] "Ontario.................... .................... .......... Juno Wll, 1is8: Cam, £5. July"
+[14] "Mid-Jaxa ....... Petb. 14-fMay 22, 1918: Case¢, :12;"                                     </code></pre>
+</div>
+</div>
+<p>Nijedan od tih znakova nije dio stvarne riječi. Svi su nastali pogrešnim prepoznavanjem, najčešće u tablicama. Znak £ pojavljuje se, primjerice, umjesto slova <em>S</em> u kratici <em>Sept.</em> ili umjesto slova <em>l</em> u kratici <em>Ala.</em> za Alabamu. Zato sve znakove izvan skupa ASCII zamjenjujemo razmakom. Za to koristimo funkciju <code>str_replace_all()</code>. Njezin je prvi argument (<code>string</code>) znakovni vektor koji se čisti, drugi (<code>pattern</code>) uzorak koji se traži, a treći (<code>replacement</code>) tekst kojim se pronađeni uzorak zamjenjuje. Razmak umjesto praznog niza koristimo zato što znak ponekad stoji između dviju riječi, a njegovim bi se uklanjanjem one spojile.</p>
+<p>Takvu odluku smijemo donijeti samo nakon pregleda konteksta. U nekom drugom tekstu znakovi izvan skupa ASCII mogli bi biti dio stvarnih riječi, primjerice slova s dijakritičkim znakovima u imenima ili tipografski znakovi poput zaobljenih apostrofa i navodnika. Zaobljeni apostrof (’) i ravni apostrof (’) za računalo su dva različita znaka pa se riječ <em>don’t</em> ne bi podudarala s riječju <em>don’t</em> iz popisa zaustavnih riječi. Takve bismo znakove zamijenili njihovim jednostavnim inačicama, a ne razmakom. U ovom biltenu svi su apostrofi ravni pa taj problem ne postoji.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zamjena znakova izvan skupa ASCII razmakom</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="ot">&lt;-</span> phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">string =</span> text,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"[^</span><span class="sc">\\</span><span class="st">x00-</span><span class="sc">\\</span><span class="st">x7F]"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">replacement =</span> <span class="st">" "</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Sljedeća je provjera traženje <strong>kontrolnih znakova</strong>. To su znakovi koji ne predstavljaju slova, brojeve ni interpunkciju, nego su izvorno služili za upravljanje uređajima poput pisača ili terminala. Većina ih se u konzoli R-a ne vidi ili se prikazuje kao neobične oznake poput <code>\a</code> ili <code>\f</code>. Takvi znakovi mogu izazvati pogreške u funkcijama ili neočekivane rezultate u daljnjoj obradi. Uzorak <code>"\\p{Cc}"</code> obuhvaća sve kontrolne znakove pa ih ne moramo navoditi jednog po jednog.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj kontrolnih znakova</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">str_count</span>(phr_lines<span class="sc">$</span>text, <span class="st">"</span><span class="sc">\\</span><span class="st">p{Cc}"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>U tekstu nema kontrolnih znakova. Znak za novi redak (<code>\n</code>) koji je također kontrolni znak, uklonili smo već pri podjeli stranica na retke. Kad bi kontrolnih znakova bilo, uklonili bismo ih istom funkcijom <code>str_replace_all()</code>, i to tako da ih zamijenimo razmakom. Među njima se nalazi i tabulator (<code>\t</code>) koji često odvaja riječi pa bi se njegovim uklanjanjem one spojile. Ako znak treba samo ukloniti, bez zamjene, umjesto <code>str_replace_all(x, uzorak, "")</code> može se koristiti kraća funkcija <code>str_remove_all(x, uzorak)</code>.</p>
+</section>
+<section id="uklanjanje-praznih-redaka-i-zaglavlja" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="uklanjanje-praznih-redaka-i-zaglavlja"><span class="header-section-number">7.2.2</span> Uklanjanje praznih redaka i zaglavlja</h3>
+<p>Funkcija <code>pdf_text()</code> čuva raspored teksta na stranici pa su u retcima ostali razmaci kojima su poravnati stupci, a između odlomaka i tablica nalaze se prazni retci. Funkcijom <code>str_squish()</code> uklanjamo razmake na početku i kraju svakog retka te višestruke razmake unutar retka zamjenjujemo jednim. Prazne retke zatim uklanjamo funkcijom <code>filter()</code>, a retke na svakoj stranici ponovno numeriramo kako bi prvi redak s tekstom imao broj 1.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="ot">&lt;-</span> phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uklanjanje suvišnih razmaka</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_squish</span>(text)) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uklanjanje praznih redaka</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(text <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ponovno numeriranje redaka na svakoj stranici</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(page) <span class="sc">|&gt;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">line =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Na vrhu svake stranice osim prve nalazi se zaglavlje s datumom izlaska broja i brojem stranice. Ono nije dio teksta koji želimo analizirati, a kad bi ostalo u tekstu, na svakoj bi se stranici pojavile iste riječi i brojevi. Funkcijom <code>filter()</code> zadržavamo samo prve retke svake stranice kako bismo vidjeli kako zaglavlja izgledaju.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prvi redak svake stranice</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(line <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(page, text) <span class="sc">|&gt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 56 × 2
+    page text                      
+   &lt;int&gt; &lt;chr&gt;                     
+ 1     1 PUBLIC HEALTH REPORTS     
+ 2     2 Novvnulewl S. t918. 1914  
+ 3     3 1915 Novrember 19         
+ 4     4 November 8, 1918. 1916    
+ 5     5 1917 November 8, 1913.    
+ 6     6 November 8, 1918. 1918    
+ 7     7 1919 November 8, 191&amp;     
+ 8     8 Nowrabc C., 19168. .19201 
+ 9     9 1921 November 8, 1918.    
+10    10 November 8, 1918. 1922    
+11    11 1923 Noy.n ie!r ,, 1918.  
+12    12 NoveLaber f, 1918. 1924   
+13    13 1.925 November 8, 1918.   
+14    14 Norember 8, 1918. 1926    
+15    15 1927 12Noveiuber .3, I 13.
+# ℹ 41 more rows</code></pre>
+</div>
+</div>
+<p>Zaglavlja sadrže datum i broj stranice, no OCR ih je često pogrešno prepoznao. Riječ <em>November</em> pojavljuje se, primjerice, kao <em>Novvnulewl</em>, <em>NoveLaber</em> ili <em>Novrember</em>, a godina 1918 kao <em>t918</em> ili <em>1913</em>. Zato ih ne možemo prepoznati po točnom tekstu. Možemo ih, međutim, prepoznati po tri obilježja. Zaglavlje je prvi redak stranice, sadrži barem jednu znamenku i kratko je. Funkcija <code>str_detect()</code> s uzorkom <code>"\\d"</code> provjerava sadrži li redak znamenku, a funkcija <code>str_length()</code> vraća broj znakova u retku. Retke koji zadovoljavaju sva tri uvjeta uklanjamo, a operator <code>!</code> pritom obrće logičku vrijednost pa zadržavamo sve ostale.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retci koji izgledaju kao žive glave</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>running_heads <span class="ot">&lt;-</span> phr_lines<span class="sc">$</span>line <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_detect</span>(phr_lines<span class="sc">$</span>text, <span class="st">"</span><span class="sc">\\</span><span class="st">d"</span>) <span class="sc">&amp;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_length</span>(phr_lines<span class="sc">$</span>text) <span class="sc">&lt;</span> <span class="dv">45</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj takvih redaka</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(running_heads)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 50</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje živih glava</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="ot">&lt;-</span> phr_lines[<span class="sc">!</span>running_heads, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Pravilo je prepoznalo 50 zaglavlja na 56 stranica. Na preostalih šest stranica prvi redak nije prepoznat kao zaglavlje. Na nekima je to naslov, poput naslova prve stranice ili rubrika <em>PREVALENCE OF DISEASE</em> i <em>FOREIGN.</em>, a na drugima kratak niz znakova bez ijedne znamenke, poput <em>-</em> ili <em>ll riace.</em>. Takvi su retci uglavnom na stranicama s tablicama i uklonit će se u sljedećem koraku.</p>
+</section>
+<section id="uklanjanje-tablica" class="level3" data-number="7.2.3">
+<h3 data-number="7.2.3" class="anchored" data-anchor-id="uklanjanje-tablica"><span class="header-section-number">7.2.3</span> Uklanjanje tablica</h3>
+<p>Najveći dio ovog broja biltena čine tablice s brojem oboljelih i umrlih. OCR ih nije mogao pravilno pročitati pa su se raspale u nizove brojeva, točaka i dijelova riječi. Takve tablice ne možemo spasiti čišćenjem, a u analizi riječi samo bi smetale. Zato ih moramo prepoznati i ukloniti.</p>
+<p>Retci tablica razlikuju se od redaka teksta po dva obilježja. Sadrže malo slova, a mnogo znamenki i interpunkcije, i često sadrže točkaste crte (npr. <code>Cases ..........</code>) koje povezuju naziv retka s brojevima. Za svaki redak zato računamo udio slova među znakovima koji nisu razmaci. Funkcija <code>str_count()</code> s uzorkom <code>"\\p{L}"</code> broji slova u retku, a funkcija <code>str_remove_all()</code> uklanja razmake prije brojanja svih znakova. Redak smatramo retkom tablice ako su manje od 60 % njegovih znakova slova ili ako sadrži tri ili više točaka zaredom (uzorak <code>"\\.{3,}"</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="ot">&lt;-</span> phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Udio slova među znakovima koji nisu razmaci</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">letter_share =</span> <span class="fu">str_count</span>(text, <span class="st">"</span><span class="sc">\\</span><span class="st">p{L}"</span>) <span class="sc">/</span> <span class="fu">str_length</span>(<span class="fu">str_remove_all</span>(text, <span class="st">" "</span>)),</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Je li redak redak tablice?</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">table_line =</span> letter_share <span class="sc">&lt;</span> <span class="fl">0.6</span> <span class="sc">|</span> <span class="fu">str_detect</span>(text, <span class="st">"</span><span class="sc">\\</span><span class="st">.{3,}"</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Primjeri redaka tablica</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(table_line) <span class="sc">|&gt;</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(page, letter_share, text) <span class="sc">|&gt;</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+    page letter_share text                                                      
+   &lt;int&gt;        &lt;dbl&gt; &lt;chr&gt;                                                     
+ 1     1       0.52   VOL. 33 NOVEMBER 8, 1918 No. 45                           
+ 2     1       0.533  November 2, 1918.                                         
+ 3     1       0.118  8917-is-1-1 (1913)                                        
+ 4     2       0.222  14. It. 26.                                               
+ 5     2       0      .__28 .                                                   
+ 6     2       0.6    Number of localities relportinig.... ' .... ... I 14 22 4…
+ 7     2       0      . .                                                       
+ 8     2       0.0455 I, 4,168 1,470 6,754 1,067                                
+ 9     2       0.121  'ases ............................                        
+10     2       0.125  Deaths.......................... ........ ........        </code></pre>
+</div>
+</div>
+<p>Uklanjanje pojedinačnih redaka tablica nije dovoljno. Na stranicama s tablicama ostali bi dijelovi zaglavlja tablica, nazivi gradova i drugi ostaci koji nisu tekst. Zato procjenjujemo i cijele stranice. Funkcijom <code>summarise()</code> za svaku stranicu računamo udio redaka koji nisu retci tablice. Funkcija <code>mean()</code> na logičkom vektoru vraća udio vrijednosti <code>TRUE</code>, a operator <code>!</code> obrće vrijednosti stupca <code>table_line</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Udio redaka teksta na svakoj stranici</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>page_types <span class="ot">&lt;-</span> phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(page) <span class="sc">|&gt;</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">text_share =</span> <span class="fu">mean</span>(<span class="sc">!</span>table_line))</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Stranice s najvećim udjelom redaka teksta</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>page_types <span class="sc">|&gt;</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(text_share)) <span class="sc">|&gt;</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 56 × 2
+    page text_share
+   &lt;int&gt;      &lt;dbl&gt;
+ 1    10      1    
+ 2    12      1    
+ 3    13      1    
+ 4    14      1    
+ 5    18      1    
+ 6    20      1    
+ 7    21      1    
+ 8    11      0.977
+ 9    16      0.976
+10    15      0.953
+11    47      0.938
+12     1      0.923
+13    29      0.761
+14    17      0.667
+15    46      0.542
+16    30      0.525
+# ℹ 40 more rows</code></pre>
+</div>
+</div>
+<p>Razlika između stranica jasno se vidi. Na 13 stranica tri četvrtine ili više redaka čine retci teksta, a na svim ostalim stranicama to su dvije trećine redaka ili manje. Zato zadržavamo samo stranice na kojima je udio redaka teksta barem 0,75. Granica je odabrana nakon pregleda podataka, a ne unaprijed, pa ju je kod drugog teksta potrebno ponovno provjeriti.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stranice na kojima prevladava tekst</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>text_pages <span class="ot">&lt;-</span> page_types <span class="sc">|&gt;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(text_share <span class="sc">&gt;=</span> <span class="fl">0.75</span>) <span class="sc">|&gt;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(page)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>text_pages</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  1 10 11 12 13 14 15 16 18 20 21 29 47</code></pre>
+</div>
+</div>
+<p>Na tim stranicama ipak je ostalo nekoliko redaka koji izgledaju kao retci tablice. Prije uklanjanja dobro ih je pogledati.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retci tablica na stranicama s tekstom</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(page <span class="sc">%in%</span> text_pages, table_line) <span class="sc">|&gt;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(page, text) <span class="sc">|&gt;</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="cn">Inf</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 2
+    page text                                                            
+   &lt;int&gt; &lt;chr&gt;                                                           
+ 1     1 VOL. 33 NOVEMBER 8, 1918 No. 45                                 
+ 2     1 November 2, 1918.                                               
+ 3     1 8917-is-1-1 (1913)                                              
+ 4    11 III Policlinfeo July 28, 1918, p. 713.1                         
+ 5    15 med. Wchnsclhr., 1918. Vol. 44, pp. 775, 808, and 863. Editorial
+ 6    15 notes, Miunchen, nmed. Wcelnschr., 1918. V7ol. 65, p. 804.)     
+ 7    16 AREA, 1916.                                                     
+ 8    29 monia 185.                                                      
+ 9    29 Cancer.. ..,...... 1 Scarlet fever .............                
+10    29 00* 20                                                          
+11    29 Chicken pox....19 Septic sore throat. . 1                       
+12    29 Diphtheria ....13 Smallpox... . 21                              
+13    29 German measles ........ 1 Svphilis .......... 3                 
+14    29 Gonorrhea... .... 29 Trachorna ......... I                      
+15    29 Influenza .... 12,154 Tuberculoss 35                            
+16    29 Measles. ... 14 Typhoid feer re 27                              
+17    29 Mumps. ...17 WNThooping cough . .17                             
+18    29 Pneumonia. .. . 131                                             
+19    47 ' Public Health Reports, Nov. 1, 1918, p. 19,)2.                
+20    47 (1959)                                                          </code></pre>
+</div>
+</div>
+<p>Većina tih redaka zaista nije tekst. To su naslov biltena s brojem godišta, dio naslova jednog članka, tiskarske oznake, brojevi stranica u zagradama, bibliografski podaci o člancima iz kojih su prevedeni izvještaji i mala tablica o broju oboljelih od pojedinih bolesti. Pravilo ipak nije savršeno. Uklonit će i redak <em>November 2, 1918.</em> koji je kraj rečenice s prve stranice te redak <em>monia 185.</em> koji je drugi dio prelomljene riječi <em>pneumonia</em>. Takve gubitke možemo prihvatiti jer su rijetki, no dobro je znati da se događaju. Funkcijom <code>filter()</code> sada zadržavamo samo retke sa stranica s tekstom koji nisu retci tablice, a pomoćne stupce uklanjamo funkcijom <code>select()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zadržavanje redaka teksta sa stranica s tekstom</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>phr_lines <span class="ot">&lt;-</span> phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(page <span class="sc">%in%</span> text_pages, <span class="sc">!</span>table_line) <span class="sc">|&gt;</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>letter_share, <span class="sc">-</span>table_line)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="spajanje-riječi-prelomljenih-spojnicom" class="level3" data-number="7.2.4">
+<h3 data-number="7.2.4" class="anchored" data-anchor-id="spajanje-riječi-prelomljenih-spojnicom"><span class="header-section-number">7.2.4</span> Spajanje riječi prelomljenih spojnicom</h3>
+<p>Za spajanje prelomljenih riječi retke svake stranice najprije spajamo u jedan znakovni niz. Funkcijom <code>summarise()</code> za svaku stranicu stvaramo jedan redak, a funkcija <code>str_c()</code> uz argument <code>collapse = "\n"</code> spaja sve retke stranice i između njih umeće znak za novi redak. Tako podatak o tome gdje je izvorni tekst imao prijelome ostaje sačuvan. Grupiranjem i po stupcu <code>report_page</code> taj se stupac zadržava u rezultatu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spajanje redaka svake stranice u jedan znakovni niz</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>phr_clean <span class="ot">&lt;-</span> phr_lines <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(page, report_page) <span class="sc">|&gt;</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">text =</span> <span class="fu">str_c</span>(text, <span class="at">collapse =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>phr_clean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 3
+    page report_page text                                                       
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;                                                      
+ 1     1        1913 "PUBLIC HEALTH REPORTS\nEPIDEMIC INFLUENZA.\nPREVALENCE IN…
+ 2    10        1922 "although the specific baciUus has not been discovered, th…
+ 3    11        1923 "latter cases the pneumococeus, or the small Vlinin diploc…
+ 4    12        1924 "l)een largely applied to the disease, but withiin tlhe kn…
+ 5    13        1925 "without these \"premonitory symptoms, fever appears, acco…
+ 6    14        1926 "Anotlher fact brought out very clearly by the demographic…
+ 7    15        1927 "1 have been able to obtain relative to said (lisealse, wh…
+ 8    16        1928 "common agents of the complicating pneumonias. Uhlenhuth s…
+ 9    18        1930 "Infant Merality.\nThe infant-mortality rate-that is, the …
+10    20        1932 "First comnes the ind(itividal who has a specific remedy, …
+11    21        1933 "Comes also the menital scientist who regards -the epidemi…
+12    29        1941 "Davenport. 1, Des Moinies 7, Eagle Grove 4, Forest City 1…
+13    47        1959 "FOREIGN.\nCHINA.\nPlague-Infected Rat-Hongkong.\nDutring …</code></pre>
+</div>
+</div>
+<p>Sljedeći su problem riječi prelomljene na kraju retka. Takva riječ počinje u jednom retku, a završava u sljedećem, pri čemu prvi dio završava spojnicom (<code>-</code>), npr. <code>com-\nplete</code>. Ako je ne spojimo, pri tokenizaciji će postati dvije besmislene riječi. Takve riječi spajamo funkcijom <code>str_replace_all()</code> i regularnim izrazom <code>"(\\p{L})-\\n(\\p{L})"</code> koji se sastoji od sljedećih dijelova.</p>
+<ul>
+<li><p><code>(\\p{L})</code> - slovo ispred spojnice (zagrade ga spremaju kao prvu skupinu),</p></li>
+<li><p><code>-</code> - spojnica na kraju retka,</p></li>
+<li><p><code>\\n</code> - prijelom retka i</p></li>
+<li><p><code>(\\p{L})</code> - prvo slovo nastavka riječi spremljeno kao druga skupina.</p></li>
+</ul>
+<p>Zamjena <code>"\\1\\2"</code> znači „vrati samo prvu i drugu skupinu”, odnosno oba slova bez spojnice i prijeloma između njih. Uzorak <code>\\p{L}</code> obuhvaća slova bilo kojeg pisma pa ispravno radi i sa slovima poput č, ć ili đ. Budući da zahtijevamo slovo neposredno ispred spojnice, izraz ne spaja retke koji završavaju spojnicom odvojenom razmakom. Funkcijom <code>str_count()</code> prije i poslije zamjene brojimo koliko je takvih prijeloma u tekstu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj riječi prelomljenih spojnicom prije spajanja</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">str_count</span>(phr_clean<span class="sc">$</span>text, <span class="st">"</span><span class="sc">\\</span><span class="st">p{L}-</span><span class="sc">\\</span><span class="st">n</span><span class="sc">\\</span><span class="st">p{L}"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 46</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spajanje riječi prelomljenih spojnicom na kraju retka</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>phr_clean <span class="ot">&lt;-</span> phr_clean <span class="sc">|&gt;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">string =</span> text,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">"(</span><span class="sc">\\</span><span class="st">p{L})-</span><span class="sc">\\</span><span class="st">n(</span><span class="sc">\\</span><span class="st">p{L})"</span>,</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">replacement =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">1</span><span class="sc">\\</span><span class="st">2"</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj riječi prelomljenih spojnicom nakon spajanja</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">str_count</span>(phr_clean<span class="sc">$</span>text, <span class="st">"</span><span class="sc">\\</span><span class="st">p{L}-</span><span class="sc">\\</span><span class="st">n</span><span class="sc">\\</span><span class="st">p{L}"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Iz samog teksta nije moguće razlikovati spojnicu koja je dodana samo zbog prijeloma retka od spojnice koja je dio riječi. Na stranici 10 riječ <em>pre-existing</em> prelomljena je na kraju retka upravo na mjestu spojnice pa ju je ovaj postupak pretvorio u <em>preexisting</em>. Kod većine analiza nekoliko pogrešno spojenih riječi nije velik problem, no dobro je znati da se to događa.</p>
+</section>
+<section id="spajanje-redaka-u-tekst-stranice" class="level3" data-number="7.2.5">
+<h3 data-number="7.2.5" class="anchored" data-anchor-id="spajanje-redaka-u-tekst-stranice"><span class="header-section-number">7.2.5</span> Spajanje redaka u tekst stranice</h3>
+<p>Nakon spajanja prelomljenih riječi preostali prijelomi redaka više nam ne trebaju. Zamjenjujemo ih razmakom, a funkcijom <code>str_squish()</code> uklanjamo višestruke razmake koji su pritom mogli nastati.</p>
+<p>U knjizi bismo tekst sada mogli podijeliti na odlomke. U tekstu dobivenom iz skenirane datoteke PDF granice odlomaka nisu označene praznim retkom, nego samo uvlakom prvog retka, a nju je OCR zapisao nedosljedno. Zato je najmanja pouzdana jedinica teksta stranica.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>phr_clean <span class="ot">&lt;-</span> phr_clean <span class="sc">|&gt;</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Zamjena prijeloma redaka razmakom</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">str_replace_all</span>(text, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="st">" "</span>),</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Uklanjanje suvišnih razmaka</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">str_squish</span>(text)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Nakon ovih koraka podatkovni okvir <code>phr_clean</code> ima jednu stranicu teksta po retku. Tekst svake stranice zapisan je u jednom retku bez oznaka <code>\n</code> i suvišnih razmaka, riječi prelomljene na kraju retka ponovno su spojene, a žive glave, tablice i znakovi izvan skupa ASCII uklonjeni su. Kako izgleda očišćeni tekst pokazuje početak stranice 20 na kojoj je pregled pisama s lijekovima protiv gripe koja su građani slali javnozdravstvenoj službi. Funkcija <code>str_wrap()</code> dugački niz za ispis dijeli na retke od najviše 80 znakova.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prvih 1.000 znakova stranice 20 nakon čišćenja</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>phr_clean <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(page <span class="sc">==</span> <span class="dv">20</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(text) <span class="sc">|&gt;</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_sub</span>(<span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_wrap</span>(<span class="at">width =</span> <span class="dv">80</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">writeLines</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>First comnes the ind(itividal who has a specific remedy, tihe formlula of
+wvhich he is ready to give to the world for a price. One such writer reminds
+tlhe Sturgeon General of the million dollars that Congress has appropriated
+for combating infltuenza, and offers to sell his secret for "a reasonalle
+s81111." Next comies; the person witlh the pseudoscientific treatment,
+somctimes "isotonic sea water," sometimes "ozonlo therapy," and again "harmonic
+vibrationis." One such writer, well klnown to the New York health authorities,
+addressed the Surgeon General from hiis present residence, the State Hospital
+for the Insane. Still another type is the individual who gives freely of his
+advice so that humnanity miav be spared from the pestilence. Such a one writes:
+"Sprinkle a little sulphur in each shoe every morning; this was given to the
+people of Atlanta by a doctor of forty-odd years of practice. He also used it
+when waiting on yellow fever year ago." Another advises people t.o add " 10 cen</code></pre>
+</div>
+</div>
+<p>Tekst je čitljiv, ali i dalje daleko od savršenog. U njemu su ostale pogrešno prepoznate riječi, poput <em>tihe</em> i <em>wvhich</em>. Njima se bavimo u drugom dijelu čišćenja, nakon tokenizacije jer ih je lakše prepoznati kad je tekst podijeljen na pojedinačne riječi.</p>
+</section>
+</section>
+<section id="tokenizacija" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="tokenizacija"><span class="header-section-number">7.3</span> Tokenizacija</h2>
+<p><strong>Uredan tekstni format</strong> (engl. <em>tidy text format</em>) podatkovni je okvir strukturiran kao <strong>jedan token po retku</strong>. <strong>Token</strong> je smislena jedinica teksta koja nas zanima u analizi. Tokenizacija je ključna pretpostavka analize teksta jer se s cjelovitim stranicama ne mogu provesti smislene kvantitativne analize. Gotovo je svaka stranica jedinstvena pa ih nema smisla brojati ni uspoređivati. Tokeni su najčešće riječi jer su riječi najčešće semantički značajne jedinice teksta, no token može biti i n-gram, rečenica ili odlomak. Uredan format omogućuje obradu i vizualizaciju podataka paketima kao što su <code>dplyr</code>, <code>tidyr</code> i <code>ggplot2</code>.</p>
+<p>Tokenizacija se u paketu <code>tidytext</code> provodi funkcijom <code>unnest_tokens()</code>. Funkcija ima tri obavezna argumenta.</p>
+<ul>
+<li><p><code>tbl</code> - podatkovni okvir u kojem se nalazi tekst,</p></li>
+<li><p><code>output</code> - naziv novog stupca u kojem će biti tokeni i</p></li>
+<li><p><code>input</code> - naziv stupca u kojem se nalazi tekst.</p></li>
+</ul>
+<p>Neobavezan, ali bitan argument je <code>token</code> kojim se određuje vrsta tokena. Ako se ne navede, zadana vrijednost je <code>"words"</code> pa se tekst dijeli na riječi. Osnovna i najčešća tokenizacija je tokenizacija na riječi. Tada je svaka riječ u tekstu jedan token. Zato ćemo stupac s tokenima nazvati <code>word</code>. Tekst se nalazi u podatkovnom okviru <code>phr_clean</code>, u stupcu <code>text</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na riječi</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>phr_word_tokens <span class="ot">&lt;-</span> <span class="fu">unnest_tokens</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tbl =</span> phr_clean,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> word,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">input =</span> text</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled tokeniziranog podatkovnog okvira</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>phr_word_tokens</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,107 × 3
+    page report_page word      
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;     
+ 1     1        1913 public    
+ 2     1        1913 health    
+ 3     1        1913 reports   
+ 4     1        1913 epidemic  
+ 5     1        1913 influenza 
+ 6     1        1913 prevalence
+ 7     1        1913 in        
+ 8     1        1913 the       
+ 9     1        1913 unifed    
+10     1        1913 states    
+# ℹ 5,097 more rows</code></pre>
+</div>
+</div>
+<p>Nakon tokenizacije svaki redak podatkovnog okvira sadrži jedan token, odnosno jednu riječ. Ostali stupci (<code>page</code> i <code>report_page</code>) zadržavaju se pa za svaku riječ znamo s koje stranice dolazi. Izvorni stupac <code>text</code> se uklanja. Interpunkcija se također uklanja, osim apostrofa unutar riječi pa, primjerice, <em>Pfeiffer’s</em> ostaje jedan token. Uklanja se i spojnica unutar riječi pa se riječ <em>broncho-pulmonary</em> dijeli na dva tokena.</p>
+<p>Osim toga, sva se slova pretvaraju u mala. Ponekad je ipak poželjno da riječi zadrže izvorna velika i mala slova, primjerice, kako bi se imena razlikovala od običnih riječi. Tada se funkciji <code>unnest_tokens()</code> dodaje argument <code>to_lower = FALSE</code>. Slično tome, interpunkcijski znakovi zadržavaju se argumentom <code>strip_punct = FALSE</code>.</p>
+<section id="druge-jedinice-teksta" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="druge-jedinice-teksta"><span class="header-section-number">7.3.1</span> Druge jedinice teksta</h3>
+<p>Tokenizacija ne mora biti ograničena na riječi, nego se tekst može podijeliti i prema drugim kriterijima, ovisno o tome što želimo analizirati.</p>
+<p>Umjesto riječi, osnovna jedinica mogu biti <strong>rečenice</strong>. Za to se argumentu <code>token</code> zadaje vrijednost <code>"sentences"</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na rečenice</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>phr_sentence_tokens <span class="ot">&lt;-</span> phr_clean <span class="sc">|&gt;</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> sentence,</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> text,</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="st">"sentences"</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled tokeniziranog podatkovnog okvira</span></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>phr_sentence_tokens</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 257 × 3
+    page report_page sentence                                                   
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;                                                      
+ 1     1        1913 public health reports epidemic influenza.                  
+ 2     1        1913 prevalence in the unifed states.                           
+ 3     1        1913 in the following tablo an attempt lhas beeni mado to prese…
+ 4     1        1913 ihe moi tal-ity fgures-for cities la- e becen checked wher…
+ 5     1        1913 it should be kept in irind that the statemernt is far from…
+ 6     1        1913 influenza wvas not made a reportable disense until the epi…
+ 7     1        1913 in perhaps the groat majority of localities -where the pre…
+ 8     1        1913 furtberirmcre, it mrst le obvious that the complete and re…
+ 9     1        1913 for these reasons city or state totals for any given week …
+10     1        1913 in some cases there are reasons to believe that tlhey aic …
+# ℹ 247 more rows</code></pre>
+</div>
+</div>
+<p>Sada je svaki token, odnosno svaki redak podatkovnog okvira, jedna rečenica. Slova su i ovdje pretvorena u mala, ali se interpunkcija, za razliku od tokenizacije na riječi, zadržava. Granice rečenica određuju se prema interpunkciji na kraju rečenice, odnosno točki, upitniku i uskličniku. Postupak nije savršen ni u urednom tekstu jer se točka iza kratice, npr. <em>Dr.</em> ili <em>Oct.</em>, prepoznaje kao kraj rečenice. U tekstu dobivenom OCR-om problema je još više. Naslovi nemaju točku na kraju pa se spajaju s prvom rečenicom teksta, kao u prvom retku ispisa, a točke koje je OCR pogrešno prepoznao rečenice dijele na mjestima na kojima ne završavaju.</p>
+<p>Za neke posebne analize, primjerice stilometriju ili analizu učestalosti slova, tekst se može podijeliti na pojedinačne znakove vrijednošću <code>"characters"</code>. Tada svaki redak sadrži jedan znak, a razmaci i interpunkcija se uklanjaju pa ostaju samo slova i znamenke. Takva se tokenizacija rjeđe koristi u sociološkoj analizi teksta.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na znakove</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>phr_character_tokens <span class="ot">&lt;-</span> phr_clean <span class="sc">|&gt;</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> char,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> text,</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="st">"characters"</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled tokeniziranog podatkovnog okvira</span></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>phr_character_tokens</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 25,045 × 3
+    page report_page char 
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;
+ 1     1        1913 p    
+ 2     1        1913 u    
+ 3     1        1913 b    
+ 4     1        1913 l    
+ 5     1        1913 i    
+ 6     1        1913 c    
+ 7     1        1913 h    
+ 8     1        1913 e    
+ 9     1        1913 a    
+10     1        1913 l    
+# ℹ 25,035 more rows</code></pre>
+</div>
+</div>
+<p>Funkcijom <code>unnest_tokens()</code> tekst se može podijeliti i na nizove uzastopnih riječi koji se nazivaju <strong>n-grami</strong>. Na taj način možemo promatrati koliko često neka riječ slijedi drugu i na temelju toga ispitivati odnose među riječima. N-grami se dobivaju vrijednošću <code>token = "ngrams"</code>, a argumentom <code>n</code> određuje se koliko riječi čini jedan n-gram. Nizovi od dvije uzastopne riječi nazivaju se <strong>bigrami</strong>, a nizovi od tri riječi <strong>trigrami</strong>. Tekst tada ima strukturu jedan bigram po retku, odnosno jedan trigram po retku. Uzastopni n-grami preklapaju se pa se svaka riječ, osim prve i posljednje, pojavljuje u dva bigrama. Ako dokument ima manje riječi nego što iznosi <code>n</code>, iz njega se ne može stvoriti nijedan n-gram pa funkcija za njega vraća <code>NA</code>. Takve retke uklanjamo funkcijom <code>filter()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na bigrame</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>phr_bigrams <span class="ot">&lt;-</span> phr_clean <span class="sc">|&gt;</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> bigram,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> text,</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="st">"ngrams"</span>,</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">2</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uklanjanje redaka iz kojih se nije mogao stvoriti bigram</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(bigram))</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled bigrama</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>phr_bigrams</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,094 × 3
+    page report_page bigram              
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;               
+ 1     1        1913 public health       
+ 2     1        1913 health reports      
+ 3     1        1913 reports epidemic    
+ 4     1        1913 epidemic influenza  
+ 5     1        1913 influenza prevalence
+ 6     1        1913 prevalence in       
+ 7     1        1913 in the              
+ 8     1        1913 the unifed          
+ 9     1        1913 unifed states       
+10     1        1913 states in           
+# ℹ 5,084 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizacija na trigrame</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>phr_trigrams <span class="ot">&lt;-</span> phr_clean <span class="sc">|&gt;</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">output =</span> trigram,</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">input =</span> text,</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="st">"ngrams"</span>,</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">3</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uklanjanje redaka iz kojih se nije mogao stvoriti trigram</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(trigram))</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled trigrama</span></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>phr_trigrams</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,081 × 3
+    page report_page trigram                      
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;                        
+ 1     1        1913 public health reports        
+ 2     1        1913 health reports epidemic      
+ 3     1        1913 reports epidemic influenza   
+ 4     1        1913 epidemic influenza prevalence
+ 5     1        1913 influenza prevalence in      
+ 6     1        1913 prevalence in the            
+ 7     1        1913 in the unifed                
+ 8     1        1913 the unifed states            
+ 9     1        1913 unifed states in             
+10     1        1913 states in the                
+# ℹ 5,071 more rows</code></pre>
+</div>
+</div>
+<p>Već i jednostavno brojanje bigrama daje prvi uvid u sadržaj teksta. Funkcijom <code>str_detect()</code> zadržavamo samo bigrame u kojima se pojavljuje riječ <em>influenza</em>, a funkcijom <code>count()</code> brojimo koliko se puta pojavljuje svaki od njih. Oznaka <code>\\b</code> u uzorku označava granicu riječi pa se pronalazi samo cijela riječ <em>influenza</em>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešći bigrami s riječju influenza</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>phr_bigrams <span class="sc">|&gt;</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(bigram, <span class="st">"</span><span class="sc">\\</span><span class="st">binfluenza</span><span class="sc">\\</span><span class="st">b"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(bigram, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 43 × 2
+   bigram                 n
+   &lt;chr&gt;              &lt;int&gt;
+ 1 of influenza           5
+ 2 epidemic influenza     4
+ 3 for influenza          2
+ 4 from influenza         2
+ 5 influenza and          2
+ 6 influenza epidemic     2
+ 7 influenza in           2
+ 8 cases influenza        1
+ 9 city influenza         1
+10 cruz influenza         1
+11 ftays influenza        1
+12 honduras influenza     1
+13 influenza 15,283       1
+14 influenza 5,025        1
+15 influenza 8,205        1
+# ℹ 28 more rows</code></pre>
+</div>
+</div>
+<p>Najčešći su bigrami <em>of influenza</em> i <em>epidemic influenza</em>, što je naziv koji je javnozdravstvena služba koristila za bolest. Na popisu se vide i bigrami s nazivima mjesta i brojevima iz kratkih izvještaja, poput <em>honduras influenza</em> i <em>influenza 15,283</em>, te bigram <em>ftays influenza</em> s pogrešno prepoznatom riječju. Takvi tokeni pokazuju zašto je potreban i drugi dio čišćenja.</p>
+</section>
+<section id="čišćenje-nakon-tokenizacije" class="level3" data-number="7.3.2">
+<h3 data-number="7.3.2" class="anchored" data-anchor-id="čišćenje-nakon-tokenizacije"><span class="header-section-number">7.3.2</span> Čišćenje nakon tokenizacije</h3>
+<p>Nakon tokenizacije provodimo drugi dio čišćenja. Tekst je sada podijeljen na pojedinačne riječi pa se lakše vidi koliko je pogrešaka OCR-a u njemu ostalo. Kvalitetu teksta možemo procijeniti tako da provjerimo koliki se udio tokena nalazi u rječniku engleskog jezika. Takav rječnik nalazi se u paketu <code>lexicon</code> koji se instalira zajedno s paketom <code>textstem</code>. Vektor <code>grady_augmented</code> sadrži više od 120.000 engleskih riječi zapisanih malim slovima. Operator <code>%in%</code> za svaki token provjerava nalazi li se u rječniku, a funkcija <code>mean()</code> računa udio vrijednosti <code>TRUE</code>, odnosno udio tokena koji su u rječniku.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rječnik engleskih riječi</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>english_words <span class="ot">&lt;-</span> lexicon<span class="sc">::</span>grady_augmented</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Udio tokena koji se nalaze u rječniku</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(phr_word_tokens<span class="sc">$</span>word <span class="sc">%in%</span> english_words)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8368905</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Udio tokena koji se nalaze u rječniku, po stranicama</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>phr_word_tokens <span class="sc">|&gt;</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(page) <span class="sc">|&gt;</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">in_dictionary =</span> <span class="fu">mean</span>(word <span class="sc">%in%</span> english_words)) <span class="sc">|&gt;</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(in_dictionary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 2
+    page in_dictionary
+   &lt;int&gt;         &lt;dbl&gt;
+ 1    29         0.542
+ 2    47         0.725
+ 3    10         0.812
+ 4    15         0.823
+ 5    16         0.832
+ 6    14         0.838
+ 7    18         0.845
+ 8    12         0.846
+ 9     1         0.866
+10    20         0.883
+11    11         0.891
+12    13         0.891
+13    21         0.982</code></pre>
+</div>
+</div>
+<p>Udio tokena iz rječnika nije savršena mjera kvalitete OCR-a. U rječniku nema mnogih imena, naziva mjesta, brojeva i stručnih izraza, a pogrešno prepoznata riječ ponekad slučajno postane neka druga stvarna riječ. To se dobro vidi na stranici 29 koja ima daleko najmanji udio tokena iz rječnika. Ona nije lošije skenirana od ostalih, nego sadrži kratke izvještaje saveznih država u kojima se nižu nazivi gradova i brojevi oboljelih.</p>
+<p>Koje se pogreške u tekstu pojavljuju najčešće, vidi se na popisu najčešćih tokena koji nisu u rječniku.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešći tokeni koji se ne nalaze u rječniku</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>phr_word_tokens <span class="sc">|&gt;</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> english_words) <span class="sc">|&gt;</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 611 × 2
+   word           n
+   &lt;chr&gt;      &lt;int&gt;
+ 1 1             43
+ 2 1918          14
+ 3 1889          11
+ 4 1,000          9
+ 5 tlhe           9
+ 6 3              8
+ 7 2              7
+ 8 dr             7
+ 9 anid           6
+10 1915           5
+11 1916           5
+12 30             5
+13 7              5
+14 thle           5
+15 101            4
+16 4              4
+17 5              4
+18 pfeiffer's     4
+19 thie           4
+20 10             3
+21 20             3
+22 23             3
+23 25             3
+24 26             3
+25 39             3
+26 90             3
+27 andl           3
+28 lhas           3
+29 madrid         3
+30 portland       3
+# ℹ 581 more rows</code></pre>
+</div>
+</div>
+<p>Na vrhu popisa nalaze se brojevi i godine, a zatim pogrešno prepoznate česte riječi, poput <em>tlhe</em>, <em>thle</em> i <em>thie</em> umjesto <em>the</em>, <em>anid</em> i <em>andl</em> umjesto <em>and</em> te <em>lhas</em> umjesto <em>has</em>. Dio tokena ne možemo ispraviti, ali ih možemo ukloniti pravilima koja opisuju kako izgleda riječ. Funkcijom <code>filter()</code> zadržavamo samo tokene koji zadovoljavaju četiri uvjeta.</p>
+<ol type="1">
+<li><p>Token se sastoji samo od malih slova engleske abecede i apostrofa (uzorak <code>"^[a-z']+$"</code>). Tako se uklanjaju brojevi i tokeni u kojima su slova pomiješana sa znamenkama.</p></li>
+<li><p>Token je dulji od jednog znaka ili je riječ <em>a</em> ili <em>i</em>, jedine jednoslovne riječi u engleskom jeziku.</p></li>
+<li><p>Token sadrži barem jedan samoglasnik (uzorak <code>"[aeiouy]"</code>) jer su nizovi samih suglasnika uglavnom ostaci pogrešnog prepoznavanja. Tim uvjetom uklanjamo i kratice poput <em>dr</em> ili <em>st</em>, a što je još jedna odluka koje moramo biti svjesni.</p></li>
+<li><p>Token ne sadrži isto slovo tri ili više puta zaredom (uzorak <code>"(\\p{L})\\1{2,}"</code> u kojem se <code>\\1</code> odnosi na slovo spremljeno u prvoj skupini). U engleskom jeziku takvih riječi gotovo nema, a u tekstu dobivenom OCR-om nastaju od linija i ukrasa na stranici.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje tokena koji ne izgledaju kao riječi</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>phr_tokens_clean <span class="ot">&lt;-</span> phr_word_tokens <span class="sc">|&gt;</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(word, <span class="st">"^[a-z']+$"</span>),</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_length</span>(word) <span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">|</span> word <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"i"</span>),</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(word, <span class="st">"[aeiouy]"</span>),</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">str_detect</span>(word, <span class="st">"(</span><span class="sc">\\</span><span class="st">p{L})</span><span class="sc">\\</span><span class="st">1{2,}"</span>)</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj tokena prije i nakon uklanjanja</span></span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(phr_word_tokens)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5107</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(phr_tokens_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4772</code></pre>
+</div>
+</div>
+<p>Dio pogrešaka može se i ispraviti. Na popisu najčešćih pogrešaka vidi se da OCR u ovom tekstu ponavlja iste pogreške. Uz slovo <em>h</em> često dodaje slovo <em>l</em> (<em>tlhe</em>, <em>thle</em>, <em>lhas</em>), uz slovo <em>n</em> slovo <em>i</em> (<em>anid</em>, <em>beeni</em>), a uz slovo <em>d</em> slovo <em>l</em> (<em>andl</em>). Takve sustavne pogreške možemo ispravljati pravilima. Pravila zapisujemo u imenovani vektor u kojem su imena elemenata uzorci koje tražimo, a vrijednosti zamjene. Kad funkciji <code>str_replace_all()</code> umjesto jednog uzorka i jedne zamjene zadamo takav vektor, ona redom provodi sve zamjene.</p>
+<p>Pravila ne smijemo primijeniti na sve tokene jer bi pokvarila i ispravne riječi. Primjenjujemo ih samo na tokene kojih nema u rječniku, a ispravak prihvaćamo samo ako je rezultat riječ iz rječnika. Postupak ima tri koraka:</p>
+<ol type="1">
+<li><p>Funkcijom <code>filter()</code> izdvajamo tokene kojih nema u rječniku, a funkcijom <code>distinct()</code> zadržavamo svaki takav token samo jednom.</p></li>
+<li><p>Funkcijom <code>mutate()</code> stvaramo stupac <code>candidate</code> u kojem su tokeni nakon primjene pravila.</p></li>
+<li><p>Funkcijom <code>filter()</code> zadržavamo samo parove u kojima je kandidat riječ iz rječnika.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pravila za česte pogreške OCR-a u ovom tekstu</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>ocr_rules <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"lh"</span> <span class="ot">=</span> <span class="st">"h"</span>,</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"hl"</span> <span class="ot">=</span> <span class="st">"h"</span>,</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ni"</span> <span class="ot">=</span> <span class="st">"n"</span>,</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"dl"</span> <span class="ot">=</span> <span class="st">"d"</span></span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Ispravci koji daju riječ iz rječnika</span></span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>ocr_corrections <span class="ot">&lt;-</span> phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> english_words) <span class="sc">|&gt;</span></span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(word) <span class="sc">|&gt;</span></span>
+<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">candidate =</span> <span class="fu">str_replace_all</span>(word, ocr_rules)) <span class="sc">|&gt;</span></span>
+<span id="cb67-14"><a href="#cb67-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(candidate <span class="sc">%in%</span> english_words)</span>
+<span id="cb67-15"><a href="#cb67-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-16"><a href="#cb67-16" aria-hidden="true" tabindex="-1"></a>ocr_corrections <span class="sc">|&gt;</span></span>
+<span id="cb67-17"><a href="#cb67-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="cn">Inf</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 63 × 2
+   word           candidate    
+   &lt;chr&gt;          &lt;chr&gt;        
+ 1 unifed         unfed        
+ 2 lhas           has          
+ 3 beeni          been         
+ 4 uniited        united       
+ 5 anid           and          
+ 6 thle           the          
+ 7 andl           and          
+ 8 condlitions    conditions   
+ 9 tlhey          they         
+10 switzerlandl   switzerland  
+11 whlich         which        
+12 gatlherings    gatherings   
+13 pulmoniary     pulmonary    
+14 tlhe           the          
+15 secretionis    secretions   
+16 niumber        number       
+17 denigue        dengue       
+18 prevalenice    prevalence   
+19 lhe            he           
+20 anothler       another      
+21 sanid          sand         
+22 miniistry      ministry     
+23 handl          hand         
+24 slhort         short        
+25 ordlinary      ordinary     
+26 lheadache      headache     
+27 genieral       general      
+28 eniters        enters       
+29 prinicipal     principal    
+30 whiclh         which        
+31 genierally     generally    
+32 witlh          with         
+33 maniner        manner       
+34 tlhis          this         
+35 anotlher       another      
+36 shlarp         sharp        
+37 tlho           tho          
+38 muclh          much         
+39 tlhrough       through      
+40 clharacter     character    
+41 foundl         found        
+42 pandlemic      pandemic     
+43 sparedl        spared       
+44 munich         munch        
+45 tlhat          that         
+46 shouldl        should       
+47 ini            in           
+48 correspondl    correspond   
+49 dlate          date         
+50 tentlhs        tenths       
+51 swedeni        sweden       
+52 corresponiding corresponding
+53 followinig     following    
+54 vibrationis    vibrations   
+55 nominial       nominal      
+56 menital        mental       
+57 counicil       council      
+58 enitire        entire       
+59 lawrenice      lawrence     
+60 chlickeni      chicken      
+61 diphtlheria    diphtheria   
+62 durinig        during       
+63 oni            on           </code></pre>
+</div>
+</div>
+<p>Većina ispravaka je točna, primjerice <em>tlhe</em> u <em>the</em>, <em>anid</em> u <em>and</em>, <em>gatlherings</em> u <em>gatherings</em> i <em>pandlemic</em> u <em>pandemic</em>. Pregled popisa ipak je nužan jer pravila griješe kad pogrešan oblik slučajno postane neka druga riječ iz rječnika. Token <em>unifed</em> tako postaje <em>unfed</em>, iako je trebao postati <em>unified</em>, a naziv grada <em>munich</em>, kojeg nema u rječniku, postaje <em>munch</em>. Takve pogrešne ispravke uklanjamo s popisa, a ostale primjenjujemo.</p>
+<p>Ispravke primjenjujemo spajanjem dva podatkovna okvira. Funkcija <code>left_join()</code> zadržava sve retke prvog podatkovnog okvira i uz svaki token dodaje stupac <code>candidate</code> iz drugog, ako se token u njemu nalazi. Za ostale tokene vrijednost u stupcu <code>candidate</code> je <code>NA</code>. Funkcija <code>coalesce()</code> zatim vrijednosti <code>NA</code> zamjenjuje izvornim tokenom. Tako se mijenjaju samo tokeni s popisa ispravaka, a svi ostali ostaju isti.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje pogrešnih ispravaka</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>ocr_corrections <span class="ot">&lt;-</span> ocr_corrections <span class="sc">|&gt;</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"unifed"</span>, <span class="st">"munich"</span>))</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Primjena ispravaka</span></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>phr_tokens_clean <span class="ot">&lt;-</span> phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(ocr_corrections, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">coalesce</span>(candidate, word)) <span class="sc">|&gt;</span></span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>candidate)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Neke se pogreške ne mogu ispraviti pravilima jer nisu sustavne ili jer pogrešan oblik slučajno postoji u rječniku. Najčešća takva pogreška u ovom tekstu je <em>tho</em> umjesto <em>the</em>. Riječ <em>tho</em> nalazi se u rječniku kao kraći oblik riječi <em>though</em> pa je ni pravila ni provjera rječnikom ne mogu prepoznati. Pregledom konteksta utvrdili smo da se u ovom tekstu svaki put radi o riječi <em>the</em>. Takve ispravke zapisujemo ručno, u imenovani vektor u kojem su imena elemenata pogrešni oblici, a vrijednosti ispravni oblici. Prije zamjene provjeravamo koliko se puta koji oblik pojavljuje.</p>
+<p>Izraz <code>ocr_fixes[word]</code> za svaki token vraća ispravan oblik ako je token jedan od pogrešnih oblika, a vrijednost <code>NA</code> ako nije. Funkcija <code>unname()</code> uklanja imena elemenata, a funkcija <code>coalesce()</code> vrijednosti <code>NA</code> ponovno zamjenjuje izvornim tokenom.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Česte pogreške koje se ispravljaju ručno</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>ocr_fixes <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tho"</span> <span class="ot">=</span> <span class="st">"the"</span>,</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"thie"</span> <span class="ot">=</span> <span class="st">"the"</span>,</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"wlich"</span> <span class="ot">=</span> <span class="st">"which"</span>,</span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rato"</span> <span class="ot">=</span> <span class="st">"rate"</span>,</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"aroa"</span> <span class="ot">=</span> <span class="st">"area"</span>,</span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tablo"</span> <span class="ot">=</span> <span class="st">"table"</span></span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Koliko se puta pojavljuje svaki pogrešni oblik</span></span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word <span class="sc">%in%</span> <span class="fu">names</span>(ocr_fixes)) <span class="sc">|&gt;</span></span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  word      n
+  &lt;chr&gt; &lt;int&gt;
+1 tho      12
+2 thie      4
+3 rato      3
+4 wlich     3
+5 aroa      2
+6 tablo     2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Zamjena pogrešnih oblika ispravnima</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>phr_tokens_clean <span class="ot">&lt;-</span> phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">coalesce</span>(<span class="fu">unname</span>(ocr_fixes[word]), word))</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Udio tokena koji se nalaze u rječniku nakon čišćenja</span></span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(phr_tokens_clean<span class="sc">$</span>word <span class="sc">%in%</span> english_words)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.908005</code></pre>
+</div>
+</div>
+<p>Nakon drugog dijela čišćenja udio tokena iz rječnika znatno je veći. Ostale pogreške previše su raznolike da bi se ispravljale ručno. Kod većeg broja dokumenata one u analizu unose šum, ali rijetko mijenjaju popis najčešćih riječi. Strože rješenje bilo bi zadržati samo tokene iz rječnika, no time bi se iz analize uklonili i nazivi mjesta, imena i stručni izrazi poput <em>streptococci</em> što u analizi ovakvog teksta nije poželjno.</p>
+</section>
+<section id="ispravljanje-pogrešaka-udaljenošću-uređivanja" class="level3" data-number="7.3.3">
+<h3 data-number="7.3.3" class="anchored" data-anchor-id="ispravljanje-pogrešaka-udaljenošću-uređivanja"><span class="header-section-number">7.3.3</span> Ispravljanje pogrešaka udaljenošću uređivanja</h3>
+<p>Pravila i ručni ispravci obuhvaćaju samo pogreške koje smo unaprijed uočili. Drugi način ispravljanja pogrešaka je onaj koji koriste programi za provjeru pravopisa. Za svaki token kojeg nema u rječniku traži se najsličnija riječ iz rječnika, a sličnost dviju riječi mjeri se <strong>udaljenošću uređivanja</strong> (engl. <em>edit distance</em>) koje smo obradili u poglavlju o znanoknim nizovima. Najčešće se koristi Levenshteinova udaljenost, odnosno najmanji broj umetanja, brisanja i zamjena pojedinačnih slova kojima se jedna riječ može pretvoriti u drugu. Token <em>tlhe</em> od riječi <em>the</em> udaljen je jedno brisanje, a token <em>appearanee</em> od riječi <em>appearance</em> jednu zamjenu pa je udaljenost u oba slučaja 1. Pravila iz prethodnog dijela poseban su slučaj tog pristupa jer i ona brišu ili zamjenjuju po jedno slovo, ali samo u unaprijed zadanim kombinacijama.</p>
+<p>Levenshteinovu udaljenost računa funkcija <code>adist()</code> iz osnovne instalacije R-a. Njezin je prvi argument riječ, a drugi vektor riječi s kojima se ona uspoređuje. Funkcija vraća udaljenost do svake od njih.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Udaljenost tokena tlhe od triju riječi</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="fu">adist</span>(<span class="st">"tlhe"</span>, <span class="fu">c</span>(<span class="st">"the"</span>, <span class="st">"tale"</span>, <span class="st">"this"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    2    3</code></pre>
+</div>
+</div>
+<p>Kod pogrešaka OCR-a na istoj se udaljenosti često nalazi više riječi iz rječnika. Token <em>anid</em>, primjerice, od riječi <em>and</em>, <em>aid</em>, <em>acid</em> i <em>amid</em> udaljen je za po jedno slovo. Zato nam treba pravilo za odabir između njih. Programi za provjeru pravopisa obično biraju riječ koja se u jeziku najčešće pojavljuje, a u ovom tekstu najbolji je pokazatelj čestoće sam bilten. Zato token ne uspoređujemo s cijelim rječnikom, nego samo s riječima iz rječnika koje se pojavljuju u tekstu, a od njih biramo onu koja se pojavljuje najčešće. Token <em>anid</em> tako bi se ispravio u <em>and</em>, a ne u <em>acid</em>. Usporedba s nešto više od 1.200 riječi iz teksta pritom je i mnogo brža od usporedbe sa 120.000 riječi iz rječnika.</p>
+<p>Funkcijom <code>count()</code> najprije brojimo koliko se puta u tekstu pojavljuje svaka riječ iz rječnika. Argumentom <code>name</code> stupac s brojem pojavljivanja nazivamo <code>freq</code>. Zatim izdvajamo tokene kojih nema u rječniku i to samo one s barem četiri slova. Kraće tokene izostavljamo jer je od njih na udaljenosti 1 velik broj riječi, a često su i dijelovi riječi koje je OCR razlomio, poput <em>tal</em> i <em>ity</em> iz riječi <em>mortality</em> pa bi se ispravili u pogrešnu riječ.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učestalost riječi iz rječnika u tekstu</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>word_freq <span class="ot">&lt;-</span> phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word <span class="sc">%in%</span> english_words) <span class="sc">|&gt;</span></span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">name =</span> <span class="st">"freq"</span>)</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(word_freq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1232</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokeni s barem četiri slova kojih nema u rječniku</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>odd_words <span class="ot">&lt;-</span> phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> english_words, <span class="fu">str_length</span>(word) <span class="sc">&gt;=</span> <span class="dv">4</span>) <span class="sc">|&gt;</span></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(word) <span class="sc">|&gt;</span></span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(word)</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(odd_words)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 357</code></pre>
+</div>
+</div>
+<p>Postupak za jedan token zapisujemo kao funkciju <code>closest_word()</code>. Funkcija <code>adist()</code> računa udaljenost tokena do svih riječi iz teksta, a funkcija <code>drop()</code> rezultat pretvara iz matrice s jednim retkom u običan vektor. Zatim izdvajamo retke podatkovnog okvira <code>word_freq</code> s riječima na udaljenosti 1. Ako takvih riječi nema, funkcija vraća <code>NA</code>, a token ostaje nepromijenjen. Ako ih ima, funkcija <code>which.max()</code> vraća položaj najveće vrijednosti u stupcu <code>freq</code> pa funkcija vraća riječ koja se u tekstu pojavljuje najčešće.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešća riječ iz teksta na udaljenosti 1 od tokena</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>closest_word <span class="ot">&lt;-</span> <span class="cf">function</span>(token) {</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>  distances <span class="ot">&lt;-</span> <span class="fu">drop</span>(<span class="fu">adist</span>(token, word_freq<span class="sc">$</span>word))</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>  candidates <span class="ot">&lt;-</span> word_freq[distances <span class="sc">==</span> <span class="dv">1</span>, ]</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(candidates) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="cn">NA_character_</span>)</span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb80-8"><a href="#cb80-8" aria-hidden="true" tabindex="-1"></a>  candidates<span class="sc">$</span>word[<span class="fu">which.max</span>(candidates<span class="sc">$</span>freq)]</span>
+<span id="cb80-9"><a href="#cb80-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb80-10"><a href="#cb80-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-11"><a href="#cb80-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Primjer</span></span>
+<span id="cb80-12"><a href="#cb80-12" aria-hidden="true" tabindex="-1"></a><span class="fu">closest_word</span>(<span class="st">"caises"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "cases"</code></pre>
+</div>
+</div>
+<p>Funkciju zatim primjenjujemo na sve izdvojene tokene. Funkcija <code>map_chr()</code> poziva funkciju <code>closest_word()</code> za svaki token i rezultate vraća kao znakovni vektor, a funkcijom <code>filter()</code> zadržavamo samo tokene za koje je pronađen ispravak.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ispravci pronađeni udaljenošću uređivanja</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>edit_corrections <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">word =</span> odd_words) <span class="sc">|&gt;</span></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">candidate =</span> <span class="fu">map_chr</span>(word, closest_word)) <span class="sc">|&gt;</span></span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(candidate))</span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>edit_corrections <span class="sc">|&gt;</span></span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="cn">Inf</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 110 × 2
+    word           candidate    
+    &lt;chr&gt;          &lt;chr&gt;        
+  1 unifed         united       
+  2 mado           made         
+  3 statiitical    statistical  
+  4 wveek          week         
+  5 fgures         figures      
+  6 becen          been         
+  7 statemernt     statement    
+  8 wvas           was          
+  9 disense        disease      
+ 10 prevalenc      prevalence   
+ 11 thian          than         
+ 12 oyed           owed         
+ 13 sholld         should       
+ 14 latt           last         
+ 15 healtih        health       
+ 16 pandemio       pandemic     
+ 17 cises          cases        
+ 18 infectiouts    infectious   
+ 19 gorms          forms        
+ 20 spuitum        sputum       
+ 21 shoul          should       
+ 22 presentel      presented    
+ 23 amongf         among        
+ 24 hias           has          
+ 25 thiose         those        
+ 26 individuala    individual   
+ 27 forner         former       
+ 28 qpidemics      epidemics    
+ 29 caes           cases        
+ 30 appearanee     appearance   
+ 31 infltenza      influenza    
+ 32 withiin        within       
+ 33 riter          writer       
+ 34 nover          over         
+ 35 maany          many         
+ 36 pathiogenic    pathogenic   
+ 37 wvhat          what         
+ 38 buit           but          
+ 39 lisease        disease      
+ 40 translmission  transmission 
+ 41 gaippe         grippe       
+ 42 pumlic         public       
+ 43 twvo           two          
+ 44 tlere          there        
+ 45 thias          this         
+ 46 communicationi communication
+ 47 eriod          period       
+ 48 thon           than         
+ 49 svmptoms       symptoms     
+ 50 lpatients      patients     
+ 51 obscrved       observed     
+ 52 mlay           may          
+ 53 detaths        deaths       
+ 54 veek           week         
+ 55 thiat          that         
+ 56 especihlly     especially   
+ 57 obsorvation    observation  
+ 58 whichi         which        
+ 59 withouit       without      
+ 60 benignitv      benignity    
+ 61 duie           due          
+ 62 diflusion      diffusion    
+ 63 disetase       disease      
+ 64 somo           some         
+ 65 hiis           his          
+ 66 stulies        studies      
+ 67 mals           males        
+ 68 couintries     countries    
+ 69 gernany        germany      
+ 70 loes           does         
+ 71 pneumonias     pneumonia    
+ 72 fait           fact         
+ 73 procee         proceed      
+ 74 vith           with         
+ 75 domonstrated   demonstrated 
+ 76 bazilli        bacilli      
+ 77 puro           pure         
+ 78 secon          second       
+ 79 lary           vary         
+ 80 accor          accord       
+ 81 infnts         infants      
+ 82 tnder          under        
+ 83 ovcr           over         
+ 84 ilfants        infants      
+ 85 wholo          whole        
+ 86 thun           than         
+ 87 whero          where        
+ 88 wero           were         
+ 89 imothers       mothers      
+ 90 whito          white        
+ 91 exess          excess       
+ 92 comnes         comes        
+ 93 tihe           the          
+ 94 wvhich         which        
+ 95 infltuenza     influenza    
+ 96 comies         comes        
+ 97 somctimes      sometimes    
+ 98 klnown         known        
+ 99 pricc          price        
+100 caises         cases        
+101 maedicine      medicine     
+102 opidemic       epidemic     
+103 citits         cities       
+104 iola           iowa         
+105 dutring        during       
+106 plagtue        plague       
+107 infecte        infected     
+108 influtenza     influenza    
+109 inftluenza     influenza    
+110 kingstoi       kingston     </code></pre>
+</div>
+</div>
+<p>Udaljenošću uređivanja pronađeno je mnogo više ispravaka nego pravilima, a većina ih je točna. Tako se <em>wvas</em> ispravlja u <em>was</em>, <em>statiitical</em> u <em>statistical</em>, <em>caises</em> i <em>cises</em> u <em>cases</em>, <em>infltuenza</em> u <em>influenza</em>, a <em>gaippe</em> u <em>grippe</em>. Ispravno se ispravlja i token <em>unifed</em> koji su pravila pretvorila u <em>unfed</em> jer riječi <em>unfed</em> u tekstu nema, a riječ <em>united</em> je česta.</p>
+<p>Pregled popisa ipak je i ovdje nužan jer postupak griješi na nekoliko načina. Neki su tokeni dijelovi riječi koje je OCR razlomio pa se <em>secon</em> i <em>lary</em> iz riječi <em>secondary</em> ispravljaju u <em>second</em> i <em>vary</em>, a <em>accor</em> iz riječi <em>according</em> u <em>accord</em>. Kod drugih je najčešća riječ na udaljenosti 1 pogrešan izbor. Token <em>nover</em> ispravlja se u <em>over</em>, a trebao bi u <em>never</em>, a <em>gorms</em> u <em>forms</em>, a trebao bi u <em>germs</em> kojih u tekstu nema. Naziv grada <em>Iola</em> u Kansasu ispravlja se u <em>iowa</em>, a <em>pneumonias</em> u <em>pneumonia</em> jer u rječniku nema množine te riječi. Takve ispravke uklanjamo s popisa, a ostale primjenjujemo na isti način kao ispravke dobivene pravilima.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pogrešni ispravci</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>wrong_corrections <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"oyed"</span>, <span class="st">"latt"</span>, <span class="st">"lity"</span>, <span class="st">"gorms"</span>, <span class="st">"lary"</span>, <span class="st">"secon"</span>, <span class="st">"pneumonias"</span>,</span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"iola"</span>, <span class="st">"accor"</span>, <span class="st">"mals"</span>, <span class="st">"procee"</span>, <span class="st">"thon"</span>, <span class="st">"nover"</span></span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-7"><a href="#cb84-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje pogrešnih ispravaka</span></span>
+<span id="cb84-8"><a href="#cb84-8" aria-hidden="true" tabindex="-1"></a>edit_corrections <span class="ot">&lt;-</span> edit_corrections <span class="sc">|&gt;</span></span>
+<span id="cb84-9"><a href="#cb84-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> wrong_corrections)</span>
+<span id="cb84-10"><a href="#cb84-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-11"><a href="#cb84-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Primjena ispravaka</span></span>
+<span id="cb84-12"><a href="#cb84-12" aria-hidden="true" tabindex="-1"></a>phr_tokens_clean <span class="ot">&lt;-</span> phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb84-13"><a href="#cb84-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(edit_corrections, <span class="at">by =</span> <span class="st">"word"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb84-14"><a href="#cb84-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">coalesce</span>(candidate, word)) <span class="sc">|&gt;</span></span>
+<span id="cb84-15"><a href="#cb84-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>candidate)</span>
+<span id="cb84-16"><a href="#cb84-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-17"><a href="#cb84-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Udio tokena koji se nalaze u rječniku nakon ispravaka</span></span>
+<span id="cb84-18"><a href="#cb84-18" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(phr_tokens_clean<span class="sc">$</span>word <span class="sc">%in%</span> english_words)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9293797</code></pre>
+</div>
+</div>
+<p>Pravila i udaljenost uređivanja ne isključuju se, nego nadopunjuju. Pravila su predvidljiva i rijetko griješe jer ispravljaju samo pogreške koje smo uočili i provjerili, ali ne obuhvaćaju ništa izvan njih. Udaljenost uređivanja pronalazi mnogo više pogrešaka bez unaprijed zadanih pravila, ali češće griješi, osobito kod kratkih tokena, dijelova razlomljenih riječi i naziva mjesta. Kad OCR stalno ponavlja iste pogreške, kao u ovom biltenu, korisno je najprije primijeniti pravila, a udaljenost uređivanja koristiti za preostale pogreške. U oba je slučaja popis ispravaka potrebno pregledati prije nego što se primijeni.</p>
+</section>
+<section id="uredni-i-drugi-formati" class="level3" data-number="7.3.4">
+<h3 data-number="7.3.4" class="anchored" data-anchor-id="uredni-i-drugi-formati"><span class="header-section-number">7.3.4</span> Uredni i drugi formati</h3>
+<p>Uredni format nije jedini način na koji se tokenizirani tekst može zapisati. Mnogi paketi za analizu teksta koriste druge formate. <strong>Korpus</strong> je objekt koji sadrži zbirku dokumenata zajedno s njihovim metapodacima, a koriste ga, primjerice, paketi <code>quanteda</code> i <code>tm</code>. <strong>Matrica dokumenata i pojmova</strong> (engl. <em>document-term matrix</em>) tablica je u kojoj je svaki redak jedan dokument, svaki stupac jedan pojam, a u ćelijama je broj pojavljivanja pojma u dokumentu. Takva se matrica koristi u mnogim statističkim postupcima, primjerice u tematskom modeliranju. Budući da se većina pojmova ne pojavljuje u većini dokumenata, gotovo su sve ćelije matrice nule. Zato se matrica obično zapisuje kao rijetka matrica (engl. <em>sparse matrix</em>) u kojoj se spremaju samo vrijednosti različite od nule.</p>
+<p>Paket <code>tidytext</code> sadrži funkcije za pretvaranje između urednog formata i tih formata. Funkcija <code>cast_sparse()</code> od urednog formata stvara rijetku matricu. Prije toga funkcijom <code>count()</code> brojimo koliko se puta svaka riječ pojavljuje na svakoj stranici. Prvi argument funkcije <code>cast_sparse()</code> stupac je s dokumentima, drugi stupac s pojmovima, a treći stupac s vrijednostima. Funkcija <code>dim()</code> vraća broj redaka i stupaca matrice, odnosno broj stranica i broj različitih riječi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rijetka matrica dokumenata i pojmova</span></span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>phr_matrix <span class="ot">&lt;-</span> phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(page, word) <span class="sc">|&gt;</span></span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cast_sparse</span>(page, word, n)</span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj dokumenata i broj pojmova</span></span>
+<span id="cb86-7"><a href="#cb86-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(phr_matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]   13 1534</code></pre>
+</div>
+</div>
+<p>Slične funkcije postoje i za druge formate. Funkcija <code>cast_dtm()</code> stvara matricu dokumenata i pojmova za paket <code>tm</code>, a funkcija <code>cast_dfm()</code> za paket <code>quanteda</code>. Funkcija <code>tidy()</code> radi obrnuto i takve objekte vraća u uredni format. Tako se u istoj analizi mogu kombinirati alati iz različitih paketa.</p>
+</section>
+</section>
+<section id="uklanjanje-zaustavnih-riječi" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="uklanjanje-zaustavnih-riječi"><span class="header-section-number">7.4</span> Uklanjanje zaustavnih riječi</h2>
+<p>Tekst u obliku jednog tokena po retku može se lako obrađivati i vizualizirati. Ipak, u analizi je često poželjno ukloniti riječi koje su iznimno česte, a malo govore o sadržaju teksta, poput <em>the</em>, <em>of</em> ili <em>to</em>. Takve riječi nazivaju se <strong>zaustavne riječi</strong> (engl. <em>stop words</em>). To su uglavnom veznici, prijedlozi, članovi, zamjenice i pomoćni glagoli koji povezuju dijelove rečenice, ali ne nose specifično značenje. Uklanjaju se kako bi se analiza usmjerila na riječi koje više govore o sadržaju.</p>
+<p>Paket <code>tidytext</code> sadrži skup podataka <code>stop_words</code> s popisom engleskih zaustavnih riječi iz tri rječnika (<code>onix</code>, <code>SMART</code> i <code>snowball</code>). Rječnici su različitih veličina, što se vidi kad funkcijom <code>count()</code> prebrojimo riječi u svakome od njih.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj zaustavnih riječi u svakom rječniku</span></span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>stop_words <span class="sc">|&gt;</span></span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(lexicon)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  lexicon      n
+  &lt;chr&gt;    &lt;int&gt;
+1 SMART      571
+2 onix       404
+3 snowball   174</code></pre>
+</div>
+</div>
+<p>Zaustavne riječi iz tokeniziranog teksta uklanjamo funkcijom <code>anti_join()</code> iz paketa <code>dplyr</code>. Ona zadržava samo one retke prvog podatkovnog okvira koji nemaju odgovarajući redak u drugom, odnosno samo one riječi koje se ne nalaze na popisu zaustavnih riječi. Argumentom <code>by = "word"</code> navodimo da se podatkovni okviri uspoređuju prema stupcu <code>word</code>. Ispravci iz prethodnog koraka ovdje dolaze do izražaja. Da nismo ispravili <em>tlhe</em>, <em>anid</em> i <em>tho</em>, te bi pogrešno prepoznate zaustavne riječi ostale u tekstu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uklanjanje zaustavnih riječi</span></span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>phr_tokens_stop <span class="ot">&lt;-</span> phr_tokens_clean <span class="sc">|&gt;</span></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(stop_words, <span class="at">by =</span> <span class="st">"word"</span>)</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj tokena prije i nakon uklanjanja</span></span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(phr_tokens_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4772</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(phr_tokens_stop)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2094</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešće riječi nakon uklanjanja zaustavnih riječi</span></span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>phr_tokens_stop <span class="sc">|&gt;</span></span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,261 × 2
+   word          n
+   &lt;chr&gt;     &lt;int&gt;
+ 1 epidemic     33
+ 2 influenza    33
+ 3 disease      22
+ 4 grippe       14
+ 5 rate         14
+ 6 reported     14
+ 7 found        12
+ 8 city         11
+ 9 fever        11
+10 health       11
+# ℹ 1,251 more rows</code></pre>
+</div>
+</div>
+<p>Uklanjanjem zaustavnih riječi broj tokena smanjio se više nego dvostruko. Na vrhu popisa sada su riječi koje govore o sadržaju biltena, poput <em>epidemic</em>, <em>influenza</em>, <em>disease</em>, <em>reported</em> i <em>grippe</em>, kako se gripa nazivala u izvještajima iz europskih zemalja.</p>
+<p>Popis zaustavnih riječi treba prilagoditi tekstu i pitanju koje istražujemo. Ako želimo koristiti samo jedan od rječnika, primjerice manji rječnik <code>snowball</code>, skup <code>stop_words</code> najprije filtriramo prema stupcu <code>lexicon</code>. Ako se na vrhu popisa najčešćih riječi nalaze riječi koje su česte u svim dokumentima, a za naše pitanje nisu važne, možemo ih dodati vlastitom popisu zaustavnih riječi. Takav popis zapisujemo kao podatkovni okvir sa stupcem <code>word</code> i funkcijom <code>bind_rows()</code> dodajemo ga skupu <code>stop_words</code>. Koje riječi dodati, odlučuje se tek nakon pregleda najčešćih riječi, a odluku je dobro obrazložiti.</p>
+</section>
+<section id="lematizacija" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="lematizacija"><span class="header-section-number">7.5</span> Lematizacija</h2>
+<p>Posljednji je korak pripreme za analizu teksta lematizacija. <strong>Lematizacija</strong> je postupak svođenja riječi na njihov rječnički oblik (lemu), primjerice <em>walking</em>, <em>walks</em> i <em>walked</em> na <em>walk</em>, <em>stories</em> na <em>story</em>, <em>children</em> na <em>child</em>, a <em>better</em> na <em>good</em>.</p>
+<p>Lematizacijom se različiti oblici iste riječi broje kao jedna riječ. To je korisno u analizama koje se temelje na učestalosti riječi, poput analize frekvencija, TF-IDF-a ili tematskog modeliranja, jer se inače, primjerice, <em>death</em> i <em>deaths</em> broje kao dvije različite riječi. Sličan je postupak korjenovanje (engl. <em>stemming</em>) kojim se riječima jednostavnim pravilima odsijecaju završeci. Korjenovanje je brže, ali često daje oblike koji nisu stvarne riječi, dok lematizacija vraća rječnički oblik.</p>
+<p>Najjednostavnije se lematizacija u R-u provodi funkcijom <code>lemmatize_words()</code> iz paketa <code>textstem</code>. Ona za svaku riječ u rječniku traži njezin osnovni oblik pa se primjenjuje na tekst tokeniziran na riječi. Riječi kojih nema u rječniku, a takve su i pogrešno prepoznate riječi, ostaju nepromijenjene.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lematizacija tokena</span></span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>phr_tokens_lemma <span class="ot">&lt;-</span> phr_tokens_stop <span class="sc">|&gt;</span></span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lemma =</span> <span class="fu">lemmatize_words</span>(word))</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled lematiziranih riječi</span></span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>phr_tokens_lemma</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,094 × 4
+    page report_page word       lemma     
+   &lt;int&gt;       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;     
+ 1     1        1913 public     public    
+ 2     1        1913 health     health    
+ 3     1        1913 reports    report    
+ 4     1        1913 epidemic   epidemic  
+ 5     1        1913 influenza  influenza 
+ 6     1        1913 prevalence prevalence
+ 7     1        1913 united     unite     
+ 8     1        1913 table      table     
+ 9     1        1913 attempt    attempt   
+10     1        1913 form       form      
+# ℹ 2,084 more rows</code></pre>
+</div>
+</div>
+<p>Učinak lematizacije vidi se kad usporedimo broj različitih riječi prije i nakon nje. Funkcija <code>n_distinct()</code> broji koliko je različitih vrijednosti u stupcu. Funkcijom <code>filter()</code> zatim zadržavamo samo tokene kojima se lematizacijom promijenio oblik i brojimo koji su parovi riječi i leme najčešći.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj različitih riječi i lema</span></span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(phr_tokens_lemma<span class="sc">$</span>word)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1261</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(phr_tokens_lemma<span class="sc">$</span>lemma)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1158</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešće riječi kojima se lematizacijom promijenio oblik</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>phr_tokens_lemma <span class="sc">|&gt;</span></span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word <span class="sc">!=</span> lemma) <span class="sc">|&gt;</span></span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 324 × 3
+   word          lemma            n
+   &lt;chr&gt;         &lt;chr&gt;        &lt;int&gt;
+ 1 reported      report          14
+ 2 found         find            12
+ 3 deaths        death           10
+ 4 observed      observe         10
+ 5 complications complication     8
+ 6 births        birth            7
+ 7 born          bear             7
+ 8 united        unite            7
+ 9 cities        city             6
+10 patients      patient          6
+# ℹ 314 more rows</code></pre>
+</div>
+</div>
+<p>Pregled takvog popisa važan je jer lematizacija nije uvijek točna. Rječnik ne zna u kojem je značenju riječ upotrijebljena pa riječ koja može imati više značenja uvijek svodi na isti oblik. U ovom tekstu riječ <em>born</em> svodi se na glagol <em>bear</em>, iako se u biltenu odnosi na rođenje djece, a riječ <em>united</em> iz naziva <em>United States</em> na glagol <em>unite</em>. Ako lema za naše pitanje mijenja značenje riječi, bolje je tu riječ ostaviti u izvornom obliku.</p>
+</section>
+<section id="literatura" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="literatura">Literatura</h2>
+<p>Silge, J. i Robinson, D. (2017). <em>Text mining with R: A tidy approach</em>. O’Reilly.</p>
+<p>Welbers, K., Van Atteveldt, W. i Benoit, K. (2017). Text analysis in R. <em>Communication Methods and Measures</em>, <em>11</em>(4), 245–265.</p>
+<p>Wickham, H., Çetinkaya-Rundel, M. i Grolemund, G. (2023). <em>R for data science: Import, tidy, transform, visualize, and model data</em> (2. izd.). O’Reilly.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./3_1_ucitavanje_teksta.html" class="pagination-link" aria-label="Učitavanje teksta">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje teksta</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./3_3_lingvisticka_obrada_teksta.html" class="pagination-link" aria-label="Lingvistička obrada teksta">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2026, Alen Husnjak</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="./www.linkedin.com/in/alen-husnjak-5a0bb9206">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,5 +1,5 @@
 ---
-title: "Učitavanje tekstualnih podataka"
+title: "Učitavanje teksta"
 description: "Svaka analiza teksta počinje dovođenjem teksta u R, a taj se korak lako podcijeni. Tekstovi dolaze iz različitih izvora i u različitim oblicima pa se jedni nalaze u datotekama na našem računalu, drugi na internetskim stranicama, a treći u bazama podataka koje svoj sadržaj nude preko programskih sučelja. Za svaki od tih izvora postoje drugačiji alati, ali i drugačija pravila o tome što smijemo preuzeti i kako to učiniti a da ne opteretimo tuđe poslužitelje i ne povrijedimo tuđa prava."
 number-sections: true
 title-block-banner: "#8B475D"

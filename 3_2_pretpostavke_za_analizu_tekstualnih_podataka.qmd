@@ -1,0 +1,779 @@
+---
+title: "Pretpostavke za analizu tekstualnih podataka"
+description: "Tekst u izvornom obliku nije pogodan za kvantitativnu analizu. Prije nego što se riječi mogu brojati i uspoređivati, tekst treba očistiti, urediti u tablicu i razložiti na manje jedinice. Zato su čišćenje teksta, tokenizacija, uklanjanje zaustavnih riječi i lematizacija osnovni postupci takve pripreme, a kojima se iz teksta izdvaja ono što nosi značenje. Iako se čine tehničkima, ti postupci nisu neutralni jer o odlukama donesenima u njima ovise i rezultati svake daljnje analize."
+number-sections: true
+title-block-banner: "#8B475D"
+title-block-banner-color: "white"
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+library(tidytext)
+library(pdftools)
+library(textstem)
+```
+
+Prije same analize teksta potrebno je provesti nekoliko postupaka koji tekst pripremaju za analizu. Bez njih analiza ne može ni započeti jer računalo tekst vidi kao dugačak niz znakova, a ne kao riječi koje se mogu brojati i uspoređivati. Zajedno, ti postupci čine predobradu teksta, odnosno **pretpostavke analize teksta**:
+
+1. Prvi je postupak oblikovanje teksta u podatkovni okvir u kojem je uz svaki dio teksta zapisano odakle dolazi.
+
+2. Drugi je čišćenje teksta kojim se iz njega uklanjaju znakovi i dijelovi koji ne pripadaju sadržaju.
+
+3. Treći je tokenizacija kojom se tekst dijeli na manje jedinice, poput riječi ili nizova riječi.
+
+4. Četvrti je uklanjanje zaustavnih riječi, odnosno vrlo čestih riječi koje malo govore o sadržaju teksta.
+
+5. Peti je lematizacija kojom se različiti oblici iste riječi svode na njezin rječnički oblik.
+
+Svaki od tih postupaka uključuje odluke o tome što u tekstu zadržati, a što ukloniti. Te odluke nisu neutralne jer o njima ovise i rezultati svake daljnje analize. Zato ih je dobro donositi svjesno, provjeravati njihov učinak i zapisati ih u kodu, kako bi ih drugi mogli vidjeti i ponoviti.
+
+::: {.callout-tip title="Preuzimanje biltena Public Health Reports"}
+Postupke ćemo pokazati na broju biltena *Public Health Reports* od 8.11.1918. Bilten je tjedno izdavala američka javnozdravstvena služba, a u jesen 1918. iz tjedna u tjedan izvještavao je o pandemiji gripe koja se tada nazivala i španjolskom gripom. U ovom se broju nalaze tablice s brojem oboljelih i umrlih po saveznim državama i gradovima, prijevodi izvještaja o gripi iz europskih zemalja, ali i pregled pisama u kojima su građani javnozdravstvenoj službi slali vlastite lijekove protiv gripe. Bilten je skeniran, a njegov je tekst dobiven optičkim prepoznavanjem znakova (engl. *optical character recognition*, OCR). Takav tekst sadrži mnogo pogrešaka. Slova su pogrešno prepoznata, riječi su prelomljene na kraju retka, tablice su se raspale u nizove brojeva i točaka, a na vrhu svake stranice nalazi se zaglavlje koje ne pripada tekstu. Zato je dobar primjer teksta na kojem se svi koraci pripreme stvarno moraju provesti.
+
+Brojevi biltena *Public Health Reports* iz 1918. godine dostupni su kao datoteke PDF u digitalnoj knjižnici *Stacks* američkih Centara za kontrolu i prevenciju bolesti. Kao publikacije američke savezne vlade nisu zaštićeni autorskim pravom pa ih smijemo slobodno preuzimati i obrađivati. Za preuzimanje nije potrebna ni registracija ni ključ. Datoteku preuzimamo funkcijom `download.file()`. Argument `destfile` određuje gdje će se datoteka spremiti, a argument `mode = "wb"` da se spremi kao binarna datoteka. Bez njega bi se datoteka PDF na Windowsima mogla oštetiti.
+
+```{r}
+#| eval: false
+download.file(
+  "https://stacks.cdc.gov/view/cdc/67877/cdc_67877_DS1.pdf",
+  destfile = "data/phr_1918_11_08.pdf",
+  mode = "wb"
+)
+```
+
+Kod je pokrenut samo jednom, a u nastavku poglavlja radimo sa spremljenom datotekom.
+
+Tekst iz datoteke PDF čitamo paketom `pdftools`. Na Windowsima i macOS-u paket se instalira na uobičajen način, a na Linuxu je prije toga potrebno instalirati sistemsku biblioteku Poppler. Na distribucijama Ubuntu i Debian to se radi naredbom `sudo apt install libpoppler-cpp-dev` u terminalu.
+:::
+
+## Podatkovni okvir i tibble
+
+Funkcija `pdf_text()` iz paketa `pdftools` čita tekst iz datoteke PDF i vraća znakovni vektor u kojem je svaki element jedna stranica. Ako datoteka PDF sadrži skenirane stranice, funkcija vraća tekst koji je pri digitalizaciji dobiven OCR-om. Funkcija pritom nastoji sačuvati raspored teksta na stranici pa su retci odvojeni znakom `\n`, a razmaci između stupaca tablica zadržani.
+
+```{r}
+# Učitavanje teksta iz datoteke PDF
+phr_text <- pdf_text("data/phr_1918_11_08.pdf")
+
+# Broj stranica
+length(phr_text)
+
+# Tekst prve stranice
+cat(phr_text[1])
+```
+
+Već prva stranica pokazuje zašto takav tekst nije spreman za analizu. Na njoj su pogrešno prepoznate riječi, poput *tablo*, *lhas*, *beeni* i *wvas*, riječi prelomljene na kraju retka, poput *com-* i *plete*, a na dnu stranice tiskarska oznaka i broj stranice u zagradi.
+
+Prije čišćenja tekst ćemo urediti u podatkovni okvir. Takav redoslijed nije nužan, no kod teksta iz datoteka PDF praktičniji je. Mnogi koraci čišćenja ovise o tome na kojoj se stranici i u kojem retku nešto nalazi, a u podatkovnom okviru taj se podatak čuva uz svaki redak teksta.
+
+Tekstualni podaci u R-u mogu biti organizirani u nekoliko različitih oblika, a svaki od njih ima svoje prednosti, ovisno o vrsti analize. Najčešće se koriste znakovni vektori, podatkovni okviri (i njihova inačica *tibble*), korpusi, matrice dokumenata i pojmova te tokenizirani objekti.
+
+Podatkovni okvir (engl. *data frame*) i njegova modernija inačica *tibble* tablični su oblici podataka. U njima svaki redak obično predstavlja jednu jedinicu analize (dokument, stranicu, odlomak, rečenicu ili riječ), a stupci sadrže tekst i pripadajuće metapodatke, poput broja stranice. Takav oblik omogućuje korištenje alata iz skupa paketa `tidyverse`. *Tibble* je modernija inačica podatkovnog okvira razvijena u sklopu skupa paketa `tidyverse`. Od klasičnog podatkovnog okvira (`data.frame()`) razlikuje se ponajprije u ponašanju:
+
+- Pri ispisu prikazuje samo prvih nekoliko redaka i onoliko stupaca koliko stane na zaslon, uz vrstu podataka u svakom stupcu (npr. `<int>` za cijele brojeve, `<chr>` za tekst).
+
+- Nikad sam ne mijenja vrstu podataka ni imena stupaca.
+
+- Upozorava kad se pozove stupac koji ne postoji umjesto da tiho vrati `NULL`.
+
+Zbog toga se s njim lakše radi, osobito kod velikih tablica, a on je i uobičajen oblik za rad s paketom `tidytext`.
+
+Podatkovni okvir stvaramo funkcijom `tibble()`. Svaki argument te funkcije postaje jedan stupac, pri čemu je ime argumenta ime stupca, a vrijednost argumenta njegov sadržaj. Ovdje stvaramo tri stupca.
+
+- `page` - redni broj stranice u datoteci PDF (funkcija `seq_along()` stvara niz brojeva od 1 do broja elemenata vektora),
+
+- `report_page` - broj stranice otisnut u biltenu,
+
+- `text` - tekst stranice.
+
+Stranice biltena numerirane su redom kroz cijelo godište pa ovaj broj ne počinje stranicom 1, nego stranicom 1913, što se vidi u zagradi na dnu prve stranice. Otisnuti broj stranice zato dobivamo tako da rednom broju stranice dodamo 1912. Funkcija `tibble()` stupce stvara redom pa se pri stvaranju stupca `report_page` možemo pozvati na upravo stvoreni stupac `page`.
+
+```{r}
+# Podatkovni okvir sa stranicama biltena
+phr_df <- tibble(
+  page = seq_along(phr_text),
+  report_page = page + 1912,
+  text = phr_text
+)
+
+# Pregled podatkovnog okvira
+phr_df
+```
+
+U ovom podatkovnom okviru svaki je redak jedna stranica. Za čišćenje nam je potrebna sitnija jedinica, odnosno redak teksta, jer se zaglavlja, tablice i prelomljene riječi prepoznaju upravo po retcima. Funkcija `separate_longer_delim()` iz paketa `tidyr` dijeli tekst u stupcu `text` na mjestima na kojima se nalazi znak zadan argumentom `delim`, ovdje znak `\n`, i svaki dio stavlja u zaseban redak podatkovnog okvira. Vrijednosti ostalih stupaca pritom se ponavljaju pa za svaki redak teksta znamo s koje je stranice. Funkcijom `group_by()` zatim podatke grupiramo prema stranici, a funkcija `row_number()` unutar svake stranice retke numerira od 1 nadalje. Funkcijom `ungroup()` na kraju uklanjamo grupiranje kako ne bi utjecalo na kasnije operacije.
+
+```{r}
+# Podjela stranica na retke
+phr_lines <- phr_df |>
+  separate_longer_delim(text, delim = "\n") |>
+  group_by(page) |>
+  mutate(line = row_number()) |>
+  ungroup()
+
+# Pregled podatkovnog okvira
+phr_lines
+```
+
+Podatkovni okvir `phr_lines` ima jedan redak teksta po retku. Na tom ćemo okviru provesti prvi dio čišćenja, a tek ćemo na kraju retke ponovno spojiti u tekst stranica.
+
+## Čišćenje teksta
+
+Nakon učitavanja tekst je potrebno očistiti. Ovdje je čišćenje podijeljeno u dva dijela. Prvi se provodi odmah nakon učitavanja teksta u R, a drugi nakon tokenizacije, odnosno nakon što se tekst podijeli na manje jedinice. Takva je podjela praktičnija jer neki elementi teksta trebaju ostati „nečisti” sve do tokenizacije. Interpunkcija, primjerice, označava granice rečenica, a prijelomi redaka pomažu prepoznati riječi prelomljene na kraju retka. Zato se u prvom dijelu bavimo tekstom kao cjelinom, a pojedinim riječima tek u drugom.
+
+### Provjera posebnih i kontrolnih znakova
+
+Prvi je korak provjeriti koji se neobični ili posebni znakovi nalaze u tekstu. Prvom provjerom brojimo retke s vrijednošću `NA`. Takvih redaka ne smije biti jer bi jedan `NA` u sljedećim koracima pokvario tekst cijele stranice. Drugom provjerom brojimo retke u kojima se pojavljuje zamjenski znak (`�`) koji se prikazuje kao romb s upitnikom i označava znak koji pri promjeni kodiranja nije bilo moguće protumačiti.
+
+```{r}
+# Broj redaka s vrijednošću NA (treba biti 0)
+sum(is.na(phr_lines$text))
+
+# Broj redaka sa zamjenskim znakom (treba biti 0)
+sum(str_detect(phr_lines$text, "�"))
+```
+
+Trećom provjerom ispisujemo sve znakove izvan osnovnog skupa ASCII koji sadrži engleska slova, znamenke i osnovnu interpunkciju, zajedno s time koliko se puta pojavljuju. Funkcija `str_extract_all()` iz svakog retka izdvaja sve takve znakove, funkcija `unlist()` spaja ih u jedan vektor, a funkcija `count()` broji koliko se puta pojavljuje svaki od njih.
+
+```{r}
+# Znakovi izvan osnovnog skupa ASCII i njihova učestalost
+tibble(char = unlist(str_extract_all(phr_lines$text, "[^\\x00-\\x7F]"))) |>
+  count(char, sort = TRUE)
+```
+
+U tekstu se pojavljuju samo četiri takva znaka i to vrlo rijetko. Kod rijetkih je znakova dobro pogledati u kojem se kontekstu nalaze. To se radi funkcijom `str_subset()` koja vraća samo one elemente vektora u kojima je uzorak pronađen. Funkcija `str_squish()` pritom uklanja višestruke razmake kako bi ispis bio pregledniji.
+
+```{r}
+# Retci u kojima se nalaze znakovi izvan skupa ASCII
+str_subset(phr_lines$text, "[^\\x00-\\x7F]") |>
+  str_squish()
+```
+
+Nijedan od tih znakova nije dio stvarne riječi. Svi su nastali pogrešnim prepoznavanjem, najčešće u tablicama. Znak £ pojavljuje se, primjerice, umjesto slova *S* u kratici *Sept.* ili umjesto slova *l* u kratici *Ala.* za Alabamu. Zato sve znakove izvan skupa ASCII zamjenjujemo razmakom. Za to koristimo funkciju `str_replace_all()`. Njezin je prvi argument (`string`) znakovni vektor koji se čisti, drugi (`pattern`) uzorak koji se traži, a treći (`replacement`) tekst kojim se pronađeni uzorak zamjenjuje. Razmak umjesto praznog niza koristimo zato što znak ponekad stoji između dviju riječi, a njegovim bi se uklanjanjem one spojile.
+
+Takvu odluku smijemo donijeti samo nakon pregleda konteksta. U nekom drugom tekstu znakovi izvan skupa ASCII mogli bi biti dio stvarnih riječi, primjerice slova s dijakritičkim znakovima u imenima ili tipografski znakovi poput zaobljenih apostrofa i navodnika. Zaobljeni apostrof (’) i ravni apostrof (') za računalo su dva različita znaka pa se riječ *don’t* ne bi podudarala s riječju *don't* iz popisa zaustavnih riječi. Takve bismo znakove zamijenili njihovim jednostavnim inačicama, a ne razmakom. U ovom biltenu svi su apostrofi ravni pa taj problem ne postoji.
+
+```{r}
+# Zamjena znakova izvan skupa ASCII razmakom
+phr_lines <- phr_lines |>
+  mutate(text = str_replace_all(
+    string = text,
+    pattern = "[^\\x00-\\x7F]",
+    replacement = " "
+  ))
+```
+
+Sljedeća je provjera traženje **kontrolnih znakova**. To su znakovi koji ne predstavljaju slova, brojeve ni interpunkciju, nego su izvorno služili za upravljanje uređajima poput pisača ili terminala. Većina ih se u konzoli R-a ne vidi ili se prikazuje kao neobične oznake poput `\a` ili `\f`. Takvi znakovi mogu izazvati pogreške u funkcijama ili neočekivane rezultate u daljnjoj obradi. Uzorak `"\\p{Cc}"` obuhvaća sve kontrolne znakove pa ih ne moramo navoditi jednog po jednog.
+
+```{r}
+# Broj kontrolnih znakova
+sum(str_count(phr_lines$text, "\\p{Cc}"))
+```
+
+U tekstu nema kontrolnih znakova. Znak za novi redak (`\n`) koji je također kontrolni znak, uklonili smo već pri podjeli stranica na retke. Kad bi kontrolnih znakova bilo, uklonili bismo ih istom funkcijom `str_replace_all()`, i to tako da ih zamijenimo razmakom. Među njima se nalazi i tabulator (`\t`) koji često odvaja riječi pa bi se njegovim uklanjanjem one spojile. Ako znak treba samo ukloniti, bez zamjene, umjesto `str_replace_all(x, uzorak, "")` može se koristiti kraća funkcija `str_remove_all(x, uzorak)`.
+
+### Uklanjanje praznih redaka i zaglavlja
+
+Funkcija `pdf_text()` čuva raspored teksta na stranici pa su u retcima ostali razmaci kojima su poravnati stupci, a između odlomaka i tablica nalaze se prazni retci. Funkcijom `str_squish()` uklanjamo razmake na početku i kraju svakog retka te višestruke razmake unutar retka zamjenjujemo jednim. Prazne retke zatim uklanjamo funkcijom `filter()`, a retke na svakoj stranici ponovno numeriramo kako bi prvi redak s tekstom imao broj 1.
+
+```{r}
+phr_lines <- phr_lines |>
+  # Uklanjanje suvišnih razmaka
+  mutate(text = str_squish(text)) |>
+  # Uklanjanje praznih redaka
+  filter(text != "") |>
+  # Ponovno numeriranje redaka na svakoj stranici
+  group_by(page) |>
+  mutate(line = row_number()) |>
+  ungroup()
+```
+
+Na vrhu svake stranice osim prve nalazi se zaglavlje s datumom izlaska broja i brojem stranice. Ono nije dio teksta koji želimo analizirati, a kad bi ostalo u tekstu, na svakoj bi se stranici pojavile iste riječi i brojevi. Funkcijom `filter()` zadržavamo samo prve retke svake stranice kako bismo vidjeli kako zaglavlja izgledaju.
+
+```{r}
+# Prvi redak svake stranice
+phr_lines |>
+  filter(line == 1) |>
+  select(page, text) |>
+  print(n = 15)
+```
+
+Zaglavlja sadrže datum i broj stranice, no OCR ih je često pogrešno prepoznao. Riječ *November* pojavljuje se, primjerice, kao *Novvnulewl*, *NoveLaber* ili *Novrember*, a godina 1918 kao *t918* ili *1913*. Zato ih ne možemo prepoznati po točnom tekstu. Možemo ih, međutim, prepoznati po tri obilježja. Zaglavlje je prvi redak stranice, sadrži barem jednu znamenku i kratko je. Funkcija `str_detect()` s uzorkom `"\\d"` provjerava sadrži li redak znamenku, a funkcija `str_length()` vraća broj znakova u retku. Retke koji zadovoljavaju sva tri uvjeta uklanjamo, a operator `!` pritom obrće logičku vrijednost pa zadržavamo sve ostale.
+
+```{r}
+# Retci koji izgledaju kao žive glave
+running_heads <- phr_lines$line == 1 &
+  str_detect(phr_lines$text, "\\d") &
+  str_length(phr_lines$text) < 45
+
+# Broj takvih redaka
+sum(running_heads)
+
+# Uklanjanje živih glava
+phr_lines <- phr_lines[!running_heads, ]
+```
+
+Pravilo je prepoznalo `r sum(running_heads)` zaglavlja na 56 stranica. Na preostalih šest stranica prvi redak nije prepoznat kao zaglavlje. Na nekima je to naslov, poput naslova prve stranice ili rubrika *PREVALENCE OF DISEASE* i *FOREIGN.*, a na drugima kratak niz znakova bez ijedne znamenke, poput *-* ili *ll riace.*. Takvi su retci uglavnom na stranicama s tablicama i uklonit će se u sljedećem koraku.
+
+### Uklanjanje tablica
+
+Najveći dio ovog broja biltena čine tablice s brojem oboljelih i umrlih. OCR ih nije mogao pravilno pročitati pa su se raspale u nizove brojeva, točaka i dijelova riječi. Takve tablice ne možemo spasiti čišćenjem, a u analizi riječi samo bi smetale. Zato ih moramo prepoznati i ukloniti.
+
+Retci tablica razlikuju se od redaka teksta po dva obilježja. Sadrže malo slova, a mnogo znamenki i interpunkcije, i često sadrže točkaste crte (npr. `Cases ..........`) koje povezuju naziv retka s brojevima. Za svaki redak zato računamo udio slova među znakovima koji nisu razmaci. Funkcija `str_count()` s uzorkom `"\\p{L}"` broji slova u retku, a funkcija `str_remove_all()` uklanja razmake prije brojanja svih znakova. Redak smatramo retkom tablice ako su manje od 60 % njegovih znakova slova ili ako sadrži tri ili više točaka zaredom (uzorak `"\\.{3,}"`).
+
+```{r}
+phr_lines <- phr_lines |>
+  mutate(
+    # Udio slova među znakovima koji nisu razmaci
+    letter_share = str_count(text, "\\p{L}") / str_length(str_remove_all(text, " ")),
+    # Je li redak redak tablice?
+    table_line = letter_share < 0.6 | str_detect(text, "\\.{3,}")
+  )
+
+# Primjeri redaka tablica
+phr_lines |>
+  filter(table_line) |>
+  select(page, letter_share, text) |>
+  head(10)
+```
+
+Uklanjanje pojedinačnih redaka tablica nije dovoljno. Na stranicama s tablicama ostali bi dijelovi zaglavlja tablica, nazivi gradova i drugi ostaci koji nisu tekst. Zato procjenjujemo i cijele stranice. Funkcijom `summarise()` za svaku stranicu računamo udio redaka koji nisu retci tablice. Funkcija `mean()` na logičkom vektoru vraća udio vrijednosti `TRUE`, a operator `!` obrće vrijednosti stupca `table_line`.
+
+```{r}
+# Udio redaka teksta na svakoj stranici
+page_types <- phr_lines |>
+  group_by(page) |>
+  summarise(text_share = mean(!table_line))
+
+# Stranice s najvećim udjelom redaka teksta
+page_types |>
+  arrange(desc(text_share)) |>
+  print(n = 16)
+```
+
+Razlika između stranica jasno se vidi. Na `r sum(page_types$text_share >= 0.75)` stranica tri četvrtine ili više redaka čine retci teksta, a na svim ostalim stranicama to su dvije trećine redaka ili manje. Zato zadržavamo samo stranice na kojima je udio redaka teksta barem 0,75. Granica je odabrana nakon pregleda podataka, a ne unaprijed, pa ju je kod drugog teksta potrebno ponovno provjeriti.
+
+```{r}
+# Stranice na kojima prevladava tekst
+text_pages <- page_types |>
+  filter(text_share >= 0.75) |>
+  pull(page)
+
+text_pages
+```
+
+Na tim stranicama ipak je ostalo nekoliko redaka koji izgledaju kao retci tablice. Prije uklanjanja dobro ih je pogledati.
+
+```{r}
+# Retci tablica na stranicama s tekstom
+phr_lines |>
+  filter(page %in% text_pages, table_line) |>
+  select(page, text) |>
+  print(n = Inf)
+```
+
+Većina tih redaka zaista nije tekst. To su naslov biltena s brojem godišta, dio naslova jednog članka, tiskarske oznake, brojevi stranica u zagradama, bibliografski podaci o člancima iz kojih su prevedeni izvještaji i mala tablica o broju oboljelih od pojedinih bolesti. Pravilo ipak nije savršeno. Uklonit će i redak *November 2, 1918.* koji je kraj rečenice s prve stranice te redak *monia 185.* koji je drugi dio prelomljene riječi *pneumonia*. Takve gubitke možemo prihvatiti jer su rijetki, no dobro je znati da se događaju. Funkcijom `filter()` sada zadržavamo samo retke sa stranica s tekstom koji nisu retci tablice, a pomoćne stupce uklanjamo funkcijom `select()`.
+
+```{r}
+# Zadržavanje redaka teksta sa stranica s tekstom
+phr_lines <- phr_lines |>
+  filter(page %in% text_pages, !table_line) |>
+  select(-letter_share, -table_line)
+```
+
+### Spajanje riječi prelomljenih spojnicom
+
+Za spajanje prelomljenih riječi retke svake stranice najprije spajamo u jedan znakovni niz. Funkcijom `summarise()` za svaku stranicu stvaramo jedan redak, a funkcija `str_c()` uz argument `collapse = "\n"` spaja sve retke stranice i između njih umeće znak za novi redak. Tako podatak o tome gdje je izvorni tekst imao prijelome ostaje sačuvan. Grupiranjem i po stupcu `report_page` taj se stupac zadržava u rezultatu.
+
+```{r}
+# Spajanje redaka svake stranice u jedan znakovni niz
+phr_clean <- phr_lines |>
+  group_by(page, report_page) |>
+  summarise(text = str_c(text, collapse = "\n"), .groups = "drop")
+
+phr_clean
+```
+
+Sljedeći su problem riječi prelomljene na kraju retka. Takva riječ počinje u jednom retku, a završava u sljedećem, pri čemu prvi dio završava spojnicom (`-`), npr. `com-\nplete`. Ako je ne spojimo, pri tokenizaciji će postati dvije besmislene riječi. Takve riječi spajamo funkcijom `str_replace_all()` i regularnim izrazom `"(\\p{L})-\\n(\\p{L})"` koji se sastoji od sljedećih dijelova.
+
+- `(\\p{L})` - slovo ispred spojnice (zagrade ga spremaju kao prvu skupinu),
+
+- `-` - spojnica na kraju retka,
+
+- `\\n` - prijelom retka i
+
+- `(\\p{L})` - prvo slovo nastavka riječi spremljeno kao druga skupina.
+
+Zamjena `"\\1\\2"` znači „vrati samo prvu i drugu skupinu”, odnosno oba slova bez spojnice i prijeloma između njih. Uzorak `\\p{L}` obuhvaća slova bilo kojeg pisma pa ispravno radi i sa slovima poput č, ć ili đ. Budući da zahtijevamo slovo neposredno ispred spojnice, izraz ne spaja retke koji završavaju spojnicom odvojenom razmakom. Funkcijom `str_count()` prije i poslije zamjene brojimo koliko je takvih prijeloma u tekstu.
+
+```{r}
+# Broj riječi prelomljenih spojnicom prije spajanja
+sum(str_count(phr_clean$text, "\\p{L}-\\n\\p{L}"))
+
+# Spajanje riječi prelomljenih spojnicom na kraju retka
+phr_clean <- phr_clean |>
+  mutate(text = str_replace_all(
+    string = text,
+    pattern = "(\\p{L})-\\n(\\p{L})",
+    replacement = "\\1\\2"
+  ))
+
+# Broj riječi prelomljenih spojnicom nakon spajanja
+sum(str_count(phr_clean$text, "\\p{L}-\\n\\p{L}"))
+```
+
+Iz samog teksta nije moguće razlikovati spojnicu koja je dodana samo zbog prijeloma retka od spojnice koja je dio riječi. Na stranici 10 riječ *pre-existing* prelomljena je na kraju retka upravo na mjestu spojnice pa ju je ovaj postupak pretvorio u *preexisting*. Kod većine analiza nekoliko pogrešno spojenih riječi nije velik problem, no dobro je znati da se to događa.
+
+### Spajanje redaka u tekst stranice
+
+Nakon spajanja prelomljenih riječi preostali prijelomi redaka više nam ne trebaju. Zamjenjujemo ih razmakom, a funkcijom `str_squish()` uklanjamo višestruke razmake koji su pritom mogli nastati.
+
+U knjizi bismo tekst sada mogli podijeliti na odlomke. U tekstu dobivenom iz skenirane datoteke PDF granice odlomaka nisu označene praznim retkom, nego samo uvlakom prvog retka, a nju je OCR zapisao nedosljedno. Zato je najmanja pouzdana jedinica teksta stranica.
+
+```{r}
+phr_clean <- phr_clean |>
+  mutate(
+    # Zamjena prijeloma redaka razmakom
+    text = str_replace_all(text, "\n", " "),
+    # Uklanjanje suvišnih razmaka
+    text = str_squish(text)
+  )
+```
+
+Nakon ovih koraka podatkovni okvir `phr_clean` ima jednu stranicu teksta po retku. Tekst svake stranice zapisan je u jednom retku bez oznaka `\n` i suvišnih razmaka, riječi prelomljene na kraju retka ponovno su spojene, a žive glave, tablice i znakovi izvan skupa ASCII uklonjeni su. Kako izgleda očišćeni tekst pokazuje početak stranice 20 na kojoj je pregled pisama s lijekovima protiv gripe koja su građani slali javnozdravstvenoj službi. Funkcija `str_wrap()` dugački niz za ispis dijeli na retke od najviše 80 znakova.
+
+```{r}
+# Prvih 1.000 znakova stranice 20 nakon čišćenja
+phr_clean |>
+  filter(page == 20) |>
+  pull(text) |>
+  str_sub(start = 1, end = 1000) |>
+  str_wrap(width = 80) |>
+  writeLines()
+```
+
+Tekst je čitljiv, ali i dalje daleko od savršenog. U njemu su ostale pogrešno prepoznate riječi, poput *tihe* i *wvhich*. Njima se bavimo u drugom dijelu čišćenja, nakon tokenizacije jer ih je lakše prepoznati kad je tekst podijeljen na pojedinačne riječi.
+
+```{r}
+#| include: false
+# Spremanje podatkovnog okvira
+saveRDS(phr_clean, file = "data/phr_clean.rds")
+```
+
+## Tokenizacija
+
+**Uredan tekstni format** (engl. *tidy text format*) podatkovni je okvir strukturiran kao **jedan token po retku**. **Token** je smislena jedinica teksta koja nas zanima u analizi. Tokenizacija je ključna pretpostavka analize teksta jer se s cjelovitim stranicama ne mogu provesti smislene kvantitativne analize. Gotovo je svaka stranica jedinstvena pa ih nema smisla brojati ni uspoređivati. Tokeni su najčešće riječi jer su riječi najčešće semantički značajne jedinice teksta, no token može biti i n-gram, rečenica ili odlomak. Uredan format omogućuje obradu i vizualizaciju podataka paketima kao što su `dplyr`, `tidyr` i `ggplot2`.
+
+Tokenizacija se u paketu `tidytext` provodi funkcijom `unnest_tokens()`. Funkcija ima tri obavezna argumenta.
+
+- `tbl` - podatkovni okvir u kojem se nalazi tekst,
+
+- `output` - naziv novog stupca u kojem će biti tokeni i
+
+- `input` - naziv stupca u kojem se nalazi tekst.
+
+Neobavezan, ali bitan argument je `token` kojim se određuje vrsta tokena. Ako se ne navede, zadana vrijednost je `"words"` pa se tekst dijeli na riječi. Osnovna i najčešća tokenizacija je tokenizacija na riječi. Tada je svaka riječ u tekstu jedan token. Zato ćemo stupac s tokenima nazvati `word`. Tekst se nalazi u podatkovnom okviru `phr_clean`, u stupcu `text`.
+
+```{r}
+# Tokenizacija na riječi
+phr_word_tokens <- unnest_tokens(
+  tbl = phr_clean,
+  output = word,
+  input = text
+)
+
+# Pregled tokeniziranog podatkovnog okvira
+phr_word_tokens
+```
+
+Nakon tokenizacije svaki redak podatkovnog okvira sadrži jedan token, odnosno jednu riječ. Ostali stupci (`page` i `report_page`) zadržavaju se pa za svaku riječ znamo s koje stranice dolazi. Izvorni stupac `text` se uklanja. Interpunkcija se također uklanja, osim apostrofa unutar riječi pa, primjerice, *Pfeiffer's* ostaje jedan token. Uklanja se i spojnica unutar riječi pa se riječ *broncho-pulmonary* dijeli na dva tokena.
+
+Osim toga, sva se slova pretvaraju u mala. Ponekad je ipak poželjno da riječi zadrže izvorna velika i mala slova, primjerice, kako bi se imena razlikovala od običnih riječi. Tada se funkciji `unnest_tokens()` dodaje argument `to_lower = FALSE`. Slično tome, interpunkcijski znakovi zadržavaju se argumentom `strip_punct = FALSE`.
+
+### Druge jedinice teksta
+
+Tokenizacija ne mora biti ograničena na riječi, nego se tekst može podijeliti i prema drugim kriterijima, ovisno o tome što želimo analizirati.
+
+Umjesto riječi, osnovna jedinica mogu biti **rečenice**. Za to se argumentu `token` zadaje vrijednost `"sentences"`.
+
+```{r}
+# Tokenizacija na rečenice
+phr_sentence_tokens <- phr_clean |>
+  unnest_tokens(
+    output = sentence,
+    input = text,
+    token = "sentences"
+  )
+
+# Pregled tokeniziranog podatkovnog okvira
+phr_sentence_tokens
+```
+
+Sada je svaki token, odnosno svaki redak podatkovnog okvira, jedna rečenica. Slova su i ovdje pretvorena u mala, ali se interpunkcija, za razliku od tokenizacije na riječi, zadržava. Granice rečenica određuju se prema interpunkciji na kraju rečenice, odnosno točki, upitniku i uskličniku. Postupak nije savršen ni u urednom tekstu jer se točka iza kratice, npr. *Dr.* ili *Oct.*, prepoznaje kao kraj rečenice. U tekstu dobivenom OCR-om problema je još više. Naslovi nemaju točku na kraju pa se spajaju s prvom rečenicom teksta, kao u prvom retku ispisa, a točke koje je OCR pogrešno prepoznao rečenice dijele na mjestima na kojima ne završavaju.
+
+Za neke posebne analize, primjerice stilometriju ili analizu učestalosti slova, tekst se može podijeliti na pojedinačne znakove vrijednošću `"characters"`. Tada svaki redak sadrži jedan znak, a razmaci i interpunkcija se uklanjaju pa ostaju samo slova i znamenke. Takva se tokenizacija rjeđe koristi u sociološkoj analizi teksta.
+
+```{r}
+# Tokenizacija na znakove
+phr_character_tokens <- phr_clean |>
+  unnest_tokens(
+    output = char,
+    input = text,
+    token = "characters"
+  )
+
+# Pregled tokeniziranog podatkovnog okvira
+phr_character_tokens
+```
+
+Funkcijom `unnest_tokens()` tekst se može podijeliti i na nizove uzastopnih riječi koji se nazivaju **n-grami**. Na taj način možemo promatrati koliko često neka riječ slijedi drugu i na temelju toga ispitivati odnose među riječima. N-grami se dobivaju vrijednošću `token = "ngrams"`, a argumentom `n` određuje se koliko riječi čini jedan n-gram. Nizovi od dvije uzastopne riječi nazivaju se **bigrami**, a nizovi od tri riječi **trigrami**. Tekst tada ima strukturu jedan bigram po retku, odnosno jedan trigram po retku. Uzastopni n-grami preklapaju se pa se svaka riječ, osim prve i posljednje, pojavljuje u dva bigrama. Ako dokument ima manje riječi nego što iznosi `n`, iz njega se ne može stvoriti nijedan n-gram pa funkcija za njega vraća `NA`. Takve retke uklanjamo funkcijom `filter()`.
+
+```{r}
+# Tokenizacija na bigrame
+phr_bigrams <- phr_clean |>
+  unnest_tokens(
+    output = bigram,
+    input = text,
+    token = "ngrams",
+    n = 2
+  ) |>
+  # Uklanjanje redaka iz kojih se nije mogao stvoriti bigram
+  filter(!is.na(bigram))
+
+# Pregled bigrama
+phr_bigrams
+
+# Tokenizacija na trigrame
+phr_trigrams <- phr_clean |>
+  unnest_tokens(
+    output = trigram,
+    input = text,
+    token = "ngrams",
+    n = 3
+  ) |>
+  # Uklanjanje redaka iz kojih se nije mogao stvoriti trigram
+  filter(!is.na(trigram))
+
+# Pregled trigrama
+phr_trigrams
+```
+
+Već i jednostavno brojanje bigrama daje prvi uvid u sadržaj teksta. Funkcijom `str_detect()` zadržavamo samo bigrame u kojima se pojavljuje riječ *influenza*, a funkcijom `count()` brojimo koliko se puta pojavljuje svaki od njih. Oznaka `\\b` u uzorku označava granicu riječi pa se pronalazi samo cijela riječ *influenza*.
+
+```{r}
+# Najčešći bigrami s riječju influenza
+phr_bigrams |>
+  filter(str_detect(bigram, "\\binfluenza\\b")) |>
+  count(bigram, sort = TRUE) |>
+  print(n = 15)
+```
+
+Najčešći su bigrami *of influenza* i *epidemic influenza*, što je naziv koji je javnozdravstvena služba koristila za bolest. Na popisu se vide i bigrami s nazivima mjesta i brojevima iz kratkih izvještaja, poput *honduras influenza* i *influenza 15,283*, te bigram *ftays influenza* s pogrešno prepoznatom riječju. Takvi tokeni pokazuju zašto je potreban i drugi dio čišćenja.
+
+### Čišćenje nakon tokenizacije
+
+Nakon tokenizacije provodimo drugi dio čišćenja. Tekst je sada podijeljen na pojedinačne riječi pa se lakše vidi koliko je pogrešaka OCR-a u njemu ostalo. Kvalitetu teksta možemo procijeniti tako da provjerimo koliki se udio tokena nalazi u rječniku engleskog jezika. Takav rječnik nalazi se u paketu `lexicon` koji se instalira zajedno s paketom `textstem`. Vektor `grady_augmented` sadrži više od 120.000 engleskih riječi zapisanih malim slovima. Operator `%in%` za svaki token provjerava nalazi li se u rječniku, a funkcija `mean()` računa udio vrijednosti `TRUE`, odnosno udio tokena koji su u rječniku.
+
+```{r}
+# Rječnik engleskih riječi
+english_words <- lexicon::grady_augmented
+
+# Udio tokena koji se nalaze u rječniku
+mean(phr_word_tokens$word %in% english_words)
+
+# Udio tokena koji se nalaze u rječniku, po stranicama
+phr_word_tokens |>
+  group_by(page) |>
+  summarise(in_dictionary = mean(word %in% english_words)) |>
+  arrange(in_dictionary)
+```
+
+Udio tokena iz rječnika nije savršena mjera kvalitete OCR-a. U rječniku nema mnogih imena, naziva mjesta, brojeva i stručnih izraza, a pogrešno prepoznata riječ ponekad slučajno postane neka druga stvarna riječ. To se dobro vidi na stranici 29 koja ima daleko najmanji udio tokena iz rječnika. Ona nije lošije skenirana od ostalih, nego sadrži kratke izvještaje saveznih država u kojima se nižu nazivi gradova i brojevi oboljelih.
+
+Koje se pogreške u tekstu pojavljuju najčešće, vidi se na popisu najčešćih tokena koji nisu u rječniku.
+
+```{r}
+# Najčešći tokeni koji se ne nalaze u rječniku
+phr_word_tokens |>
+  filter(!word %in% english_words) |>
+  count(word, sort = TRUE) |>
+  print(n = 30)
+```
+
+Na vrhu popisa nalaze se brojevi i godine, a zatim pogrešno prepoznate česte riječi, poput *tlhe*, *thle* i *thie* umjesto *the*, *anid* i *andl* umjesto *and* te *lhas* umjesto *has*. Dio tokena ne možemo ispraviti, ali ih možemo ukloniti pravilima koja opisuju kako izgleda riječ. Funkcijom `filter()` zadržavamo samo tokene koji zadovoljavaju četiri uvjeta.
+
+1. Token se sastoji samo od malih slova engleske abecede i apostrofa (uzorak `"^[a-z']+$"`). Tako se uklanjaju brojevi i tokeni u kojima su slova pomiješana sa znamenkama.
+
+2. Token je dulji od jednog znaka ili je riječ *a* ili *i*, jedine jednoslovne riječi u engleskom jeziku.
+
+3. Token sadrži barem jedan samoglasnik (uzorak `"[aeiouy]"`) jer su nizovi samih suglasnika uglavnom ostaci pogrešnog prepoznavanja. Tim uvjetom uklanjamo i kratice poput *dr* ili *st*, a što je još jedna odluka koje moramo biti svjesni.
+
+4. Token ne sadrži isto slovo tri ili više puta zaredom (uzorak `"(\\p{L})\\1{2,}"` u kojem se `\\1` odnosi na slovo spremljeno u prvoj skupini). U engleskom jeziku takvih riječi gotovo nema, a u tekstu dobivenom OCR-om nastaju od linija i ukrasa na stranici.
+
+```{r}
+# Uklanjanje tokena koji ne izgledaju kao riječi
+phr_tokens_clean <- phr_word_tokens |>
+  filter(
+    str_detect(word, "^[a-z']+$"),
+    str_length(word) > 1 | word %in% c("a", "i"),
+    str_detect(word, "[aeiouy]"),
+    !str_detect(word, "(\\p{L})\\1{2,}")
+  )
+
+# Broj tokena prije i nakon uklanjanja
+nrow(phr_word_tokens)
+nrow(phr_tokens_clean)
+```
+
+Dio pogrešaka može se i ispraviti. Na popisu najčešćih pogrešaka vidi se da OCR u ovom tekstu ponavlja iste pogreške. Uz slovo *h* često dodaje slovo *l* (*tlhe*, *thle*, *lhas*), uz slovo *n* slovo *i* (*anid*, *beeni*), a uz slovo *d* slovo *l* (*andl*). Takve sustavne pogreške možemo ispravljati pravilima. Pravila zapisujemo u imenovani vektor u kojem su imena elemenata uzorci koje tražimo, a vrijednosti zamjene. Kad funkciji `str_replace_all()` umjesto jednog uzorka i jedne zamjene zadamo takav vektor, ona redom provodi sve zamjene.
+
+Pravila ne smijemo primijeniti na sve tokene jer bi pokvarila i ispravne riječi. Primjenjujemo ih samo na tokene kojih nema u rječniku, a ispravak prihvaćamo samo ako je rezultat riječ iz rječnika. Postupak ima tri koraka:
+
+1. Funkcijom `filter()` izdvajamo tokene kojih nema u rječniku, a funkcijom `distinct()` zadržavamo svaki takav token samo jednom.
+
+2. Funkcijom `mutate()` stvaramo stupac `candidate` u kojem su tokeni nakon primjene pravila.
+
+3. Funkcijom `filter()` zadržavamo samo parove u kojima je kandidat riječ iz rječnika.
+
+```{r}
+# Pravila za česte pogreške OCR-a u ovom tekstu
+ocr_rules <- c(
+  "lh" = "h",
+  "hl" = "h",
+  "ni" = "n",
+  "dl" = "d"
+)
+
+# Ispravci koji daju riječ iz rječnika
+ocr_corrections <- phr_tokens_clean |>
+  filter(!word %in% english_words) |>
+  distinct(word) |>
+  mutate(candidate = str_replace_all(word, ocr_rules)) |>
+  filter(candidate %in% english_words)
+
+ocr_corrections |>
+  print(n = Inf)
+```
+
+Većina ispravaka je točna, primjerice *tlhe* u *the*, *anid* u *and*, *gatlherings* u *gatherings* i *pandlemic* u *pandemic*. Pregled popisa ipak je nužan jer pravila griješe kad pogrešan oblik slučajno postane neka druga riječ iz rječnika. Token *unifed* tako postaje *unfed*, iako je trebao postati *unified*, a naziv grada *munich*, kojeg nema u rječniku, postaje *munch*. Takve pogrešne ispravke uklanjamo s popisa, a ostale primjenjujemo.
+
+Ispravke primjenjujemo spajanjem dva podatkovna okvira. Funkcija `left_join()` zadržava sve retke prvog podatkovnog okvira i uz svaki token dodaje stupac `candidate` iz drugog, ako se token u njemu nalazi. Za ostale tokene vrijednost u stupcu `candidate` je `NA`. Funkcija `coalesce()` zatim vrijednosti `NA` zamjenjuje izvornim tokenom. Tako se mijenjaju samo tokeni s popisa ispravaka, a svi ostali ostaju isti.
+
+```{r}
+# Uklanjanje pogrešnih ispravaka
+ocr_corrections <- ocr_corrections |>
+  filter(!word %in% c("unifed", "munich"))
+
+# Primjena ispravaka
+phr_tokens_clean <- phr_tokens_clean |>
+  left_join(ocr_corrections, by = "word") |>
+  mutate(word = coalesce(candidate, word)) |>
+  select(-candidate)
+```
+
+Neke se pogreške ne mogu ispraviti pravilima jer nisu sustavne ili jer pogrešan oblik slučajno postoji u rječniku. Najčešća takva pogreška u ovom tekstu je *tho* umjesto *the*. Riječ *tho* nalazi se u rječniku kao kraći oblik riječi *though* pa je ni pravila ni provjera rječnikom ne mogu prepoznati. Pregledom konteksta utvrdili smo da se u ovom tekstu svaki put radi o riječi *the*. Takve ispravke zapisujemo ručno, u imenovani vektor u kojem su imena elemenata pogrešni oblici, a vrijednosti ispravni oblici. Prije zamjene provjeravamo koliko se puta koji oblik pojavljuje.
+
+Izraz `ocr_fixes[word]` za svaki token vraća ispravan oblik ako je token jedan od pogrešnih oblika, a vrijednost `NA` ako nije. Funkcija `unname()` uklanja imena elemenata, a funkcija `coalesce()` vrijednosti `NA` ponovno zamjenjuje izvornim tokenom.
+
+```{r}
+# Česte pogreške koje se ispravljaju ručno
+ocr_fixes <- c(
+  "tho" = "the",
+  "thie" = "the",
+  "wlich" = "which",
+  "rato" = "rate",
+  "aroa" = "area",
+  "tablo" = "table"
+)
+
+# Koliko se puta pojavljuje svaki pogrešni oblik
+phr_tokens_clean |>
+  filter(word %in% names(ocr_fixes)) |>
+  count(word, sort = TRUE)
+
+# Zamjena pogrešnih oblika ispravnima
+phr_tokens_clean <- phr_tokens_clean |>
+  mutate(word = coalesce(unname(ocr_fixes[word]), word))
+
+# Udio tokena koji se nalaze u rječniku nakon čišćenja
+mean(phr_tokens_clean$word %in% english_words)
+```
+
+Nakon drugog dijela čišćenja udio tokena iz rječnika znatno je veći. Ostale pogreške previše su raznolike da bi se ispravljale ručno. Kod većeg broja dokumenata one u analizu unose šum, ali rijetko mijenjaju popis najčešćih riječi. Strože rješenje bilo bi zadržati samo tokene iz rječnika, no time bi se iz analize uklonili i nazivi mjesta, imena i stručni izrazi poput *streptococci* što u analizi ovakvog teksta nije poželjno.
+
+### Ispravljanje pogrešaka udaljenošću uređivanja
+
+Pravila i ručni ispravci obuhvaćaju samo pogreške koje smo unaprijed uočili. Drugi način ispravljanja pogrešaka je onaj koji koriste programi za provjeru pravopisa. Za svaki token kojeg nema u rječniku traži se najsličnija riječ iz rječnika, a sličnost dviju riječi mjeri se **udaljenošću uređivanja** (engl. *edit distance*) koje smo obradili u poglavlju o znanoknim nizovima. Najčešće se koristi Levenshteinova udaljenost, odnosno najmanji broj umetanja, brisanja i zamjena pojedinačnih slova kojima se jedna riječ može pretvoriti u drugu. Token *tlhe* od riječi *the* udaljen je jedno brisanje, a token *appearanee* od riječi *appearance* jednu zamjenu pa je udaljenost u oba slučaja 1. Pravila iz prethodnog dijela poseban su slučaj tog pristupa jer i ona brišu ili zamjenjuju po jedno slovo, ali samo u unaprijed zadanim kombinacijama.
+
+Levenshteinovu udaljenost računa funkcija `adist()` iz osnovne instalacije R-a. Njezin je prvi argument riječ, a drugi vektor riječi s kojima se ona uspoređuje. Funkcija vraća udaljenost do svake od njih.
+
+```{r}
+# Udaljenost tokena tlhe od triju riječi
+adist("tlhe", c("the", "tale", "this"))
+```
+
+Kod pogrešaka OCR-a na istoj se udaljenosti često nalazi više riječi iz rječnika. Token *anid*, primjerice, od riječi *and*, *aid*, *acid* i *amid* udaljen je za po jedno slovo. Zato nam treba pravilo za odabir između njih. Programi za provjeru pravopisa obično biraju riječ koja se u jeziku najčešće pojavljuje, a u ovom tekstu najbolji je pokazatelj čestoće sam bilten. Zato token ne uspoređujemo s cijelim rječnikom, nego samo s riječima iz rječnika koje se pojavljuju u tekstu, a od njih biramo onu koja se pojavljuje najčešće. Token *anid* tako bi se ispravio u *and*, a ne u *acid*. Usporedba s nešto više od 1.200 riječi iz teksta pritom je i mnogo brža od usporedbe sa 120.000 riječi iz rječnika.
+
+Funkcijom `count()` najprije brojimo koliko se puta u tekstu pojavljuje svaka riječ iz rječnika. Argumentom `name` stupac s brojem pojavljivanja nazivamo `freq`. Zatim izdvajamo tokene kojih nema u rječniku i to samo one s barem četiri slova. Kraće tokene izostavljamo jer je od njih na udaljenosti 1 velik broj riječi, a često su i dijelovi riječi koje je OCR razlomio, poput *tal* i *ity* iz riječi *mortality* pa bi se ispravili u pogrešnu riječ.
+
+```{r}
+# Učestalost riječi iz rječnika u tekstu
+word_freq <- phr_tokens_clean |>
+  filter(word %in% english_words) |>
+  count(word, name = "freq")
+
+nrow(word_freq)
+
+# Tokeni s barem četiri slova kojih nema u rječniku
+odd_words <- phr_tokens_clean |>
+  filter(!word %in% english_words, str_length(word) >= 4) |>
+  distinct(word) |>
+  pull(word)
+
+length(odd_words)
+```
+
+Postupak za jedan token zapisujemo kao funkciju `closest_word()`. Funkcija `adist()` računa udaljenost tokena do svih riječi iz teksta, a funkcija `drop()` rezultat pretvara iz matrice s jednim retkom u običan vektor. Zatim izdvajamo retke podatkovnog okvira `word_freq` s riječima na udaljenosti 1. Ako takvih riječi nema, funkcija vraća `NA`, a token ostaje nepromijenjen. Ako ih ima, funkcija `which.max()` vraća položaj najveće vrijednosti u stupcu `freq` pa funkcija vraća riječ koja se u tekstu pojavljuje najčešće.
+
+```{r}
+# Najčešća riječ iz teksta na udaljenosti 1 od tokena
+closest_word <- function(token) {
+  distances <- drop(adist(token, word_freq$word))
+  candidates <- word_freq[distances == 1, ]
+  if (nrow(candidates) == 0) {
+    return(NA_character_)
+  }
+  candidates$word[which.max(candidates$freq)]
+}
+
+# Primjer
+closest_word("caises")
+```
+
+Funkciju zatim primjenjujemo na sve izdvojene tokene. Funkcija `map_chr()` poziva funkciju `closest_word()` za svaki token i rezultate vraća kao znakovni vektor, a funkcijom `filter()` zadržavamo samo tokene za koje je pronađen ispravak.
+
+```{r}
+# Ispravci pronađeni udaljenošću uređivanja
+edit_corrections <- tibble(word = odd_words) |>
+  mutate(candidate = map_chr(word, closest_word)) |>
+  filter(!is.na(candidate))
+
+edit_corrections |>
+  print(n = Inf)
+```
+
+Udaljenošću uređivanja pronađeno je mnogo više ispravaka nego pravilima, a većina ih je točna. Tako se *wvas* ispravlja u *was*, *statiitical* u *statistical*, *caises* i *cises* u *cases*, *infltuenza* u *influenza*, a *gaippe* u *grippe*. Ispravno se ispravlja i token *unifed* koji su pravila pretvorila u *unfed* jer riječi *unfed* u tekstu nema, a riječ *united* je česta.
+
+Pregled popisa ipak je i ovdje nužan jer postupak griješi na nekoliko načina. Neki su tokeni dijelovi riječi koje je OCR razlomio pa se *secon* i *lary* iz riječi *secondary* ispravljaju u *second* i *vary*, a *accor* iz riječi *according* u *accord*. Kod drugih je najčešća riječ na udaljenosti 1 pogrešan izbor. Token *nover* ispravlja se u *over*, a trebao bi u *never*, a *gorms* u *forms*, a trebao bi u *germs* kojih u tekstu nema. Naziv grada *Iola* u Kansasu ispravlja se u *iowa*, a *pneumonias* u *pneumonia* jer u rječniku nema množine te riječi. Takve ispravke uklanjamo s popisa, a ostale primjenjujemo na isti način kao ispravke dobivene pravilima.
+
+```{r}
+# Pogrešni ispravci
+wrong_corrections <- c(
+  "oyed", "latt", "lity", "gorms", "lary", "secon", "pneumonias",
+  "iola", "accor", "mals", "procee", "thon", "nover"
+)
+
+# Uklanjanje pogrešnih ispravaka
+edit_corrections <- edit_corrections |>
+  filter(!word %in% wrong_corrections)
+
+# Primjena ispravaka
+phr_tokens_clean <- phr_tokens_clean |>
+  left_join(edit_corrections, by = "word") |>
+  mutate(word = coalesce(candidate, word)) |>
+  select(-candidate)
+
+# Udio tokena koji se nalaze u rječniku nakon ispravaka
+mean(phr_tokens_clean$word %in% english_words)
+```
+
+Pravila i udaljenost uređivanja ne isključuju se, nego nadopunjuju. Pravila su predvidljiva i rijetko griješe jer ispravljaju samo pogreške koje smo uočili i provjerili, ali ne obuhvaćaju ništa izvan njih. Udaljenost uređivanja pronalazi mnogo više pogrešaka bez unaprijed zadanih pravila, ali češće griješi, osobito kod kratkih tokena, dijelova razlomljenih riječi i naziva mjesta. Kad OCR stalno ponavlja iste pogreške, kao u ovom biltenu, korisno je najprije primijeniti pravila, a udaljenost uređivanja koristiti za preostale pogreške. U oba je slučaja popis ispravaka potrebno pregledati prije nego što se primijeni.
+
+### Uredni i drugi formati
+
+Uredni format nije jedini način na koji se tokenizirani tekst može zapisati. Mnogi paketi za analizu teksta koriste druge formate. **Korpus** je objekt koji sadrži zbirku dokumenata zajedno s njihovim metapodacima, a koriste ga, primjerice, paketi `quanteda` i `tm`. **Matrica dokumenata i pojmova** (engl. *document-term matrix*) tablica je u kojoj je svaki redak jedan dokument, svaki stupac jedan pojam, a u ćelijama je broj pojavljivanja pojma u dokumentu. Takva se matrica koristi u mnogim statističkim postupcima, primjerice u tematskom modeliranju. Budući da se većina pojmova ne pojavljuje u većini dokumenata, gotovo su sve ćelije matrice nule. Zato se matrica obično zapisuje kao rijetka matrica (engl. *sparse matrix*) u kojoj se spremaju samo vrijednosti različite od nule.
+
+Paket `tidytext` sadrži funkcije za pretvaranje između urednog formata i tih formata. Funkcija `cast_sparse()` od urednog formata stvara rijetku matricu. Prije toga funkcijom `count()` brojimo koliko se puta svaka riječ pojavljuje na svakoj stranici. Prvi argument funkcije `cast_sparse()` stupac je s dokumentima, drugi stupac s pojmovima, a treći stupac s vrijednostima. Funkcija `dim()` vraća broj redaka i stupaca matrice, odnosno broj stranica i broj različitih riječi.
+
+```{r}
+# Rijetka matrica dokumenata i pojmova
+phr_matrix <- phr_tokens_clean |>
+  count(page, word) |>
+  cast_sparse(page, word, n)
+
+# Broj dokumenata i broj pojmova
+dim(phr_matrix)
+```
+
+Slične funkcije postoje i za druge formate. Funkcija `cast_dtm()` stvara matricu dokumenata i pojmova za paket `tm`, a funkcija `cast_dfm()` za paket `quanteda`. Funkcija `tidy()` radi obrnuto i takve objekte vraća u uredni format. Tako se u istoj analizi mogu kombinirati alati iz različitih paketa.
+
+## Uklanjanje zaustavnih riječi
+
+Tekst u obliku jednog tokena po retku može se lako obrađivati i vizualizirati. Ipak, u analizi je često poželjno ukloniti riječi koje su iznimno česte, a malo govore o sadržaju teksta, poput *the*, *of* ili *to*. Takve riječi nazivaju se **zaustavne riječi** (engl. *stop words*). To su uglavnom veznici, prijedlozi, članovi, zamjenice i pomoćni glagoli koji povezuju dijelove rečenice, ali ne nose specifično značenje. Uklanjaju se kako bi se analiza usmjerila na riječi koje više govore o sadržaju.
+
+Paket `tidytext` sadrži skup podataka `stop_words` s popisom engleskih zaustavnih riječi iz tri rječnika (`onix`, `SMART` i `snowball`). Rječnici su različitih veličina, što se vidi kad funkcijom `count()` prebrojimo riječi u svakome od njih.
+
+```{r}
+# Broj zaustavnih riječi u svakom rječniku
+stop_words |>
+  count(lexicon)
+```
+
+Zaustavne riječi iz tokeniziranog teksta uklanjamo funkcijom `anti_join()` iz paketa `dplyr`. Ona zadržava samo one retke prvog podatkovnog okvira koji nemaju odgovarajući redak u drugom, odnosno samo one riječi koje se ne nalaze na popisu zaustavnih riječi. Argumentom `by = "word"` navodimo da se podatkovni okviri uspoređuju prema stupcu `word`. Ispravci iz prethodnog koraka ovdje dolaze do izražaja. Da nismo ispravili *tlhe*, *anid* i *tho*, te bi pogrešno prepoznate zaustavne riječi ostale u tekstu.
+
+```{r}
+# Uklanjanje zaustavnih riječi
+phr_tokens_stop <- phr_tokens_clean |>
+  anti_join(stop_words, by = "word")
+
+# Broj tokena prije i nakon uklanjanja
+nrow(phr_tokens_clean)
+nrow(phr_tokens_stop)
+
+# Najčešće riječi nakon uklanjanja zaustavnih riječi
+phr_tokens_stop |>
+  count(word, sort = TRUE)
+```
+
+Uklanjanjem zaustavnih riječi broj tokena smanjio se više nego dvostruko. Na vrhu popisa sada su riječi koje govore o sadržaju biltena, poput *epidemic*, *influenza*, *disease*, *reported* i *grippe*, kako se gripa nazivala u izvještajima iz europskih zemalja.
+
+Popis zaustavnih riječi treba prilagoditi tekstu i pitanju koje istražujemo. Ako želimo koristiti samo jedan od rječnika, primjerice manji rječnik `snowball`, skup `stop_words` najprije filtriramo prema stupcu `lexicon`. Ako se na vrhu popisa najčešćih riječi nalaze riječi koje su česte u svim dokumentima, a za naše pitanje nisu važne, možemo ih dodati vlastitom popisu zaustavnih riječi. Takav popis zapisujemo kao podatkovni okvir sa stupcem `word` i funkcijom `bind_rows()` dodajemo ga skupu `stop_words`. Koje riječi dodati, odlučuje se tek nakon pregleda najčešćih riječi, a odluku je dobro obrazložiti.
+
+## Lematizacija
+
+Posljednji je korak pripreme za analizu teksta lematizacija. **Lematizacija** je postupak svođenja riječi na njihov rječnički oblik (lemu), primjerice *walking*, *walks* i *walked* na *walk*, *stories* na *story*, *children* na *child*, a *better* na *good*.
+
+Lematizacijom se različiti oblici iste riječi broje kao jedna riječ. To je korisno u analizama koje se temelje na učestalosti riječi, poput analize frekvencija, TF-IDF-a ili tematskog modeliranja, jer se inače, primjerice, *death* i *deaths* broje kao dvije različite riječi. Sličan je postupak korjenovanje (engl. *stemming*) kojim se riječima jednostavnim pravilima odsijecaju završeci. Korjenovanje je brže, ali često daje oblike koji nisu stvarne riječi, dok lematizacija vraća rječnički oblik.
+
+Najjednostavnije se lematizacija u R-u provodi funkcijom `lemmatize_words()` iz paketa `textstem`. Ona za svaku riječ u rječniku traži njezin osnovni oblik pa se primjenjuje na tekst tokeniziran na riječi. Riječi kojih nema u rječniku, a takve su i pogrešno prepoznate riječi, ostaju nepromijenjene.
+
+```{r}
+# Lematizacija tokena
+phr_tokens_lemma <- phr_tokens_stop |>
+  mutate(lemma = lemmatize_words(word))
+
+# Pregled lematiziranih riječi
+phr_tokens_lemma
+```
+
+Učinak lematizacije vidi se kad usporedimo broj različitih riječi prije i nakon nje. Funkcija `n_distinct()` broji koliko je različitih vrijednosti u stupcu. Funkcijom `filter()` zatim zadržavamo samo tokene kojima se lematizacijom promijenio oblik i brojimo koji su parovi riječi i leme najčešći.
+
+```{r}
+# Broj različitih riječi i lema
+n_distinct(phr_tokens_lemma$word)
+n_distinct(phr_tokens_lemma$lemma)
+
+# Najčešće riječi kojima se lematizacijom promijenio oblik
+phr_tokens_lemma |>
+  filter(word != lemma) |>
+  count(word, lemma, sort = TRUE)
+```
+
+Pregled takvog popisa važan je jer lematizacija nije uvijek točna. Rječnik ne zna u kojem je značenju riječ upotrijebljena pa riječ koja može imati više značenja uvijek svodi na isti oblik. U ovom tekstu riječ *born* svodi se na glagol *bear*, iako se u biltenu odnosi na rođenje djece, a riječ *united* iz naziva *United States* na glagol *unite*. Ako lema za naše pitanje mijenja značenje riječi, bolje je tu riječ ostaviti u izvornom obliku.
+
+## Literatura {.unnumbered}
+
+Silge, J. i Robinson, D. (2017). *Text mining with R: A tidy approach*. O'Reilly.
+
+Welbers, K., Van Atteveldt, W. i Benoit, K. (2017). Text analysis in R. *Communication Methods and Measures*, *11*(4), 245–265.
+
+Wickham, H., Çetinkaya-Rundel, M. i Grolemund, G. (2023). *R for data science: Import, tidy, transform, visualize, and model data* (2. izd.). O'Reilly.

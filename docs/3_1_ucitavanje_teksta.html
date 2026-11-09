@@ -8,7 +8,7 @@
 
 <meta name="description" content="Svaka analiza teksta počinje dovođenjem teksta u R, a taj se korak lako podcijeni. Tekstovi dolaze iz različitih izvora i u različitim oblicima pa se jedni nalaze u datotekama na našem računalu, drugi na internetskim stranicama, a treći u bazama podataka koje svoj sadržaj nude preko programskih sučelja. Za svaki od tih izvora postoje drugačiji alati, ali i drugačija pravila o tome što smijemo preuzeti i kako to učiniti a da ne opteretimo tuđe poslužitelje i ne povrijedimo tuđa prava.">
 
-<title>6&nbsp; Učitavanje tekstualnih podataka – Analiza teksta u R-u</title>
+<title>6&nbsp; Učitavanje teksta – Analiza teksta u R-u</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -69,7 +69,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./3_2_pretpostavke_za_analizu_teksta.html" rel="next">
+<link href="./3_2_pretpostavke_za_analizu_tekstualnih_podataka.html" rel="next">
 <link href="./2_2_regularni_izrazi.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -140,7 +140,7 @@ background: #8B475D;
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_teksta.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_1_ucitavanje_teksta.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje teksta</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -152,8 +152,8 @@ background: #8B475D;
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_1_ucitavanje_tekstualnih_podataka.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></a></li></ol></nav>
-      <h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></h1>
+    <div class="quarto-title column-body"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./3_1_ucitavanje_teksta.html">OD IZVORA DO PODATAKA</a></li><li class="breadcrumb-item"><a href="./3_1_ucitavanje_teksta.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje teksta</span></a></li></ol></nav>
+      <h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje teksta</span></h1>
                   <div>
         <div class="description">
           Svaka analiza teksta počinje dovođenjem teksta u R, a taj se korak lako podcijeni. Tekstovi dolaze iz različitih izvora i u različitim oblicima pa se jedni nalaze u datotekama na našem računalu, drugi na internetskim stranicama, a treći u bazama podataka koje svoj sadržaj nude preko programskih sučelja. Za svaki od tih izvora postoje drugačiji alati, ali i drugačija pravila o tome što smijemo preuzeti i kako to učiniti a da ne opteretimo tuđe poslužitelje i ne povrijedimo tuđa prava.
@@ -252,14 +252,14 @@ background: #8B475D;
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_1_ucitavanje_tekstualnih_podataka.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje tekstualnih podataka</span></span></a>
+  <a href="./3_1_ucitavanje_teksta.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Učitavanje teksta</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./3_2_pretpostavke_za_analizu_teksta.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span></a>
+  <a href="./3_2_pretpostavke_za_analizu_tekstualnih_podataka.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu tekstualnih podataka</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -1880,8 +1880,8 @@ Baker (Jamie Parker) and his wife (Katie Brayben) for</code></pre>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./3_2_pretpostavke_za_analizu_teksta.html" class="pagination-link" aria-label="Pretpostavke za analizu teksta">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu teksta</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./3_2_pretpostavke_za_analizu_tekstualnih_podataka.html" class="pagination-link" aria-label="Pretpostavke za analizu tekstualnih podataka">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Pretpostavke za analizu tekstualnih podataka</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
