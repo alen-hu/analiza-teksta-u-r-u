@@ -1,9 +1,377 @@
 ---
 title: "Lingvistička obrada teksta"
-description: "..."
+description: "U dosadašnjim poglavljima tekst smo obrađivali kao niz riječi bez znanja o tome kakvu ulogu svaka riječ ima u rečenici. Lingvistička obrada tekstu dodaje upravo takve podatke. Za svaku riječ određuje vrstu riječi i rječnički oblik, a za rečenicu odnose među riječima. U ovom kratkom poglavlju upoznajemo osnove takve obrade na jednom od klasičnih socioloških tekstova."
 number-sections: true
 title-block-banner: "#8B475D"
 title-block-banner-color: "white"
 ---
 
-...
+```{r}
+#| include: false
+library(tidyverse)
+library(udpipe)
+library(textstem)
+```
+
+U prethodnom poglavlju tekst smo podijelili na riječi, uklonili zaustavne riječi i riječi sveli na rječnički oblik. Pritom nismo znali ništa o tome kakvu ulogu pojedina riječ ima u rečenici. Lematizacija rječnikom je zato riječ *born* svela na glagol *bear*, a riječ *united* iz naziva *United States* na glagol *unite*. **Lingvistička obrada teksta** tekstu dodaje jezične podatke. Za svaku riječ određuje kojoj vrsti riječi pripada, koji je njezin rječnički oblik u danom kontekstu i koja su njezina morfološka obilježja, poput broja ili vremena. Za svaku rečenicu određuje i kako su riječi u njoj međusobno povezane, primjerice koja je riječ subjekt, a koja predikat.
+
+Za sociološku analizu teksta lingvistička obrada najčešće je pomoćni korak. Njome se tekst može suziti na imenice i pridjeve koji najviše govore o sadržaju ili se iz njega mogu izdvojiti akteri i radnje koje im se pripisuju. U ovom poglavlju zato obrađujemo samo osnove. Pokazat ćemo kako se tekst označava, kako se razlikuju lematizacija rječnikom i lematizacija u kontekstu te kako se koriste vrste riječi i odnosi među riječima.
+
+::: {.callout-tip title="Preuzimanje teksta i jezičnog modela"}
+Kao primjer koristimo prvo poglavlje knjige *The Souls of Black Folk* W. E. B. Du Boisa iz 1903. godine naslovljeno *Of Our Spiritual Strivings*. U tom poglavlju Du Bois opisuje iskustvo osoba crne rase u SAmD-u i uvodi pojam dvostruke svijesti, odnosno osjećaj da osoba sebe uvijek gleda i očima drugih.
+
+Knjiga *The Souls of Black Folk* nalazi se u javnom vlasništvu i dostupna je na Projektu Gutenberg pod brojem 408. Ovdje je preuzimamo s GitHuba, iz projekta GITenberg koji čuva preslike knjiga s Projekta Gutenberg kako bi tekst uvijek bio jednak onome na kojem je napisano ovo poglavlje.
+
+```{r}
+#| eval: false
+# Preuzimanje knjige
+download.file(
+  "https://raw.githubusercontent.com/GITenberg/The-Souls-of-Black-Folk_408/master/408.txt",
+  destfile = "data/souls_of_black_folk.txt"
+)
+```
+
+```{r}
+# Učitavanje knjige
+dubois_lines <- read_lines("data/souls_of_black_folk.txt")
+```
+
+Kod je pokrenut samo jednom, a u nastavku poglavlja radimo sa spremljenim datotekama.
+:::
+
+Za lingvističku obradu potreban je i **jezični model**, odnosno datoteka u kojoj je zapisano ono što je program naučio iz ručno označenih tekstova na nekom jeziku. Funkcija `udpipe_download_model()` iz paketa `udpipe` preuzima model za jezik zadan argumentom `language` i sprema ga u mapu zadanu argumentom `model_dir`. Model `english-ewt` naučen je na korpusu *English Web Treebank* koji sadrži tekstove s interneta, poput blogova, recenzija i elektroničke pošte. Modeli su dostupni pod licencom CC BY-NC-SA 4.0 koja dopušta nekomercijalnu upotrebu.
+
+```{r}
+#| eval: false
+# Preuzimanje engleskog jezičnog modela
+udpipe_download_model(language = "english-ewt", model_dir = "data")
+```
+
+Da bi se tekstovi na različitim jezicima mogli označavati na isti način, potreban je zajednički sustav oznaka. Danas je najrašireniji sustav **Universal Dependencies** (UD). To je istodobno teorijski okvir za morfosintaktičko označavanje, otvoreni projekt u kojem sudjeluju stotine istraživača i zbirka ručno označenih korpusa, takozvanih banaka stabala (engl. *treebanks*) za više od stotinu jezika. Na tim se korpusima uče jezični modeli kakav ćemo koristiti u ovom poglavlju.
+
+Osnovna jedinica u sustavu UD je riječ. Svaka riječ ima rječnički oblik, odnosno **lemu** i pripada jednoj od 17 vrsta riječi (engl. *universal part-of-speech tags*, UPOS). Te su vrste bliske tradicionalnoj gramatici, poput imenica (`NOUN`), vlastitih imenica (`PROPN`), glagola (`VERB`), pomoćnih glagola (`AUX`), pridjeva (`ADJ`) i priloga (`ADV`), a dodane su i oznake za interpunkciju (`PUNCT`) i simbole. Riječima se pripisuju i **morfološka obilježja** zapisana kao parovi naziva i vrijednosti, primjerice `Number=Sing` za jedninu ili `Tense=Past` za prošlo vrijeme.
+
+Riječi u rečenici povezane su **ovisnosnim odnosima** (engl. *dependency relations*). Svaka riječ ovisi o točno jednoj drugoj riječi koja je njezina **glava** (engl. *head*), osim glavne riječi rečenice koja se naziva korijen (`root`). Tako sve riječi rečenice tvore stablo. Glava rečenice obično je glagol koji izražava radnju ili stanje, a glava imenske skupine imenica. Svaki ovisnosni odnos ima oznaku vrste odnosa, a sustav UD ima 37 takvih oznaka, primjerice `nsubj` za subjekt, `obj` za objekt i `amod` za pridjev koji opisuje imenicu. Kao glave sustav UD bira riječi koje nose sadržaj, a funkcijske riječi, poput članova, prijedloga i pomoćnih glagola, ovise o njima. Zato su odnosi u stablu bliski pitanju tko što radi i čemu što ih čini zanimljivima i za društvene znanosti.
+
+Među riječima koje ovise o predikatu sustav UD razlikuje **temeljne argumente** (engl. *core arguments*) i **priložne dopune** (engl. *oblique modifiers*). Temeljni argumenti su subjekt i objekt. U mnogim jezicima glagol se slaže samo s njima, a pojavljuju se bez prijedloga i obično blizu glagola. Sve ostale riječi i skupine koje ovise o predikatu, primjerice one s prijedlogom koje izražavaju mjesto, vrijeme ili način, priložne su dopune i označavaju se oznakom `obl`. Ta razlika ne ovisi o značenju, nego o tome kako je dopuna gramatički izražena.
+
+## Označavanje teksta
+
+Tekst knjige učitavamo funkcijom `read_lines()`. Poglavlje započinje rečenicom *Between me and the other world…*, a završava riječima *…the striving in the souls of black folk.* Funkcija `str_which()` vraća redni broj elementa vektora u kojem je pronađen uzorak, pa njome pronalazimo prvi i posljednji redak poglavlja. Pjesmu na početku poglavlja i sve ostale dijelove knjige time izostavljamo.
+
+```{r}
+# Prvi i posljednji redak prvog poglavlja
+chapter_start <- str_which(dubois_lines, "^Between me and the other world")
+chapter_end <- str_which(dubois_lines, "striving in the souls of black folk\\.")
+
+# Retci prvog poglavlja
+chapter_lines <- dubois_lines[chapter_start:chapter_end]
+```
+
+Kao i u prethodnom poglavlju, retke spajamo u jedan niz i zatim ga dijelimo na odlomke na mjestima na kojima se nalazi prazan redak. Prijelome redaka unutar odlomka zamjenjujemo razmakom, a suvišne razmake uklanjamo. Odlomke zatim spremamo u podatkovni okvir sa stupcima `paragraph` i `text`.
+
+```{r}
+# Podjela poglavlja na odlomke
+paragraphs <- str_c(chapter_lines, collapse = "\n") |>
+  str_split("\n\\s*\n") |>
+  pluck(1) |>
+  str_replace_all("\n", " ") |>
+  str_squish()
+
+# Podatkovni okvir s odlomcima
+dubois_df <- tibble(
+  paragraph = seq_along(paragraphs),
+  text = paragraphs
+)
+
+dubois_df
+```
+
+Poglavlje ima 17 odlomaka. Dva od njih, sedmi i deveti, kratki su citati koje Du Bois navodi u tekstu.
+
+Model učitavamo funkcijom `udpipe_load_model()`, kojoj kao argument zadajemo putanju do preuzete datoteke. Tekst zatim označavamo funkcijom `udpipe_annotate()`. Argumentom `object` zadajemo model, argumentom `x` znakovni vektor s tekstovima, a argumentom `doc_id` oznake dokumenata, ovdje redne brojeve odlomaka. Funkcija u jednom koraku dijeli tekst na rečenice i riječi, određuje leme, vrste riječi i morfološka obilježja te provodi ovisnosnu analizu. Rezultat je poseban objekt koji funkcijom `as_tibble()` pretvaramo u podatkovni okvir.
+
+```{r}
+# Učitavanje jezičnog modela
+ud_model <- udpipe_load_model("data/english-ewt-ud-2.5-191206.udpipe")
+
+# Označavanje teksta
+dubois_anno <- udpipe_annotate(
+  object = ud_model,
+  x = dubois_df$text,
+  doc_id = dubois_df$paragraph
+) |>
+  as_tibble()
+
+# Pregled označenog teksta
+dubois_anno |>
+  select(doc_id, sentence_id, token_id, token, lemma, upos, feats, head_token_id, dep_rel)
+```
+
+Rezultat je podatkovni okvir s jednim tokenom po retku, odnosno u urednom formatu koji smo upoznali u prethodnom poglavlju. Zato se s njim radi istim funkcijama paketa `dplyr`. Za razliku od funkcije `unnest_tokens()`, interpunkcija ostaje u tekstu kao zaseban token, a velika slova se zadržavaju. Najvažniji su stupci sljedeći:
+
+- `doc_id` - oznaka dokumenta (ovdje redni broj odlomka),
+
+- `sentence_id` - redni broj rečenice u dokumentu,
+
+- `token_id` - redni broj tokena u rečenici,
+
+- `token` - riječ ili interpunkcijski znak onako kako se pojavljuje u tekstu,
+
+- `lemma` - rječnički oblik riječi,
+
+- `upos` - vrsta riječi prema sustavu UD,
+
+- `feats` - morfološka obilježja,
+
+- `head_token_id` - redni broj tokena koji je glava ovog tokena (0 za korijen rečenice) i
+
+- `dep_rel` - vrsta ovisnosnog odnosa prema glavi.
+
+Već prvi retci pokazuju kakve podatke model dodaje. Riječ *is* ima lemu *be*, označena je kao glagol (`VERB`) i ima obilježja trećeg lica jednine sadašnjeg vremena. Budući da je glava rečenice, njezina je vrijednost u stupcu `head_token_id` 0, a u stupcu `dep_rel` `root`.
+
+Model je tekst podijelio i na rečenice. Funkcijom `distinct()` zadržavamo po jedan redak za svaku kombinaciju dokumenta i rečenice pa dobivamo broj rečenica. Duljinu rečenica dobivamo tako da funkcijom `count()` prebrojimo tokene u svakoj rečenici, bez interpunkcije, a funkcija `summary()` zatim sažima te duljine.
+
+```{r}
+# Broj rečenica
+dubois_anno |>
+  distinct(doc_id, sentence_id) |>
+  nrow()
+
+# Duljina rečenica u riječima
+sentence_length <- dubois_anno |>
+  filter(upos != "PUNCT") |>
+  count(doc_id, sentence_id)
+
+summary(sentence_length$n)
+```
+
+Poglavlje ima 109 rečenica. Polovina rečenica ima 26 riječi ili više, a najdulja ima više od stotinu riječi. Takve duge rečenice, povezane zarezima, točkama sa zarezom i crtama, obilježje su Du Boisova stila. Za model su teže od kratkih rečenica s interneta na kojima je naučen, pa je u njima i više pogrešaka.
+
+## Lematizacija i vrste riječi
+
+Funkcija `lemmatize_words()` iz paketa `textstem`, a koju smo koristili u prethodnom poglavlju, svaku riječ traži u rječniku i uvijek joj pripisuje istu lemu. Jezični model lemu određuje u kontekstu rečenice, zajedno s vrstom riječi. Razliku vidimo kad iste riječi lematiziramo na oba načina. Funkcijom `filter()` najprije uklanjamo interpunkciju, a zatim stvaramo stupac s riječju zapisanom malim slovima, stupac s lemom iz rječnika i stupac s lemom iz modela. Na kraju zadržavamo samo riječi kojima su dva postupka dala različite leme.
+
+```{r}
+# Usporedba leme iz rječnika i leme iz jezičnog modela
+lemma_comparison <- dubois_anno |>
+  filter(upos != "PUNCT") |>
+  mutate(
+    word = str_to_lower(token),
+    dictionary_lemma = lemmatize_words(word),
+    model_lemma = str_to_lower(lemma)
+  ) |>
+  filter(dictionary_lemma != model_lemma)
+
+# Broj riječi s različitim lemama
+nrow(lemma_comparison)
+
+# Najčešće razlike
+lemma_comparison |>
+  count(word, upos, model_lemma, dictionary_lemma, sort = TRUE) |>
+  print(n = 40)
+```
+
+Dva postupka daju različite leme za 229 od nešto više od 3.000 riječi. Najčešća je razlika kod zamjenica. U sustavu UD lema zamjenica *his* i *him* je *he*, a lema zamjenica *their* i *them* je *they*, dok ih rječnik ostavlja nepromijenjenima. Važnija je razlika kod riječi koje mogu biti različite vrste riječi. Riječ *striving*, koja se pojavljuje u naslovu poglavlja, rječnik uvijek svodi na glagol *strive*. Model je u većini slučajeva prepoznaje kao imenicu (`NOUN`) pa joj ostavlja oblik *striving*. Isto vrijedi za riječi *training* i *means*. Kad zadržimo samo retke s nekoliko takvih riječi vidi se da ista riječ u različitim rečenicama dobiva različitu vrstu riječi.
+
+```{r}
+# Riječi koje u tekstu pripadaju različitim vrstama riječi
+dubois_anno |>
+  filter(str_to_lower(token) %in% c("striving", "strivings", "burden", "cry")) |>
+  select(doc_id, sentence_id, token, lemma, upos)
+```
+
+Riječ *burden* u šesnaestom odlomku je imenica (*whose burden is almost beyond the measure of their strength*), a u dvanaestom je u jednoj rečenici imenica, a u drugoj glagol. Ni model nije savršen. U petnaestom odlomku riječ *striving* označio je kao imenicu, a lemu joj je ipak sveo na glagol *strive*. U usporedbi s rječnikom vide se i drugi propusti modela. Riječi *races* i *eyes* nisu svedene na jedninu, *centuries* je postala *centurie*, a *ashamed* je postala *asham*. Model je naučen na suvremenim tekstovima s interneta pa ga starinski i književni stil Du Boisova teksta ponekad zbuni. Zato je i ovdje rezultate dobro provjeriti prije analize.
+
+Vrste riječi najčešće se koriste za sužavanje teksta. Zaustavne riječi uglavnom su funkcijske riječi, poput članova, prijedloga, veznika i zamjenica pa se umjesto popisa zaustavnih riječi mogu zadržati samo riječi određenih vrsta. Funkcijom `count()` najprije provjeravamo koliko je u tekstu riječi svake vrste.
+
+```{r}
+# Broj tokena po vrstama riječi
+dubois_anno |>
+  count(upos, sort = TRUE)
+```
+
+Imenice su najčešća vrsta riječi u tekstu. Funkcijom `filter()` zadržavamo samo imenice, odnosno samo pridjeve, i brojimo njihove leme.
+
+```{r}
+# Najčešće imenice
+dubois_anno |>
+  filter(upos == "NOUN") |>
+  count(lemma, sort = TRUE)
+
+# Najčešći pridjevi
+dubois_anno |>
+  filter(upos == "ADJ") |>
+  count(lemma, sort = TRUE)
+```
+
+Popisi dobro sažimaju sadržaj poglavlja. Među imenicama su *world*, *ideal*, *self*, *man*, *soul*, *freedom* i *power*, a među pridjevima *black*, *american*, *white*, *dark* i *double*. Na takvim popisima nema zaustavnih riječi iako ih nismo uklanjali popisom jer funkcijske riječi pripadaju drugim vrstama riječi.
+
+## Morfološka obilježja
+
+Morfološka obilježja zapisana su u stupcu `feats` kao jedan znakovni niz u kojem su parovi naziva i vrijednosti odvojeni okomitom crtom (`|`), a naziv i vrijednost znakom jednakosti (`=`). Takav zapis nije pogodan za analizu pa ga pretvaramo u uredni format, u kojem je jedno obilježje jedan redak. Funkcijom `filter()` najprije uklanjamo tokene bez obilježja, a funkcija `separate_longer_delim()` niz zatim dijeli na mjestima na kojima je okomita crta i svaki par stavlja u zaseban redak. Funkcija `separate_wider_delim()` svaki par dijeli na mjestu znaka jednakosti u dva stupca čija imena zadajemo argumentom `names`.
+
+```{r}
+# Morfološka obilježja u urednom formatu
+dubois_feats <- dubois_anno |>
+  filter(!is.na(feats)) |>
+  select(doc_id, sentence_id, token_id, token, lemma, upos, feats) |>
+  separate_longer_delim(feats, delim = "|") |>
+  separate_wider_delim(feats, delim = "=", names = c("feature", "value"))
+
+# Učestalost obilježja
+dubois_feats |>
+  count(feature, sort = TRUE)
+```
+
+Najčešće je obilježje broj (`Number`) koje imaju imenice, zamjenice i glagoli, a zatim vrsta zamjenice (`PronType`), oblik glagola (`VerbForm`) i određenost (`Definite`) koju u engleskom jeziku nose članovi. Obilježja ovise o jeziku. U engleskom jeziku pridjevi nemaju broj, a padež (`Case`) imaju samo neke zamjenice, dok je u češkom ili hrvatskom padež obilježje imenica, pridjeva, zamjenica i brojeva.
+
+Obilježja se mogu koristiti i za analizu sadržaja. Glagolsko vrijeme (`Tense`), primjerice, pokazuje govori li tekst o prošlosti ili o sadašnjosti. Zadržavamo samo glagole i pomoćne glagole s obilježjem vremena i za svaki odlomak brojimo oblike prošlog (`Past`) i sadašnjeg (`Pres`) vremena. Funkcija `pivot_wider()` vrijednosti iz stupca `value` pretvara u zasebne stupce, a argument `values_fill = 0` upisuje nulu kad u odlomku nema oblika nekog vremena. Na kraju računamo udio prošlog vremena. Budući da je `doc_id` znakovni stupac, pretvaramo ga u broj kako bi se odlomci složili pravim redoslijedom.
+
+```{r}
+# Prošlo i sadašnje vrijeme po odlomcima
+dubois_feats |>
+  filter(upos %in% c("VERB", "AUX"), feature == "Tense") |>
+  count(doc_id, value) |>
+  pivot_wider(names_from = value, values_from = n, values_fill = 0) |>
+  mutate(
+    doc_id = as.integer(doc_id),
+    past_share = Past / (Past + Pres)
+  ) |>
+  arrange(doc_id)
+```
+
+Raspodjela vremena prati strukturu poglavlja. Prvi odlomak, u kojem Du Bois postavlja pitanje kako je to biti problem, uglavnom je u sadašnjem vremenu. U drugom odlomku prevladava prošlo vrijeme jer opisuje sjećanje iz djetinjstva. U šestom, jedanaestom i dvanaestom odlomku gotovo su svi glagoli u prošlom vremenu jer pripovijedaju povijest crnaca od ropstva do kraja 19. stoljeća, a u većini posljednjih odlomaka ponovno prevladava sadašnje vrijeme jer Du Bois iz te povijesti izvodi zaključke o sadašnjosti. Deveti odlomak nema glagola s obilježjem vremena jer je kratak citat u zapovjednom načinu.
+
+## Ovisnosna analiza
+
+Ovisnosni odnosi najlakše se razumiju na jednoj rečenici. Funkcijom `filter()` zadržavamo rečenicu *I remember well when the shadow swept across me.* iz drugog odlomka.
+
+```{r}
+# Ovisnosni odnosi u jednoj rečenici
+dubois_anno |>
+  filter(doc_id == "2", sentence_id == 3) |>
+  select(token_id, token, lemma, upos, head_token_id, dep_rel)
+```
+
+Korijen rečenice je glagol *remember* (u stupcu `head_token_id` ima vrijednost 0). O njemu ovisi zamjenica *I* kao subjekt (`nsubj`), prilog *well* kao priložna oznaka (`advmod`) i glagol *swept* koji je glava zavisne rečenice (`advcl`). Zavisna rečenica ima vlastiti subjekt, imenicu *shadow*, a zamjenica *me* ovisi o glagolu *swept* kao priložna oznaka s prijedlogom (`obl`). Prijedlog *across* pritom ovisi o zamjenici *me* (`case`), a ne obrnuto jer sustav UD kao glavu bira riječ koja nosi sadržaj.
+
+Koliko se koji odnos pojavljuje u cijelom poglavlju vidi se kad prebrojimo vrijednosti u stupcu `dep_rel`.
+
+```{r}
+# Učestalost ovisnosnih odnosa
+dubois_anno |>
+  count(dep_rel, sort = TRUE) |>
+  print(n = 15)
+```
+
+Najčešći su odnosi interpunkcije (`punct`), prijedloga (`case`) i članova (`det`), odnosno funkcijskih riječi. Česti su i pridjevi uz imenice (`amod`) te sastavni odnosi (`conj`) kojima su povezani nizovi istovrsnih riječi i skupina karakteristični za Du Boisov stil. Subjekata (`nsubj`) ima 186, a objekata (`obj`) 143.
+
+Iz takvih se odnosa mogu izdvojiti parovi riječi. Svaki redak s oznakom `amod`, primjerice, sadrži pridjev, a stupac `head_token_id` kaže uz koju imenicu stoji. Da bismo uz pridjev dobili i tu imenicu, podatkovni okvir spajamo sa samim sobom. Funkcija `left_join()` uz svaki pridjev dodaje token iz istog dokumenta i iste rečenice čiji je redni broj (`token_id`) jednak vrijednosti u stupcu `head_token_id`. Takvo spajanje zadajemo argumentom `by` u kojem izraz `"head_token_id" = "token_id"` znači da se vrijednosti iz stupca `head_token_id` prvog podatkovnog okvira uspoređuju s vrijednostima iz stupca `token_id` drugog.
+
+```{r}
+# Parovi pridjeva i imenica
+adjective_noun <- dubois_anno |>
+  filter(dep_rel == "amod") |>
+  select(doc_id, sentence_id, head_token_id, adjective = lemma) |>
+  left_join(
+    dubois_anno |>
+      select(doc_id, sentence_id, token_id, noun = lemma),
+    by = c("doc_id", "sentence_id", "head_token_id" = "token_id")
+  )
+
+# Najčešći parovi
+adjective_noun |>
+  count(adjective, noun, sort = TRUE)
+
+# Imenice uz pridjev double
+adjective_noun |>
+  filter(adjective == "double")
+```
+
+Najčešći je par *black man*, a zatim *other world* iz uvodne rečenice poglavlja. Pridjev *double* stoji uz imenice *consciousness*, *self* i *aim* (jednom u obliku *aims*), odnosno upravo uz pojmove kojima Du Bois opisuje dvostruku svijest.
+
+Na isti se način mogu izdvojiti subjekti i glagoli uz koje stoje. Takvi parovi pokazuju tko u tekstu djeluje i što mu se pripisuje. Zadržavamo retke s oznakom `nsubj` i uz svaki subjekt dodajemo lemu njegove glave.
+
+```{r}
+# Parovi subjekata i glava
+subject_verb <- dubois_anno |>
+  filter(dep_rel == "nsubj") |>
+  select(doc_id, sentence_id, head_token_id, subject = lemma) |>
+  left_join(
+    dubois_anno |>
+      select(doc_id, sentence_id, token_id, verb = lemma, verb_upos = upos),
+    by = c("doc_id", "sentence_id", "head_token_id" = "token_id")
+  )
+
+# Najčešći subjekti
+subject_verb |>
+  count(subject, sort = TRUE)
+
+# Glagoli kojima je subjekt zamjenica he
+subject_verb |>
+  filter(subject == "he") |>
+  count(verb, verb_upos, sort = TRUE) |>
+  print(n = 25)
+```
+
+Najčešći subjekt je zamjenica *he* kojom Du Bois u većem dijelu poglavlja govori o crncu u Americi, a zatim *I*, kojom opisuje vlastito iskustvo. Glagoli uz *he* pokazuju što mu tekst pripisuje. On počinje, osjeća, vidi i želi (*begin*, *feel*, *see*, *wish*), a u poznatom odlomku o dvostrukoj svijesti ne bi htio afrikanizirati Ameriku (*Africanize*) ni izbijeliti svoju dušu (*bleach*). Glava subjekta nije uvijek glagol. U rečenicama s glagolom *to be* glava je imenica ili pridjev uz njega pa smo u ispis dodali i vrstu riječi glave. U ispisu se vide i pogreške modela. Lema *implor* trebala bi biti *implore*, prilog *humbly* označen je kao glagol, a zamjenica *himself* pogrešno je postala glava subjekta.
+
+Na isti način možemo izdvojiti i glagole s njihovim objektima, odnosno ono na što je radnja usmjerena.
+
+```{r}
+# Parovi glagola i objekata
+verb_object <- dubois_anno |>
+  filter(dep_rel == "obj") |>
+  select(doc_id, sentence_id, head_token_id, object = lemma) |>
+  left_join(
+    dubois_anno |>
+      select(doc_id, sentence_id, token_id, verb = lemma),
+    by = c("doc_id", "sentence_id", "head_token_id" = "token_id")
+  )
+
+# Najčešći parovi
+verb_object |>
+  count(verb, object, sort = TRUE)
+```
+
+U kratkom tekstu većina se parova pojavljuje samo jednom. Ipak se i tu vide parovi koji sažimaju dijelove poglavlja, poput *know power* i *teach world*, a u odlomku o dvostrukoj svijesti *Africanize America*. Na većem broju tekstova takvi parovi postaju korisni za usporedbu, primjerice kad nas zanima koje se radnje u novinama pripisuju različitim društvenim skupinama.
+
+## Imenske skupine i imenovani entiteti
+
+Mnogi pojmovi sastoje se od više riječi, poput *double consciousness* ili *black man*. Kad tekst tokeniziramo na riječi, takvi se pojmovi raspadaju, a n-grami iz prethodnog poglavlja obuhvaćaju sve nizove riječi pa i one koji nisu smislene cjeline. Vrste riječi omogućuju da izdvojimo samo nizove određenog oblika, primjerice imenske skupine koje se sastoje od pridjeva i imenica.
+
+Za to paket `udpipe` ima dvije funkcije. Funkcija `as_phrasemachine()` vrste riječi pretvara u jednoslovne oznake, primjerice `A` za pridjev, `N` za imenicu, `P` za prijedlog i `D` za član. Funkcija `keywords_phrases()` zatim u nizu tih oznaka traži dijelove koji odgovaraju regularnom izrazu zadanom argumentom `pattern`, a argumentom `term` zadajemo riječi koje se vraćaju kao rezultat. Izraz `"(A|N)*N(P+D*(A|N)*N)*"` opisuje imensku skupinu. Ona se sastoji od nijednog ili više pridjeva ili imenica iza kojih slijedi imenica, a može se nastaviti prijedlogom i još jednom takvom skupinom, kao u izrazu *kingdom of culture*. Argument `is_regex = TRUE` određuje da je uzorak regularni izraz, a argumentom `detailed = FALSE` dobivamo samo popis skupina s brojem pojavljivanja. Funkcijom `filter()` zadržavamo samo skupine od dvije ili više riječi.
+
+```{r}
+# Jednoslovne oznake vrsta riječi
+dubois_anno <- dubois_anno |>
+  mutate(phrase_tag = as_phrasemachine(upos, type = "upos"))
+
+# Imenske skupine
+noun_phrases <- keywords_phrases(
+  x = dubois_anno$phrase_tag,
+  term = str_to_lower(dubois_anno$token),
+  pattern = "(A|N)*N(P+D*(A|N)*N)*",
+  is_regex = TRUE,
+  detailed = FALSE
+) |>
+  as_tibble()
+
+# Najčešće imenske skupine od dvije ili više riječi
+noun_phrases |>
+  filter(ngram > 1)
+```
+
+Najčešće su skupine *other world*, *black men* i *black man*, *american negro*, *double aims* i *negro people*. Na popisu se vidi i ograničenje postupka. Funkcija `as_phrasemachine()` zamjenice označava kao imenice pa se na popisu nalaze i skupine poput *his people* ili *world which* koje nisu pravi pojmovi.
+
+Sličan postupak koji se često koristi je **prepoznavanje imenovanih entiteta** (engl. *named entity recognition*), odnosno pronalaženje imena osoba, organizacija i mjesta u tekstu. Paket `udpipe` to ne radi, a za engleski jezik postoje drugi alati, primjerice paket `spacyr` koji koristi program spaCy napisan u Pythonu. Kao grubu zamjenu možemo izdvojiti vlastite imenice (`PROPN`).
+
+```{r}
+# Najčešće vlastite imenice
+dubois_anno |>
+  filter(upos == "PROPN") |>
+  count(token, sort = TRUE)
+```
+
+Među vlastitim imenicama su nazivi mjesta i naroda, poput *America*, *Africa* i *Egypt*, ali i riječi *Negro* i *Nation* koje nisu imena, nego ih je model tako označio jer ih Du Bois piše velikim početnim slovom. To pokazuje i opće ograničenje lingvističke obrade. Rezultati ovise o modelu i o tekstovima na kojima je naučen pa je kod svakog novog teksta potrebno provjeriti koliko su pouzdani.

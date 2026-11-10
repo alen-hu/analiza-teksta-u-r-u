@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="…">
+<meta name="description" content="U dosadašnjim poglavljima tekst smo obrađivali kao niz riječi bez znanja o tome kakvu ulogu svaka riječ ima u rečenici. Lingvistička obrada tekstu dodaje upravo takve podatke. Za svaku riječ određuje vrstu riječi i rječnički oblik, a za rečenicu odnose među riječima. U ovom kratkom poglavlju upoznajemo osnove takve obrade na jednom od klasičnih socioloških tekstova.">
 
 <title>8&nbsp; Lingvistička obrada teksta – Analiza teksta u R-u</title>
 <style>
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -121,7 +156,7 @@ background: #8B475D;
       <h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Lingvistička obrada teksta</span></h1>
                   <div>
         <div class="description">
-          …
+          U dosadašnjim poglavljima tekst smo obrađivali kao niz riječi bez znanja o tome kakvu ulogu svaka riječ ima u rečenici. Lingvistička obrada tekstu dodaje upravo takve podatke. Za svaku riječ određuje vrstu riječi i rječnički oblik, a za rečenicu odnose među riječima. U ovom kratkom poglavlju upoznajemo osnove takve obrade na jednom od klasičnih socioloških tekstova.
         </div>
       </div>
                 </div>
@@ -445,8 +480,18 @@ background: #8B475D;
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Sadržaj poglavlja</h2>
+   
+  <ul>
+  <li><a href="#označavanje-teksta" id="toc-označavanje-teksta" class="nav-link active" data-scroll-target="#označavanje-teksta"><span class="header-section-number">8.1</span> Označavanje teksta</a></li>
+  <li><a href="#lematizacija-i-vrste-riječi" id="toc-lematizacija-i-vrste-riječi" class="nav-link" data-scroll-target="#lematizacija-i-vrste-riječi"><span class="header-section-number">8.2</span> Lematizacija i vrste riječi</a></li>
+  <li><a href="#morfološka-obilježja" id="toc-morfološka-obilježja" class="nav-link" data-scroll-target="#morfološka-obilježja"><span class="header-section-number">8.3</span> Morfološka obilježja</a></li>
+  <li><a href="#ovisnosna-analiza" id="toc-ovisnosna-analiza" class="nav-link" data-scroll-target="#ovisnosna-analiza"><span class="header-section-number">8.4</span> Ovisnosna analiza</a></li>
+  <li><a href="#imenske-skupine-i-imenovani-entiteti" id="toc-imenske-skupine-i-imenovani-entiteti" class="nav-link" data-scroll-target="#imenske-skupine-i-imenovani-entiteti"><span class="header-section-number">8.5</span> Imenske skupine i imenovani entiteti</a></li>
+  </ul>
+<div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="ahusnjak0810@gmail.com"><i class="bi bi-chat-text"></i>Gmail</a></li><li><a href="www.linkedin.com/in/alen-husnjak-5a0bb9206"><i class="bi bi-linkedin"></i>LinkedIn</a></li></ul></div></nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
 
@@ -454,9 +499,663 @@ background: #8B475D;
 
 
 
-<p>…</p>
+<p>U prethodnom poglavlju tekst smo podijelili na riječi, uklonili zaustavne riječi i riječi sveli na rječnički oblik. Pritom nismo znali ništa o tome kakvu ulogu pojedina riječ ima u rečenici. Lematizacija rječnikom je zato riječ <em>born</em> svela na glagol <em>bear</em>, a riječ <em>united</em> iz naziva <em>United States</em> na glagol <em>unite</em>. <strong>Lingvistička obrada teksta</strong> tekstu dodaje jezične podatke. Za svaku riječ određuje kojoj vrsti riječi pripada, koji je njezin rječnički oblik u danom kontekstu i koja su njezina morfološka obilježja, poput broja ili vremena. Za svaku rečenicu određuje i kako su riječi u njoj međusobno povezane, primjerice koja je riječ subjekt, a koja predikat.</p>
+<p>Za sociološku analizu teksta lingvistička obrada najčešće je pomoćni korak. Njome se tekst može suziti na imenice i pridjeve koji najviše govore o sadržaju ili se iz njega mogu izdvojiti akteri i radnje koje im se pripisuju. U ovom poglavlju zato obrađujemo samo osnove. Pokazat ćemo kako se tekst označava, kako se razlikuju lematizacija rječnikom i lematizacija u kontekstu te kako se koriste vrste riječi i odnosi među riječima.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Preuzimanje teksta i jezičnog modela">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Preuzimanje teksta i jezičnog modela
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Kao primjer koristimo prvo poglavlje knjige <em>The Souls of Black Folk</em> W. E. B. Du Boisa iz 1903. godine naslovljeno <em>Of Our Spiritual Strivings</em>. U tom poglavlju Du Bois opisuje iskustvo osoba crne rase u SAmD-u i uvodi pojam dvostruke svijesti, odnosno osjećaj da osoba sebe uvijek gleda i očima drugih.</p>
+<p>Knjiga <em>The Souls of Black Folk</em> nalazi se u javnom vlasništvu i dostupna je na Projektu Gutenberg pod brojem 408. Ovdje je preuzimamo s GitHuba, iz projekta GITenberg koji čuva preslike knjiga s Projekta Gutenberg kako bi tekst uvijek bio jednak onome na kojem je napisano ovo poglavlje.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preuzimanje knjige</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://raw.githubusercontent.com/GITenberg/The-Souls-of-Black-Folk_408/master/408.txt"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">destfile =</span> <span class="st">"data/souls_of_black_folk.txt"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje knjige</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dubois_lines <span class="ot">&lt;-</span> <span class="fu">read_lines</span>(<span class="st">"data/souls_of_black_folk.txt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Kod je pokrenut samo jednom, a u nastavku poglavlja radimo sa spremljenim datotekama.</p>
+</div>
+</div>
+<p>Za lingvističku obradu potreban je i <strong>jezični model</strong>, odnosno datoteka u kojoj je zapisano ono što je program naučio iz ručno označenih tekstova na nekom jeziku. Funkcija <code>udpipe_download_model()</code> iz paketa <code>udpipe</code> preuzima model za jezik zadan argumentom <code>language</code> i sprema ga u mapu zadanu argumentom <code>model_dir</code>. Model <code>english-ewt</code> naučen je na korpusu <em>English Web Treebank</em> koji sadrži tekstove s interneta, poput blogova, recenzija i elektroničke pošte. Modeli su dostupni pod licencom CC BY-NC-SA 4.0 koja dopušta nekomercijalnu upotrebu.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preuzimanje engleskog jezičnog modela</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">udpipe_download_model</span>(<span class="at">language =</span> <span class="st">"english-ewt"</span>, <span class="at">model_dir =</span> <span class="st">"data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Da bi se tekstovi na različitim jezicima mogli označavati na isti način, potreban je zajednički sustav oznaka. Danas je najrašireniji sustav <strong>Universal Dependencies</strong> (UD). To je istodobno teorijski okvir za morfosintaktičko označavanje, otvoreni projekt u kojem sudjeluju stotine istraživača i zbirka ručno označenih korpusa, takozvanih banaka stabala (engl. <em>treebanks</em>) za više od stotinu jezika. Na tim se korpusima uče jezični modeli kakav ćemo koristiti u ovom poglavlju.</p>
+<p>Osnovna jedinica u sustavu UD je riječ. Svaka riječ ima rječnički oblik, odnosno <strong>lemu</strong> i pripada jednoj od 17 vrsta riječi (engl. <em>universal part-of-speech tags</em>, UPOS). Te su vrste bliske tradicionalnoj gramatici, poput imenica (<code>NOUN</code>), vlastitih imenica (<code>PROPN</code>), glagola (<code>VERB</code>), pomoćnih glagola (<code>AUX</code>), pridjeva (<code>ADJ</code>) i priloga (<code>ADV</code>), a dodane su i oznake za interpunkciju (<code>PUNCT</code>) i simbole. Riječima se pripisuju i <strong>morfološka obilježja</strong> zapisana kao parovi naziva i vrijednosti, primjerice <code>Number=Sing</code> za jedninu ili <code>Tense=Past</code> za prošlo vrijeme.</p>
+<p>Riječi u rečenici povezane su <strong>ovisnosnim odnosima</strong> (engl. <em>dependency relations</em>). Svaka riječ ovisi o točno jednoj drugoj riječi koja je njezina <strong>glava</strong> (engl. <em>head</em>), osim glavne riječi rečenice koja se naziva korijen (<code>root</code>). Tako sve riječi rečenice tvore stablo. Glava rečenice obično je glagol koji izražava radnju ili stanje, a glava imenske skupine imenica. Svaki ovisnosni odnos ima oznaku vrste odnosa, a sustav UD ima 37 takvih oznaka, primjerice <code>nsubj</code> za subjekt, <code>obj</code> za objekt i <code>amod</code> za pridjev koji opisuje imenicu. Kao glave sustav UD bira riječi koje nose sadržaj, a funkcijske riječi, poput članova, prijedloga i pomoćnih glagola, ovise o njima. Zato su odnosi u stablu bliski pitanju tko što radi i čemu što ih čini zanimljivima i za društvene znanosti.</p>
+<p>Među riječima koje ovise o predikatu sustav UD razlikuje <strong>temeljne argumente</strong> (engl. <em>core arguments</em>) i <strong>priložne dopune</strong> (engl. <em>oblique modifiers</em>). Temeljni argumenti su subjekt i objekt. U mnogim jezicima glagol se slaže samo s njima, a pojavljuju se bez prijedloga i obično blizu glagola. Sve ostale riječi i skupine koje ovise o predikatu, primjerice one s prijedlogom koje izražavaju mjesto, vrijeme ili način, priložne su dopune i označavaju se oznakom <code>obl</code>. Ta razlika ne ovisi o značenju, nego o tome kako je dopuna gramatički izražena.</p>
+<section id="označavanje-teksta" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="označavanje-teksta"><span class="header-section-number">8.1</span> Označavanje teksta</h2>
+<p>Tekst knjige učitavamo funkcijom <code>read_lines()</code>. Poglavlje započinje rečenicom <em>Between me and the other world…</em>, a završava riječima <em>…the striving in the souls of black folk.</em> Funkcija <code>str_which()</code> vraća redni broj elementa vektora u kojem je pronađen uzorak, pa njome pronalazimo prvi i posljednji redak poglavlja. Pjesmu na početku poglavlja i sve ostale dijelove knjige time izostavljamo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prvi i posljednji redak prvog poglavlja</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>chapter_start <span class="ot">&lt;-</span> <span class="fu">str_which</span>(dubois_lines, <span class="st">"^Between me and the other world"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>chapter_end <span class="ot">&lt;-</span> <span class="fu">str_which</span>(dubois_lines, <span class="st">"striving in the souls of black folk</span><span class="sc">\\</span><span class="st">."</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Retci prvog poglavlja</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>chapter_lines <span class="ot">&lt;-</span> dubois_lines[chapter_start<span class="sc">:</span>chapter_end]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Kao i u prethodnom poglavlju, retke spajamo u jedan niz i zatim ga dijelimo na odlomke na mjestima na kojima se nalazi prazan redak. Prijelome redaka unutar odlomka zamjenjujemo razmakom, a suvišne razmake uklanjamo. Odlomke zatim spremamo u podatkovni okvir sa stupcima <code>paragraph</code> i <code>text</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Podjela poglavlja na odlomke</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>paragraphs <span class="ot">&lt;-</span> <span class="fu">str_c</span>(chapter_lines, <span class="at">collapse =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_split</span>(<span class="st">"</span><span class="sc">\n\\</span><span class="st">s*</span><span class="sc">\n</span><span class="st">"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pluck</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_replace_all</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="st">" "</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_squish</span>()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Podatkovni okvir s odlomcima</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>dubois_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">paragraph =</span> <span class="fu">seq_along</span>(paragraphs),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> paragraphs</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>dubois_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 17 × 2
+   paragraph text                                                               
+       &lt;int&gt; &lt;chr&gt;                                                              
+ 1         1 "Between me and the other world there is ever an unasked question:…
+ 2         2 "And yet, being a problem is a strange experience,--peculiar even …
+ 3         3 "After the Egyptian and Indian, the Greek and Roman, the Teuton an…
+ 4         4 "The history of the American Negro is the history of this strife,-…
+ 5         5 "This, then, is the end of his striving: to be a co-worker in the …
+ 6         6 "Away back in the days of bondage they thought to see in one divin…
+ 7         7 "\"Shout, O children! Shout, you're free! For God has bought your …
+ 8         8 "Years have passed away since then,--ten, twenty, forty; forty yea…
+ 9         9 "\"Take any shape but that, and my firm nerves Shall never tremble…
+10        10 "The Nation has not yet found peace from its sins; the freedman ha…
+11        11 "The first decade was merely a prolongation of the vain search for…
+12        12 "Up the new path the advance guard toiled, slowly, heavily, dogged…
+13        13 "A people thus handicapped ought not to be asked to race with the …
+14        14 "But the facing of so vast a prejudice could not but bring the ine…
+15        15 "So dawned the time of Sturm und Drang: storm and stress to-day ro…
+16        16 "Merely a concrete test of the underlying principles of the great …
+17        17 "And now what I have briefly sketched in large outline let me on c…</code></pre>
+</div>
+</div>
+<p>Poglavlje ima 17 odlomaka. Dva od njih, sedmi i deveti, kratki su citati koje Du Bois navodi u tekstu.</p>
+<p>Model učitavamo funkcijom <code>udpipe_load_model()</code>, kojoj kao argument zadajemo putanju do preuzete datoteke. Tekst zatim označavamo funkcijom <code>udpipe_annotate()</code>. Argumentom <code>object</code> zadajemo model, argumentom <code>x</code> znakovni vektor s tekstovima, a argumentom <code>doc_id</code> oznake dokumenata, ovdje redne brojeve odlomaka. Funkcija u jednom koraku dijeli tekst na rečenice i riječi, određuje leme, vrste riječi i morfološka obilježja te provodi ovisnosnu analizu. Rezultat je poseban objekt koji funkcijom <code>as_tibble()</code> pretvaramo u podatkovni okvir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učitavanje jezičnog modela</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ud_model <span class="ot">&lt;-</span> <span class="fu">udpipe_load_model</span>(<span class="st">"data/english-ewt-ud-2.5-191206.udpipe"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Označavanje teksta</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="ot">&lt;-</span> <span class="fu">udpipe_annotate</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">object =</span> ud_model,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> dubois_df<span class="sc">$</span>text,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">doc_id =</span> dubois_df<span class="sc">$</span>paragraph</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>()</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Pregled označenog teksta</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(doc_id, sentence_id, token_id, token, lemma, upos, feats, head_token_id, dep_rel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3,552 × 9
+   doc_id sentence_id token_id token   lemma   upos  feats head_token_id dep_rel
+   &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;  
+ 1 1                1 1        Between between ADP   &lt;NA&gt;  2             case   
+ 2 1                1 2        me      I       PRON  Case… 8             obl    
+ 3 1                1 3        and     and     CCONJ &lt;NA&gt;  6             cc     
+ 4 1                1 4        the     the     DET   Defi… 6             det    
+ 5 1                1 5        other   other   ADJ   Degr… 6             amod   
+ 6 1                1 6        world   world   NOUN  Numb… 2             conj   
+ 7 1                1 7        there   there   PRON  &lt;NA&gt;  8             expl   
+ 8 1                1 8        is      be      VERB  Mood… 0             root   
+ 9 1                1 9        ever    ever    ADV   &lt;NA&gt;  8             advmod 
+10 1                1 10       an      a       DET   Defi… 12            det    
+# ℹ 3,542 more rows</code></pre>
+</div>
+</div>
+<p>Rezultat je podatkovni okvir s jednim tokenom po retku, odnosno u urednom formatu koji smo upoznali u prethodnom poglavlju. Zato se s njim radi istim funkcijama paketa <code>dplyr</code>. Za razliku od funkcije <code>unnest_tokens()</code>, interpunkcija ostaje u tekstu kao zaseban token, a velika slova se zadržavaju. Najvažniji su stupci sljedeći:</p>
+<ul>
+<li><p><code>doc_id</code> - oznaka dokumenta (ovdje redni broj odlomka),</p></li>
+<li><p><code>sentence_id</code> - redni broj rečenice u dokumentu,</p></li>
+<li><p><code>token_id</code> - redni broj tokena u rečenici,</p></li>
+<li><p><code>token</code> - riječ ili interpunkcijski znak onako kako se pojavljuje u tekstu,</p></li>
+<li><p><code>lemma</code> - rječnički oblik riječi,</p></li>
+<li><p><code>upos</code> - vrsta riječi prema sustavu UD,</p></li>
+<li><p><code>feats</code> - morfološka obilježja,</p></li>
+<li><p><code>head_token_id</code> - redni broj tokena koji je glava ovog tokena (0 za korijen rečenice) i</p></li>
+<li><p><code>dep_rel</code> - vrsta ovisnosnog odnosa prema glavi.</p></li>
+</ul>
+<p>Već prvi retci pokazuju kakve podatke model dodaje. Riječ <em>is</em> ima lemu <em>be</em>, označena je kao glagol (<code>VERB</code>) i ima obilježja trećeg lica jednine sadašnjeg vremena. Budući da je glava rečenice, njezina je vrijednost u stupcu <code>head_token_id</code> 0, a u stupcu <code>dep_rel</code> <code>root</code>.</p>
+<p>Model je tekst podijelio i na rečenice. Funkcijom <code>distinct()</code> zadržavamo po jedan redak za svaku kombinaciju dokumenta i rečenice pa dobivamo broj rečenica. Duljinu rečenica dobivamo tako da funkcijom <code>count()</code> prebrojimo tokene u svakoj rečenici, bez interpunkcije, a funkcija <code>summary()</code> zatim sažima te duljine.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj rečenica</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(doc_id, sentence_id) <span class="sc">|&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nrow</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 109</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Duljina rečenica u riječima</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>sentence_length <span class="ot">&lt;-</span> dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(upos <span class="sc">!=</span> <span class="st">"PUNCT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(doc_id, sentence_id)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(sentence_length<span class="sc">$</span>n)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2.00   14.00   26.00   28.02   36.00  102.00 </code></pre>
+</div>
+</div>
+<p>Poglavlje ima 109 rečenica. Polovina rečenica ima 26 riječi ili više, a najdulja ima više od stotinu riječi. Takve duge rečenice, povezane zarezima, točkama sa zarezom i crtama, obilježje su Du Boisova stila. Za model su teže od kratkih rečenica s interneta na kojima je naučen, pa je u njima i više pogrešaka.</p>
+</section>
+<section id="lematizacija-i-vrste-riječi" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="lematizacija-i-vrste-riječi"><span class="header-section-number">8.2</span> Lematizacija i vrste riječi</h2>
+<p>Funkcija <code>lemmatize_words()</code> iz paketa <code>textstem</code>, a koju smo koristili u prethodnom poglavlju, svaku riječ traži u rječniku i uvijek joj pripisuje istu lemu. Jezični model lemu određuje u kontekstu rečenice, zajedno s vrstom riječi. Razliku vidimo kad iste riječi lematiziramo na oba načina. Funkcijom <code>filter()</code> najprije uklanjamo interpunkciju, a zatim stvaramo stupac s riječju zapisanom malim slovima, stupac s lemom iz rječnika i stupac s lemom iz modela. Na kraju zadržavamo samo riječi kojima su dva postupka dala različite leme.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usporedba leme iz rječnika i leme iz jezičnog modela</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>lemma_comparison <span class="ot">&lt;-</span> dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(upos <span class="sc">!=</span> <span class="st">"PUNCT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">word =</span> <span class="fu">str_to_lower</span>(token),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">dictionary_lemma =</span> <span class="fu">lemmatize_words</span>(word),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">model_lemma =</span> <span class="fu">str_to_lower</span>(lemma)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dictionary_lemma <span class="sc">!=</span> model_lemma)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj riječi s različitim lemama</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(lemma_comparison)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 229</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešće razlike</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>lemma_comparison <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, upos, model_lemma, dictionary_lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">40</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 132 × 5
+   word        upos  model_lemma dictionary_lemma     n
+   &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;            &lt;int&gt;
+ 1 his         PRON  he          his                 33
+ 2 him         PRON  he          him                  9
+ 3 their       PRON  they        their                8
+ 4 me          PRON  i           me                   7
+ 5 these       DET   these       this                 7
+ 6 could       AUX   could       can                  5
+ 7 them        PRON  they        them                 5
+ 8 our         PRON  we          our                  4
+ 9 striving    NOUN  striving    strive               4
+10 training    NOUN  training    train                4
+11 her         PRON  she         her                  3
+12 more        ADV   more        much                 3
+13 races       NOUN  races       race                 3
+14 these       PRON  these       this                 3
+15 those       DET   those       that                 3
+16 '           PART  's          '                    2
+17 ashamed     VERB  asham       ashamed              2
+18 better      ADJ   better      good                 2
+19 eyes        NOUN  eyes        eye                  2
+20 higher      ADJ   higher      high                 2
+21 means       NOUN  means       mean                 2
+22 o           ADP   of          o                    2
+23 second      ADJ   second      2                    2
+24 us          PRON  we          us                   2
+25 well        ADV   well        good                 2
+26 your        PRON  you         your                 2
+27 're         AUX   be          're                  1
+28 accumulated VERB  accumulated accumulate           1
+29 accustomed  VERB  accustomed  accustom             1
+30 aims        NOUN  aims        aim                  1
+31 amused      ADJ   amused      amuse                1
+32 best        ADJ   best        good                 1
+33 bluest      ADJ   bluest      blue                 1
+34 blundering  NOUN  blundering  blunder              1
+35 boiling     NOUN  boiling     boil                 1
+36 broader     NOUN  broader     broad                1
+37 burning     VERB  burning     burn                 1
+38 bursts      NOUN  bursts      burst                1
+39 centuries   NOUN  centurie    century              1
+40 clearer     ADJ   clearer     clear                1
+# ℹ 92 more rows</code></pre>
+</div>
+</div>
+<p>Dva postupka daju različite leme za 229 od nešto više od 3.000 riječi. Najčešća je razlika kod zamjenica. U sustavu UD lema zamjenica <em>his</em> i <em>him</em> je <em>he</em>, a lema zamjenica <em>their</em> i <em>them</em> je <em>they</em>, dok ih rječnik ostavlja nepromijenjenima. Važnija je razlika kod riječi koje mogu biti različite vrste riječi. Riječ <em>striving</em>, koja se pojavljuje u naslovu poglavlja, rječnik uvijek svodi na glagol <em>strive</em>. Model je u većini slučajeva prepoznaje kao imenicu (<code>NOUN</code>) pa joj ostavlja oblik <em>striving</em>. Isto vrijedi za riječi <em>training</em> i <em>means</em>. Kad zadržimo samo retke s nekoliko takvih riječi vidi se da ista riječ u različitim rečenicama dobiva različitu vrstu riječi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Riječi koje u tekstu pripadaju različitim vrstama riječi</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_to_lower</span>(token) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"striving"</span>, <span class="st">"strivings"</span>, <span class="st">"burden"</span>, <span class="st">"cry"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(doc_id, sentence_id, token, lemma, upos)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 5
+   doc_id sentence_id token     lemma    upos 
+   &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;
+ 1 2               13 cry       cry      NOUN 
+ 2 3                3 strivings striving NOUN 
+ 3 5                1 striving  striving NOUN 
+ 4 5                5 striving  striving NOUN 
+ 5 8                2 cry       cry      VERB 
+ 6 11               2 cry       cry      NOUN 
+ 7 12               6 striving  strive   VERB 
+ 8 12               8 burden    burden   NOUN 
+ 9 12              12 burden    burden   VERB 
+10 15               9 striving  strive   NOUN 
+11 16               1 striving  striving NOUN 
+12 16               1 burden    burden   NOUN 
+13 17               1 striving  striving NOUN </code></pre>
+</div>
+</div>
+<p>Riječ <em>burden</em> u šesnaestom odlomku je imenica (<em>whose burden is almost beyond the measure of their strength</em>), a u dvanaestom je u jednoj rečenici imenica, a u drugoj glagol. Ni model nije savršen. U petnaestom odlomku riječ <em>striving</em> označio je kao imenicu, a lemu joj je ipak sveo na glagol <em>strive</em>. U usporedbi s rječnikom vide se i drugi propusti modela. Riječi <em>races</em> i <em>eyes</em> nisu svedene na jedninu, <em>centuries</em> je postala <em>centurie</em>, a <em>ashamed</em> je postala <em>asham</em>. Model je naučen na suvremenim tekstovima s interneta pa ga starinski i književni stil Du Boisova teksta ponekad zbuni. Zato je i ovdje rezultate dobro provjeriti prije analize.</p>
+<p>Vrste riječi najčešće se koriste za sužavanje teksta. Zaustavne riječi uglavnom su funkcijske riječi, poput članova, prijedloga, veznika i zamjenica pa se umjesto popisa zaustavnih riječi mogu zadržati samo riječi određenih vrsta. Funkcijom <code>count()</code> najprije provjeravamo koliko je u tekstu riječi svake vrste.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Broj tokena po vrstama riječi</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(upos, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 15 × 2
+   upos      n
+   &lt;chr&gt; &lt;int&gt;
+ 1 NOUN    743
+ 2 PUNCT   498
+ 3 DET     405
+ 4 ADP     394
+ 5 VERB    316
+ 6 ADJ     273
+ 7 PRON    226
+ 8 CCONJ   189
+ 9 ADV     166
+10 AUX     125
+11 PART     73
+12 PROPN    66
+13 SCONJ    44
+14 NUM      29
+15 INTJ      5</code></pre>
+</div>
+</div>
+<p>Imenice su najčešća vrsta riječi u tekstu. Funkcijom <code>filter()</code> zadržavamo samo imenice, odnosno samo pridjeve, i brojimo njihove leme.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešće imenice</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(upos <span class="sc">==</span> <span class="st">"NOUN"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 444 × 2
+   lemma       n
+   &lt;chr&gt;   &lt;int&gt;
+ 1 world      17
+ 2 ideal      15
+ 3 self       14
+ 4 man        13
+ 5 soul       12
+ 6 freedom    11
+ 7 power      11
+ 8 people     10
+ 9 day         9
+10 race        7
+# ℹ 434 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešći pridjevi</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(upos <span class="sc">==</span> <span class="st">"ADJ"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(lemma, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 179 × 2
+   lemma        n
+   &lt;chr&gt;    &lt;int&gt;
+ 1 black       13
+ 2 american     7
+ 3 other        7
+ 4 white        7
+ 5 dark         5
+ 6 double       5
+ 7 own          5
+ 8 new          4
+ 9 social       4
+10 vain         4
+# ℹ 169 more rows</code></pre>
+</div>
+</div>
+<p>Popisi dobro sažimaju sadržaj poglavlja. Među imenicama su <em>world</em>, <em>ideal</em>, <em>self</em>, <em>man</em>, <em>soul</em>, <em>freedom</em> i <em>power</em>, a među pridjevima <em>black</em>, <em>american</em>, <em>white</em>, <em>dark</em> i <em>double</em>. Na takvim popisima nema zaustavnih riječi iako ih nismo uklanjali popisom jer funkcijske riječi pripadaju drugim vrstama riječi.</p>
+</section>
+<section id="morfološka-obilježja" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="morfološka-obilježja"><span class="header-section-number">8.3</span> Morfološka obilježja</h2>
+<p>Morfološka obilježja zapisana su u stupcu <code>feats</code> kao jedan znakovni niz u kojem su parovi naziva i vrijednosti odvojeni okomitom crtom (<code>|</code>), a naziv i vrijednost znakom jednakosti (<code>=</code>). Takav zapis nije pogodan za analizu pa ga pretvaramo u uredni format, u kojem je jedno obilježje jedan redak. Funkcijom <code>filter()</code> najprije uklanjamo tokene bez obilježja, a funkcija <code>separate_longer_delim()</code> niz zatim dijeli na mjestima na kojima je okomita crta i svaki par stavlja u zaseban redak. Funkcija <code>separate_wider_delim()</code> svaki par dijeli na mjestu znaka jednakosti u dva stupca čija imena zadajemo argumentom <code>names</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Morfološka obilježja u urednom formatu</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>dubois_feats <span class="ot">&lt;-</span> dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(feats)) <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(doc_id, sentence_id, token_id, token, lemma, upos, feats) <span class="sc">|&gt;</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_longer_delim</span>(feats, <span class="at">delim =</span> <span class="st">"|"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(feats, <span class="at">delim =</span> <span class="st">"="</span>, <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"feature"</span>, <span class="st">"value"</span>))</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Učestalost obilježja</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>dubois_feats <span class="sc">|&gt;</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(feature, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 15 × 2
+   feature      n
+   &lt;chr&gt;    &lt;int&gt;
+ 1 Number    1096
+ 2 PronType   584
+ 3 VerbForm   441
+ 4 Definite   321
+ 5 Degree     281
+ 6 Tense      265
+ 7 Person     242
+ 8 Mood       192
+ 9 Case       109
+10 Gender     102
+11 Poss        62
+12 NumType     36
+13 Voice       13
+14 Reflex       7
+15 Abbr         2</code></pre>
+</div>
+</div>
+<p>Najčešće je obilježje broj (<code>Number</code>) koje imaju imenice, zamjenice i glagoli, a zatim vrsta zamjenice (<code>PronType</code>), oblik glagola (<code>VerbForm</code>) i određenost (<code>Definite</code>) koju u engleskom jeziku nose članovi. Obilježja ovise o jeziku. U engleskom jeziku pridjevi nemaju broj, a padež (<code>Case</code>) imaju samo neke zamjenice, dok je u češkom ili hrvatskom padež obilježje imenica, pridjeva, zamjenica i brojeva.</p>
+<p>Obilježja se mogu koristiti i za analizu sadržaja. Glagolsko vrijeme (<code>Tense</code>), primjerice, pokazuje govori li tekst o prošlosti ili o sadašnjosti. Zadržavamo samo glagole i pomoćne glagole s obilježjem vremena i za svaki odlomak brojimo oblike prošlog (<code>Past</code>) i sadašnjeg (<code>Pres</code>) vremena. Funkcija <code>pivot_wider()</code> vrijednosti iz stupca <code>value</code> pretvara u zasebne stupce, a argument <code>values_fill = 0</code> upisuje nulu kad u odlomku nema oblika nekog vremena. Na kraju računamo udio prošlog vremena. Budući da je <code>doc_id</code> znakovni stupac, pretvaramo ga u broj kako bi se odlomci složili pravim redoslijedom.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prošlo i sadašnje vrijeme po odlomcima</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>dubois_feats <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(upos <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"VERB"</span>, <span class="st">"AUX"</span>), feature <span class="sc">==</span> <span class="st">"Tense"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(doc_id, value) <span class="sc">|&gt;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> value, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">doc_id =</span> <span class="fu">as.integer</span>(doc_id),</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">past_share =</span> Past <span class="sc">/</span> (Past <span class="sc">+</span> Pres)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(doc_id)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16 × 4
+   doc_id  Past  Pres past_share
+    &lt;int&gt; &lt;int&gt; &lt;int&gt;      &lt;dbl&gt;
+ 1      1     3     9      0.25 
+ 2      2    23     6      0.793
+ 3      3     4     7      0.364
+ 4      4     4     6      0.4  
+ 5      5    26    14      0.65 
+ 6      6    15     0      1    
+ 7      7     1     2      0.333
+ 8      8     2     2      0.5  
+ 9     10     5     2      0.714
+10     11    35     0      1    
+11     12    35     5      0.875
+12     13     6    10      0.375
+13     14     7     2      0.778
+14     15    11    15      0.423
+15     16     0     4      0    
+16     17     2     2      0.5  </code></pre>
+</div>
+</div>
+<p>Raspodjela vremena prati strukturu poglavlja. Prvi odlomak, u kojem Du Bois postavlja pitanje kako je to biti problem, uglavnom je u sadašnjem vremenu. U drugom odlomku prevladava prošlo vrijeme jer opisuje sjećanje iz djetinjstva. U šestom, jedanaestom i dvanaestom odlomku gotovo su svi glagoli u prošlom vremenu jer pripovijedaju povijest crnaca od ropstva do kraja 19. stoljeća, a u većini posljednjih odlomaka ponovno prevladava sadašnje vrijeme jer Du Bois iz te povijesti izvodi zaključke o sadašnjosti. Deveti odlomak nema glagola s obilježjem vremena jer je kratak citat u zapovjednom načinu.</p>
+</section>
+<section id="ovisnosna-analiza" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="ovisnosna-analiza"><span class="header-section-number">8.4</span> Ovisnosna analiza</h2>
+<p>Ovisnosni odnosi najlakše se razumiju na jednoj rečenici. Funkcijom <code>filter()</code> zadržavamo rečenicu <em>I remember well when the shadow swept across me.</em> iz drugog odlomka.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ovisnosni odnosi u jednoj rečenici</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(doc_id <span class="sc">==</span> <span class="st">"2"</span>, sentence_id <span class="sc">==</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(token_id, token, lemma, upos, head_token_id, dep_rel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 6
+   token_id token    lemma    upos  head_token_id dep_rel
+   &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;  
+ 1 1        I        I        PRON  2             nsubj  
+ 2 2        remember remember VERB  0             root   
+ 3 3        well     well     ADV   2             advmod 
+ 4 4        when     when     ADV   7             mark   
+ 5 5        the      the      DET   6             det    
+ 6 6        shadow   shadow   NOUN  7             nsubj  
+ 7 7        swept    sweep    VERB  2             advcl  
+ 8 8        across   across   ADP   9             case   
+ 9 9        me       I        PRON  7             obl    
+10 10       .        .        PUNCT 2             punct  </code></pre>
+</div>
+</div>
+<p>Korijen rečenice je glagol <em>remember</em> (u stupcu <code>head_token_id</code> ima vrijednost 0). O njemu ovisi zamjenica <em>I</em> kao subjekt (<code>nsubj</code>), prilog <em>well</em> kao priložna oznaka (<code>advmod</code>) i glagol <em>swept</em> koji je glava zavisne rečenice (<code>advcl</code>). Zavisna rečenica ima vlastiti subjekt, imenicu <em>shadow</em>, a zamjenica <em>me</em> ovisi o glagolu <em>swept</em> kao priložna oznaka s prijedlogom (<code>obl</code>). Prijedlog <em>across</em> pritom ovisi o zamjenici <em>me</em> (<code>case</code>), a ne obrnuto jer sustav UD kao glavu bira riječ koja nosi sadržaj.</p>
+<p>Koliko se koji odnos pojavljuje u cijelom poglavlju vidi se kad prebrojimo vrijednosti u stupcu <code>dep_rel</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Učestalost ovisnosnih odnosa</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(dep_rel, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 40 × 2
+   dep_rel       n
+   &lt;chr&gt;     &lt;int&gt;
+ 1 punct       498
+ 2 case        395
+ 3 det         377
+ 4 amod        243
+ 5 conj        228
+ 6 nmod        211
+ 7 cc          186
+ 8 nsubj       186
+ 9 advmod      163
+10 obl         153
+11 obj         143
+12 root        109
+13 mark         93
+14 compound     79
+15 nmod:poss    73
+# ℹ 25 more rows</code></pre>
+</div>
+</div>
+<p>Najčešći su odnosi interpunkcije (<code>punct</code>), prijedloga (<code>case</code>) i članova (<code>det</code>), odnosno funkcijskih riječi. Česti su i pridjevi uz imenice (<code>amod</code>) te sastavni odnosi (<code>conj</code>) kojima su povezani nizovi istovrsnih riječi i skupina karakteristični za Du Boisov stil. Subjekata (<code>nsubj</code>) ima 186, a objekata (<code>obj</code>) 143.</p>
+<p>Iz takvih se odnosa mogu izdvojiti parovi riječi. Svaki redak s oznakom <code>amod</code>, primjerice, sadrži pridjev, a stupac <code>head_token_id</code> kaže uz koju imenicu stoji. Da bismo uz pridjev dobili i tu imenicu, podatkovni okvir spajamo sa samim sobom. Funkcija <code>left_join()</code> uz svaki pridjev dodaje token iz istog dokumenta i iste rečenice čiji je redni broj (<code>token_id</code>) jednak vrijednosti u stupcu <code>head_token_id</code>. Takvo spajanje zadajemo argumentom <code>by</code> u kojem izraz <code>"head_token_id" = "token_id"</code> znači da se vrijednosti iz stupca <code>head_token_id</code> prvog podatkovnog okvira uspoređuju s vrijednostima iz stupca <code>token_id</code> drugog.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Parovi pridjeva i imenica</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>adjective_noun <span class="ot">&lt;-</span> dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dep_rel <span class="sc">==</span> <span class="st">"amod"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(doc_id, sentence_id, head_token_id, <span class="at">adjective =</span> lemma) <span class="sc">|&gt;</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(doc_id, sentence_id, token_id, <span class="at">noun =</span> lemma),</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"doc_id"</span>, <span class="st">"sentence_id"</span>, <span class="st">"head_token_id"</span> <span class="ot">=</span> <span class="st">"token_id"</span>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešći parovi</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>adjective_noun <span class="sc">|&gt;</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(adjective, noun, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 233 × 3
+   adjective   noun           n
+   &lt;chr&gt;       &lt;chr&gt;      &lt;int&gt;
+ 1 black       man            6
+ 2 other       world          4
+ 3 political   power          2
+ 4 social      problem        2
+ 5 American    Negro          1
+ 6 Southern    outrage        1
+ 7 accompany   repression     1
+ 8 accumulated sloth          1
+ 9 accustomed  seat           1
+10 african     chastity       1
+# ℹ 223 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Imenice uz pridjev double</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>adjective_noun <span class="sc">|&gt;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(adjective <span class="sc">==</span> <span class="st">"double"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 5
+  doc_id sentence_id head_token_id adjective noun         
+  &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;        
+1 3                2 10            double    consciousness
+2 4                1 28            double    self         
+3 5                6 15            double    aims         
+4 5               11 5             double    aim          </code></pre>
+</div>
+</div>
+<p>Najčešći je par <em>black man</em>, a zatim <em>other world</em> iz uvodne rečenice poglavlja. Pridjev <em>double</em> stoji uz imenice <em>consciousness</em>, <em>self</em> i <em>aim</em> (jednom u obliku <em>aims</em>), odnosno upravo uz pojmove kojima Du Bois opisuje dvostruku svijest.</p>
+<p>Na isti se način mogu izdvojiti subjekti i glagoli uz koje stoje. Takvi parovi pokazuju tko u tekstu djeluje i što mu se pripisuje. Zadržavamo retke s oznakom <code>nsubj</code> i uz svaki subjekt dodajemo lemu njegove glave.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Parovi subjekata i glava</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>subject_verb <span class="ot">&lt;-</span> dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dep_rel <span class="sc">==</span> <span class="st">"nsubj"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(doc_id, sentence_id, head_token_id, <span class="at">subject =</span> lemma) <span class="sc">|&gt;</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(doc_id, sentence_id, token_id, <span class="at">verb =</span> lemma, <span class="at">verb_upos =</span> upos),</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"doc_id"</span>, <span class="st">"sentence_id"</span>, <span class="st">"head_token_id"</span> <span class="ot">=</span> <span class="st">"token_id"</span>)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešći subjekti</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>subject_verb <span class="sc">|&gt;</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(subject, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 92 × 2
+   subject     n
+   &lt;chr&gt;   &lt;int&gt;
+ 1 he         23
+ 2 I          16
+ 3 it         12
+ 4 that        9
+ 5 we          8
+ 6 they        5
+ 7 ideal       4
+ 8 man         4
+ 9 this        4
+10 which       4
+# ℹ 82 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Glagoli kojima je subjekt zamjenica he</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>subject_verb <span class="sc">|&gt;</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(subject <span class="sc">==</span> <span class="st">"he"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(verb, verb_upos, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">25</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 19 × 3
+   verb       verb_upos     n
+   &lt;chr&gt;      &lt;chr&gt;     &lt;int&gt;
+ 1 begin      VERB          2
+ 2 feel       VERB          2
+ 3 see        VERB          2
+ 4 wish       VERB          2
+ 5 Africanize VERB          1
+ 6 articulate VERB          1
+ 7 bear       VERB          1
+ 8 bleach     VERB          1
+ 9 enter      VERB          1
+10 have       VERB          1
+11 himself    PRON          1
+12 humbly     VERB          1
+13 implor     VERB          1
+14 know       VERB          1
+15 look       VERB          1
+16 regard     VERB          1
+17 seek       VERB          1
+18 stand      VERB          1
+19 think      VERB          1</code></pre>
+</div>
+</div>
+<p>Najčešći subjekt je zamjenica <em>he</em> kojom Du Bois u većem dijelu poglavlja govori o crncu u Americi, a zatim <em>I</em>, kojom opisuje vlastito iskustvo. Glagoli uz <em>he</em> pokazuju što mu tekst pripisuje. On počinje, osjeća, vidi i želi (<em>begin</em>, <em>feel</em>, <em>see</em>, <em>wish</em>), a u poznatom odlomku o dvostrukoj svijesti ne bi htio afrikanizirati Ameriku (<em>Africanize</em>) ni izbijeliti svoju dušu (<em>bleach</em>). Glava subjekta nije uvijek glagol. U rečenicama s glagolom <em>to be</em> glava je imenica ili pridjev uz njega pa smo u ispis dodali i vrstu riječi glave. U ispisu se vide i pogreške modela. Lema <em>implor</em> trebala bi biti <em>implore</em>, prilog <em>humbly</em> označen je kao glagol, a zamjenica <em>himself</em> pogrešno je postala glava subjekta.</p>
+<p>Na isti način možemo izdvojiti i glagole s njihovim objektima, odnosno ono na što je radnja usmjerena.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Parovi glagola i objekata</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>verb_object <span class="ot">&lt;-</span> dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dep_rel <span class="sc">==</span> <span class="st">"obj"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(doc_id, sentence_id, head_token_id, <span class="at">object =</span> lemma) <span class="sc">|&gt;</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(doc_id, sentence_id, token_id, <span class="at">verb =</span> lemma),</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"doc_id"</span>, <span class="st">"sentence_id"</span>, <span class="st">"head_token_id"</span> <span class="ot">=</span> <span class="st">"token_id"</span>)</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešći parovi</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>verb_object <span class="sc">|&gt;</span></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(verb, object, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 140 × 3
+   verb       object      n
+   &lt;chr&gt;      &lt;chr&gt;   &lt;int&gt;
+ 1 know       power       2
+ 2 see        himself     2
+ 3 teach      world       2
+ 4 Africanize America     1
+ 5 analyze    burden      1
+ 6 answer     word        1
+ 7 approach   I           1
+ 8 articulate message     1
+ 9 attain     manhood     1
+10 attain     place       1
+# ℹ 130 more rows</code></pre>
+</div>
+</div>
+<p>U kratkom tekstu većina se parova pojavljuje samo jednom. Ipak se i tu vide parovi koji sažimaju dijelove poglavlja, poput <em>know power</em> i <em>teach world</em>, a u odlomku o dvostrukoj svijesti <em>Africanize America</em>. Na većem broju tekstova takvi parovi postaju korisni za usporedbu, primjerice kad nas zanima koje se radnje u novinama pripisuju različitim društvenim skupinama.</p>
+</section>
+<section id="imenske-skupine-i-imenovani-entiteti" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="imenske-skupine-i-imenovani-entiteti"><span class="header-section-number">8.5</span> Imenske skupine i imenovani entiteti</h2>
+<p>Mnogi pojmovi sastoje se od više riječi, poput <em>double consciousness</em> ili <em>black man</em>. Kad tekst tokeniziramo na riječi, takvi se pojmovi raspadaju, a n-grami iz prethodnog poglavlja obuhvaćaju sve nizove riječi pa i one koji nisu smislene cjeline. Vrste riječi omogućuju da izdvojimo samo nizove određenog oblika, primjerice imenske skupine koje se sastoje od pridjeva i imenica.</p>
+<p>Za to paket <code>udpipe</code> ima dvije funkcije. Funkcija <code>as_phrasemachine()</code> vrste riječi pretvara u jednoslovne oznake, primjerice <code>A</code> za pridjev, <code>N</code> za imenicu, <code>P</code> za prijedlog i <code>D</code> za član. Funkcija <code>keywords_phrases()</code> zatim u nizu tih oznaka traži dijelove koji odgovaraju regularnom izrazu zadanom argumentom <code>pattern</code>, a argumentom <code>term</code> zadajemo riječi koje se vraćaju kao rezultat. Izraz <code>"(A|N)*N(P+D*(A|N)*N)*"</code> opisuje imensku skupinu. Ona se sastoji od nijednog ili više pridjeva ili imenica iza kojih slijedi imenica, a može se nastaviti prijedlogom i još jednom takvom skupinom, kao u izrazu <em>kingdom of culture</em>. Argument <code>is_regex = TRUE</code> određuje da je uzorak regularni izraz, a argumentom <code>detailed = FALSE</code> dobivamo samo popis skupina s brojem pojavljivanja. Funkcijom <code>filter()</code> zadržavamo samo skupine od dvije ili više riječi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Jednoslovne oznake vrsta riječi</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="ot">&lt;-</span> dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">phrase_tag =</span> <span class="fu">as_phrasemachine</span>(upos, <span class="at">type =</span> <span class="st">"upos"</span>))</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Imenske skupine</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>noun_phrases <span class="ot">&lt;-</span> <span class="fu">keywords_phrases</span>(</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> dubois_anno<span class="sc">$</span>phrase_tag,</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">term =</span> <span class="fu">str_to_lower</span>(dubois_anno<span class="sc">$</span>token),</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"(A|N)*N(P+D*(A|N)*N)*"</span>,</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">is_regex =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">detailed =</span> <span class="cn">FALSE</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>()</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešće imenske skupine od dvije ili više riječi</span></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>noun_phrases <span class="sc">|&gt;</span></span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ngram <span class="sc">&gt;</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 785 × 3
+   keyword        ngram  freq
+   &lt;chr&gt;          &lt;int&gt; &lt;int&gt;
+ 1 other world        2     4
+ 2 black men          2     3
+ 3 black man          2     3
+ 4 his people         2     3
+ 5 world which        2     2
+ 6 american negro     2     2
+ 7 double aims        2     2
+ 8 two centuries      2     2
+ 9 forty years        2     2
+10 negro people       2     2
+# ℹ 775 more rows</code></pre>
+</div>
+</div>
+<p>Najčešće su skupine <em>other world</em>, <em>black men</em> i <em>black man</em>, <em>american negro</em>, <em>double aims</em> i <em>negro people</em>. Na popisu se vidi i ograničenje postupka. Funkcija <code>as_phrasemachine()</code> zamjenice označava kao imenice pa se na popisu nalaze i skupine poput <em>his people</em> ili <em>world which</em> koje nisu pravi pojmovi.</p>
+<p>Sličan postupak koji se često koristi je <strong>prepoznavanje imenovanih entiteta</strong> (engl. <em>named entity recognition</em>), odnosno pronalaženje imena osoba, organizacija i mjesta u tekstu. Paket <code>udpipe</code> to ne radi, a za engleski jezik postoje drugi alati, primjerice paket <code>spacyr</code> koji koristi program spaCy napisan u Pythonu. Kao grubu zamjenu možemo izdvojiti vlastite imenice (<code>PROPN</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Najčešće vlastite imenice</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>dubois_anno <span class="sc">|&gt;</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(upos <span class="sc">==</span> <span class="st">"PROPN"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(token, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 40 × 2
+   token        n
+   &lt;chr&gt;    &lt;int&gt;
+ 1 Negro       17
+ 2 America      4
+ 3 God          3
+ 4 Nation       3
+ 5 American     2
+ 6 Canaan       2
+ 7 Greek        2
+ 8 Africa       1
+ 9 Amen         1
+10 Drang        1
+# ℹ 30 more rows</code></pre>
+</div>
+</div>
+<p>Među vlastitim imenicama su nazivi mjesta i naroda, poput <em>America</em>, <em>Africa</em> i <em>Egypt</em>, ali i riječi <em>Negro</em> i <em>Nation</em> koje nisu imena, nego ih je model tako označio jer ih Du Bois piše velikim početnim slovom. To pokazuje i opće ograničenje lingvističke obrade. Rezultati ovise o modelu i o tekstovima na kojima je naučen pa je kod svakog novog teksta potrebno provjeriti koliko su pouzdani.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

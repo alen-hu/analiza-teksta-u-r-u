@@ -769,11 +769,3 @@ phr_tokens_lemma |>
 ```
 
 Pregled takvog popisa važan je jer lematizacija nije uvijek točna. Rječnik ne zna u kojem je značenju riječ upotrijebljena pa riječ koja može imati više značenja uvijek svodi na isti oblik. U ovom tekstu riječ *born* svodi se na glagol *bear*, iako se u biltenu odnosi na rođenje djece, a riječ *united* iz naziva *United States* na glagol *unite*. Ako lema za naše pitanje mijenja značenje riječi, bolje je tu riječ ostaviti u izvornom obliku.
-
-## Literatura {.unnumbered}
-
-Silge, J. i Robinson, D. (2017). *Text mining with R: A tidy approach*. O'Reilly.
-
-Welbers, K., Van Atteveldt, W. i Benoit, K. (2017). Text analysis in R. *Communication Methods and Measures*, *11*(4), 245–265.
-
-Wickham, H., Çetinkaya-Rundel, M. i Grolemund, G. (2023). *R for data science: Import, tidy, transform, visualize, and model data* (2. izd.). O'Reilly.
